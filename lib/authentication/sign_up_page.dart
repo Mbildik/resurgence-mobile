@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/credentials.dart';
+import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/ui/button.dart';
+import 'package:resurgence/ui/error_handler.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -83,16 +86,22 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget signUpButton() {
     return abstractButton(
       S.signUp,
-      () => Future.delayed(Duration(seconds: 1)).whenComplete(() {
-        Navigator.pop<Credential>(
-          context,
-          Credential(
-            emailController.text,
-            passwordController.text,
-          ),
-        );
-        setState(() => _loading = false);
-      }),
+      () => context
+          .read<AuthenticationService>()
+          .createAccount(emailController.text, passwordController.text)
+          .then((account) => _onSignUpSucceed())
+          .catchError((e) => ErrorHandler.showError(context, e))
+          .whenComplete(() => setState(() => _loading = false)),
+    );
+  }
+
+  void _onSignUpSucceed() {
+    Navigator.pop<Credential>(
+      context,
+      Credential(
+        emailController.text,
+        passwordController.text,
+      ),
     );
   }
 

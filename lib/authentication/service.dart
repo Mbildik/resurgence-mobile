@@ -1,3 +1,4 @@
+import 'package:resurgence/authentication/account.dart';
 import 'package:resurgence/authentication/token.dart';
 import 'package:resurgence/network/client.dart';
 
@@ -11,6 +12,10 @@ class AuthenticationService {
 
   Future<Token> login(String username, String password) {
     return _client.login(username, password);
+  }
+
+  Future<Account> createAccount(String email, String password) {
+    return _client.createAccount(email, password);
   }
 }
 
@@ -26,5 +31,12 @@ class _AuthenticationClient {
       'username': username,
       'password': password,
     }).then((response) => Token.fromJson(response.data));
+  }
+
+  Future<Account> createAccount(String email, String password) {
+    return _client.post('account', data: {
+      'email': email,
+      'password': password,
+    }).then((response) => Account.fromJson(response.data));
   }
 }
