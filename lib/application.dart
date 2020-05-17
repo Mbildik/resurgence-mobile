@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/login_page.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
-
-import 'ui/button.dart';
+import 'package:resurgence/player/player_control_page.dart';
 
 class Application extends StatelessWidget {
   // This widget is the root of the application.
@@ -24,14 +23,7 @@ class Application extends StatelessWidget {
   Widget buildBody(BuildContext context, AuthenticationState state) {
     if (state.isLoggedIn) {
       return SafeArea(
-        child: Row(
-          children: [
-            Button(
-              onPressed: () => state.logout(),
-              child: Text(S.logout),
-            ),
-          ],
-        ),
+        child: PlayerControlPage(),
       );
     }
 

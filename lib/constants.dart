@@ -10,6 +10,8 @@ class S {
 
   // Label
   static var email = 'email';
+  static var nickname = 'nickname';
+  static var create = 'create';
   static var sendEmail = 'send.email';
   static var submit = 'submit';
   static var password = 'password';
@@ -20,4 +22,8 @@ class S {
   static var loginGoogle = 'login.google';
   static var signUp = 'sign_up';
   static var signUpInfo = 'sign_up.info';
+  static var playerCreationTitle = 'player.creation.title';
+  static var race = 'race';
+  static var reload = 'reload';
+  static var errorOccurred = 'error.occurred';
 }
