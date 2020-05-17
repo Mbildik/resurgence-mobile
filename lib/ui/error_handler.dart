@@ -6,6 +6,7 @@ class ErrorHandler {
     BuildContext context,
     e,
   ) {
+    // todo add more error handler much as possible
     if (e is ApiError) {
       return Scaffold.of(context).showSnackBar(
         SnackBar(
@@ -13,6 +14,7 @@ class ErrorHandler {
         ),
       );
     } else {
+      // default error handling method
       return Scaffold.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString()),

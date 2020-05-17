@@ -49,6 +49,8 @@ class Client {
         log('Client: Filter processing: apiErrorInterceptor');
 
         if (e.type == DioErrorType.RESPONSE &&
+            e.response?.data != null &&
+            e.response?.data != '' &&
             e.response?.data['message'] != null) {
           log('Client: Api error threw');
           throw ApiError(e);
