@@ -6,6 +6,7 @@ import 'package:resurgence/constants.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/player_creation_page.dart';
 import 'package:resurgence/player/service.dart';
+import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/ui/button.dart';
 
 class PlayerControlPage extends StatefulWidget {
@@ -89,13 +90,7 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
           );
         }
 
-        var player = snapshot.data;
-        return Row(
-          children: [
-            Text('you are already:${player.nickname}'),
-            logoutButton(context),
-          ],
-        );
+        return ProfilePage();
       },
     );
   }

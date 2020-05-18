@@ -24,6 +24,10 @@ class S {
   static var signUpInfo = 'sign_up.info';
   static var playerCreationTitle = 'player.creation.title';
   static var race = 'race';
+  static var balance = 'balance';
+  static var health = 'health';
+  static var honor = 'honor';
+  static var experience = 'experience';
   static var reload = 'reload';
   static var errorOccurred = 'error.occurred';
 }
