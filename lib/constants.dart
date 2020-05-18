@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Application String Constants
 class S {
   // Misc
@@ -30,4 +32,10 @@ class S {
   static var experience = 'experience';
   static var reload = 'reload';
   static var errorOccurred = 'error.occurred';
+}
+
+class W {
+  static var defaultAppBar = AppBar(
+    title: Text(S.applicationTitle),
+  );
 }

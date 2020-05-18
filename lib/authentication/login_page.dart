@@ -25,44 +25,46 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                margin(48),
-                Text(
-                  S.applicationTitle,
-                  style: Theme.of(context).primaryTextTheme.headline2,
-                ),
-                Text(
-                  S.applicationDescription,
-                  style: Theme.of(context).primaryTextTheme.headline6,
-                ),
-                margin(48),
-                emailFormField(),
-                margin(8),
-                passwordFormField(),
-                margin(16),
-                GridView.count(
-                  primary: false,
-                  padding: EdgeInsets.all(16),
-                  childAspectRatio: 4,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  children: <Widget>[
-                    loginButton(),
-                    loginGoogleButton(),
-                    signUpButton(),
-                    forgotPasswordButton(),
-                  ],
-                ),
-              ],
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  margin(48),
+                  Text(
+                    S.applicationTitle,
+                    style: Theme.of(context).primaryTextTheme.headline2,
+                  ),
+                  Text(
+                    S.applicationDescription,
+                    style: Theme.of(context).primaryTextTheme.headline6,
+                  ),
+                  margin(48),
+                  emailFormField(),
+                  margin(8),
+                  passwordFormField(),
+                  margin(16),
+                  GridView.count(
+                    primary: false,
+                    padding: EdgeInsets.all(16),
+                    childAspectRatio: 4,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    children: <Widget>[
+                      loginButton(),
+                      loginGoogleButton(),
+                      signUpButton(),
+                      forgotPasswordButton(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

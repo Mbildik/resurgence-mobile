@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:resurgence/constants.dart';
 import 'package:resurgence/network/error.dart';
 
 class ErrorHandler {
-  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showError(
-    BuildContext context,
-    e,
-  ) {
-    // todo add more error handler much as possible
+  static Future<T> showError<T>(BuildContext context, e) {
     if (e is ApiError) {
-      return Scaffold.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message),
-        ),
-      );
-    } else {
-      // default error handling method
-      return Scaffold.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
+      return _abstractDialog(context, Text(e.message));
     }
+    return _abstractDialog(context, Text(e.toString()));
+  }
+
+  static Future<T> _abstractDialog<T>(BuildContext context, Widget content) {
+    return showDialog<T>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            S.errorOccurred,
+            style: TextStyle(color: Colors.red),
+          ),
+          content: content,
+        );
+      },
+    );
   }
 }

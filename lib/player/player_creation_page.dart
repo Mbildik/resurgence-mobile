@@ -31,32 +31,35 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                margin(48),
-                Text(
-                  S.playerCreationTitle,
-                  style: Theme.of(context).primaryTextTheme.headline6,
-                ),
-                margin(48),
-                raceDropdown(),
-                margin(16),
-                nicknameFormField(),
-                margin(16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    createPlayerButton(),
-                    logoutButton(),
-                  ],
-                ),
-              ],
+    return Scaffold(
+      appBar: W.defaultAppBar,
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  margin(48),
+                  Text(
+                    S.playerCreationTitle,
+                    style: Theme.of(context).primaryTextTheme.headline6,
+                  ),
+                  margin(48),
+                  raceDropdown(),
+                  margin(16),
+                  nicknameFormField(),
+                  margin(16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      createPlayerButton(),
+                      logoutButton(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

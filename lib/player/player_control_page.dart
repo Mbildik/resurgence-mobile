@@ -50,48 +50,65 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
       future: futurePlayer,
       builder: (BuildContext context, AsyncSnapshot<Player> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return _loadingWidget();
         } else if (snapshot.hasError) {
           if (snapshot.error is PlayerNotCreatedError) {
-            return Row(
-              children: [
-                Button(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return Scaffold(
-                            appBar: AppBar(
-                              title: Text('player creation'),
-                            ),
-                            body: PlayerCreationPage(),
-                          );
-                        },
-                      ),
-                    ).then(
-                      (value) => setState(() {
-                        futurePlayer = fetchPlayer();
-                      }),
-                    );
-                  },
-                  child: Text('create a player'),
-                ),
-                logoutButton(context),
-              ],
-            );
+            return _playerCreateWidget(context);
           }
-          return Column(
-            children: [
-              Text('An error occurred while fetching player info'),
-              refreshButton(context),
-              logoutButton(context),
-            ],
-          );
+          return _onErrorWidget(context);
         }
 
         return ProfilePage();
       },
+    );
+  }
+
+  Widget _onErrorWidget(BuildContext context) {
+    return Scaffold(
+      appBar: W.defaultAppBar,
+      body: Center(
+        child: Column(
+          children: [
+            Text('An error occurred while fetching player info'),
+            refreshButton(context),
+            logoutButton(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _playerCreateWidget(BuildContext context) {
+    return Scaffold(
+      appBar: W.defaultAppBar,
+      body: Row(
+        children: [
+          Button(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => PlayerCreationPage(),
+                ),
+              ).then(
+                (value) => setState(() {
+                  futurePlayer = fetchPlayer();
+                }),
+              );
+            },
+            child: Text('create a player'),
+          ),
+          logoutButton(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _loadingWidget() {
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 

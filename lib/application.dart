@@ -13,30 +13,14 @@ class Application extends StatelessWidget {
     return MaterialApp(
       title: S.applicationTitle,
       theme: ThemeData.dark(),
-      home: Scaffold(
-        appBar: buildAppBar(context, authenticationState),
-        body: buildBody(context, authenticationState),
-      ),
+      home: buildBody(context, authenticationState),
     );
   }
 
   Widget buildBody(BuildContext context, AuthenticationState state) {
     if (state.isLoggedIn) {
-      return SafeArea(
-        child: PlayerControlPage(),
-      );
+      return PlayerControlPage();
     }
-
     return LoginPage();
-  }
-
-  Widget buildAppBar(BuildContext context, AuthenticationState state) {
-    if (state.isLoggedIn) {
-      return AppBar(
-        title: Text(S.applicationTitle),
-      );
-    }
-
-    return null;
   }
 }
