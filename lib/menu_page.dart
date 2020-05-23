@@ -27,6 +27,7 @@ class _MenuPageState extends State<MenuPage> {
         shrinkWrap: true,
         children: <Widget>[
           profileButton(),
+          taskButton(),
         ],
       ),
     );
@@ -40,6 +41,20 @@ class _MenuPageState extends State<MenuPage> {
         MaterialPageRoute(
           builder: (context) {
             return ProfilePage();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget taskButton() {
+    return Button(
+      child: Text(S.task),
+      onPressed: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return SoloTaskPage();
           },
         ),
       ),
