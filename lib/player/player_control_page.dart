@@ -7,7 +7,6 @@ import 'package:resurgence/menu_page.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/player_creation_page.dart';
 import 'package:resurgence/player/service.dart';
-import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/ui/button.dart';
 
 class PlayerControlPage extends StatefulWidget {

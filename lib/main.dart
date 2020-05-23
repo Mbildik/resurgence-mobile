@@ -31,6 +31,11 @@ void main() {
     create: (_) => PlayerService(client),
   );
 
+  // Task
+  final taskServiceProvider = Provider(
+    create: (_) => TaskService(client),
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -40,7 +45,11 @@ void main() {
 
         // Player
         playerServiceProvider,
-        playerStateProvider
+        playerStateProvider,
+
+        // Task
+        taskServiceProvider,
+
       ],
       child: Application(),
     ),
