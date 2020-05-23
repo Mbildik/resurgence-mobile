@@ -32,6 +32,10 @@ class S {
   static var experience = 'experience';
   static var reload = 'reload';
   static var errorOccurred = 'error.occurred';
+  static var profile = 'profile';
+  static var task = 'task';
+  static var info = 'info';
+  static var perform = 'perform';
 }
 
 class W {
