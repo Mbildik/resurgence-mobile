@@ -5,6 +5,7 @@ import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
+import 'package:resurgence/task/service.dart';
 
 import 'application.dart';
 
@@ -15,18 +16,18 @@ void main() {
   final client = Client(authenticationState);
 
   // Authentication
-  var authenticationStateProvider = ChangeNotifierProvider(
+  final authenticationStateProvider = ChangeNotifierProvider(
     create: (BuildContext context) => authenticationState,
   );
-  var authenticationServiceProvider = Provider(
+  final authenticationServiceProvider = Provider(
     create: (_) => AuthenticationService(client),
   );
 
   // Player
-  var playerStateProvider = ChangeNotifierProvider(
+  final playerStateProvider = ChangeNotifierProvider(
     create: (BuildContext context) => PlayerState(),
   );
-  var playerServiceProvider = Provider(
+  final playerServiceProvider = Provider(
     create: (_) => PlayerService(client),
   );
 
