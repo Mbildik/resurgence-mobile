@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/task/service.dart';
 import 'package:resurgence/task/task.dart';
+import 'package:resurgence/ui/button.dart';
 import 'package:resurgence/ui/error_handler.dart';
 
 class SoloTaskPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task'),
+        title: Text(S.soloTask),
       ),
       body: FutureBuilder<List<Task>>(
         future: futureTasks,
@@ -42,7 +43,15 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
           } else if (snapshot.hasError) {
             return Scaffold(
               body: Center(
-                child: Text(S.errorOccurred),
+                child: Column(
+                  children: <Widget>[
+                    Button(
+                      child: Text(S.reload),
+                      onPressed: () => this._refreshTasks(),
+                    ),
+                    Text(S.errorOccurred),
+                  ],
+                ),
               ),
             );
           }
@@ -66,28 +75,9 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
   }
 
   TaskResult onTaskPerformed(TaskResult result) {
-
-//    showDialog(
-//      context: context,
-//      builder: (context) {
-//        return AlertDialog(
-//          title: result.succeed
-//              ? Text(
-//                  'Succeed',
-//                  style: TextStyle(color: Colors.green),
-//                )
-//              : Text(
-//                  'Failed',
-//                  style: TextStyle(color: Colors.red),
-//                ),
-//          content: Text(result.moneyGain.toString()),
-//        );
-//      },
-//    ).then((value) {
-    setState(() {
-      futureTasks = this.fetchAllTasks();
-    });
-//    });
+    _refreshTasks();
     return result;
   }
+
+  void _refreshTasks() => setState(() => futureTasks = this.fetchAllTasks());
 }

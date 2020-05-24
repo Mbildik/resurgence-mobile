@@ -49,7 +49,7 @@ class _MenuPageState extends State<MenuPage> {
 
   Widget taskButton() {
     return Button(
-      child: Text(S.task),
+      child: Text(S.soloTask),
       onPressed: () => Navigator.push(
         context,
         MaterialPageRoute(

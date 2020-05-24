@@ -34,6 +34,7 @@ class S {
   static var errorOccurred = 'error.occurred';
   static var profile = 'profile';
   static var task = 'task';
+  static var soloTask = 'solo.task';
   static var info = 'info';
   static var perform = 'perform';
 }
