@@ -65,7 +65,8 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
                 task,
                 onPerform: () => perform(task.key)
                     .then(onTaskPerformed)
-                    .catchError((e) => ErrorHandler.showError(context, e)),
+                    .catchError(
+                        (e) => ErrorHandler.showError<TaskResult>(context, e)),
               );
             },
           );
@@ -79,5 +80,9 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
     return result;
   }
 
-  void _refreshTasks() => setState(() => futureTasks = this.fetchAllTasks());
+  void _refreshTasks() {
+    setState(() {
+      futureTasks = this.fetchAllTasks();
+    });
+  }
 }
