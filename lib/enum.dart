@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class AbstractEnum {
   String key;
   String value;
@@ -14,5 +16,33 @@ class AbstractEnum {
     data['key'] = this.key;
     data['value'] = this.value;
     return data;
+  }
+}
+
+class EnumWidget extends StatelessWidget {
+  final AbstractEnum _enum;
+  final Color color;
+
+  const EnumWidget(
+      this._enum, {
+        Key key,
+        @required this.color,
+      }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      color: this.color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(4.0),
+        ),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(4.0),
+        child: Text(_enum.value),
+      ),
+    );
   }
 }

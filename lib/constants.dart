@@ -37,6 +37,15 @@ class S {
   static var soloTask = 'solo.task';
   static var info = 'info';
   static var perform = 'perform';
+  static var duration = 'duration';
+  static var auxiliary = 'auxiliary';
+  static var skillGain = 'skillGain';
+  static var drop = 'drop';
+  static var requiredItemCategory = 'requiredItemCategory';
+  static var difficulty = 'difficulty';
+  static var easy = 'easy';
+  static var medium = 'medium';
+  static var hard = 'hard';
 }
 
 class W {
