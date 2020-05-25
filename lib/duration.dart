@@ -36,10 +36,11 @@ class ISO8601Duration {
     );
   }
 
-  String pretty({Locale locale = const Locale('en')}) {
+  String pretty({Locale locale = const Locale('en'), abbreviated: false}) {
     return prettyDuration(
       _duration,
       locale: _locale(locale),
+      abbreviated: abbreviated,
     );
   }
 

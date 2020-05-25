@@ -269,7 +269,9 @@ class _TaskWidgetState extends State<TaskWidget> {
                   child: Text(
                     finished
                         ? S.perform
-                        : ISO8601Duration.from(duration).pretty(),
+                        : ISO8601Duration.from(duration).pretty(
+                            abbreviated: true,
+                          ),
                   ),
                 ),
               ],
