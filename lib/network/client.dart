@@ -46,13 +46,10 @@ class Client {
   Interceptor apiErrorInterceptor() {
     return InterceptorsWrapper(
       onError: (e) {
-        log('Client: Filter processing: apiErrorInterceptor');
-
         if (e.type == DioErrorType.RESPONSE &&
             e.response?.data != null &&
             e.response?.data != '' &&
             e.response?.data['message'] != null) {
-          log('Client: Api error threw');
           throw ApiError(e);
         } else {
           throw e;
@@ -64,10 +61,7 @@ class Client {
   Interceptor accessTokenFilter() {
     return InterceptorsWrapper(
       onRequest: (RequestOptions options) {
-        log('Client: Filter processing: accessTokenFilter');
-
         if (_state.isLoggedIn && !securityPaths.contains(options.path)) {
-          log('Client: Authorization header added.');
           options.headers['Authorization'] =
               'Bearer ${_state.token.accessToken}';
         }
@@ -77,8 +71,6 @@ class Client {
 
   Interceptor refreshTokenFilter() {
     return InterceptorsWrapper(onError: (e) {
-      log('Client: Filter processing: refreshTokenFilter');
-
       if (e.type == DioErrorType.RESPONSE &&
           !securityPaths.contains(e.request.path) &&
           e.response.statusCode == 401) {
@@ -86,7 +78,6 @@ class Client {
         var refreshTokenOptions = Options(
           headers: {'Refresh-Token': _state.token.refreshToken},
         );
-        log('Client: Refresh-Token header added.');
 
         return _dio
             .post('security/refresh', options: refreshTokenOptions)

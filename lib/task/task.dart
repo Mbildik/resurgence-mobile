@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/duration.dart';
 import 'package:resurgence/enum.dart';
+import 'package:resurgence/item/item.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/ui/button.dart';
 
@@ -88,26 +89,6 @@ class Drop {
   }
 }
 
-class Item extends AbstractEnum {
-  Set<AbstractEnum> category;
-  int price;
-
-  Item({String key, String value, this.category, this.price})
-      : super(key: key, value: value);
-
-  Item.fromJson(Map<String, dynamic> json) {
-    var abstractEnum = AbstractEnum.fromJson(json);
-    key = abstractEnum.key;
-    value = abstractEnum.value;
-    if (json['category'] != null) {
-      category = (json['category'] as List)
-          .map((e) => AbstractEnum.fromJson(e))
-          .toSet();
-    }
-    price = json['price'];
-  }
-}
-
 class RequiredItemCategory {
   AbstractEnum category;
   int quantity;
@@ -149,7 +130,7 @@ class TaskResult {
   }
 }
 
-typedef PerformCallBack<T> = Future<T> Function();
+typedef PerformCallBack<T> = Future<T> Function(List<PlayerItem> selectedItems);
 
 class TaskWidget extends StatefulWidget {
   final Task task;
@@ -261,10 +242,20 @@ class _TaskWidgetState extends State<TaskWidget> {
                 Button(
                   enabled: !loading && finished,
                   onPressed: () {
-                    setState(() => loading = true);
-                    widget.onPerform().whenComplete(() {
-                      setState(() => loading = false);
-                    });
+                    var requiredItemCat = widget.task.requiredItemCategory;
+                    if (requiredItemCat != null && requiredItemCat.isNotEmpty) {
+                      Navigator.push<List<PlayerItem>>(
+                        context,
+                        ItemListPageRoute(widget.task),
+                      ).then((selectedItems) {
+                        // if `selectedItems` is null,
+                        //  it means player canceled the task
+                        if (selectedItems == null) return;
+                        performTask(selectedItems);
+                      });
+                    } else {
+                      performTask([]);
+                    }
                   },
                   child: Text(
                     finished
@@ -294,12 +285,11 @@ class _TaskWidgetState extends State<TaskWidget> {
     );
   }
 
-  void showTaskInfo() {
-    print('show task info');
-  }
-
-  Future<void> performTask() {
-    return Future.delayed(Duration(seconds: 1));
+  void performTask(List<PlayerItem> selectedItems) {
+    setState(() => loading = true);
+    widget.onPerform(selectedItems).whenComplete(() {
+      setState(() => loading = false);
+    });
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/item/item.dart';
 import 'package:resurgence/task/service.dart';
 import 'package:resurgence/task/task.dart';
 import 'package:resurgence/ui/button.dart';
@@ -22,8 +23,8 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
 
   Future<List<Task>> fetchAllTasks() => context.read<TaskService>().allTask();
 
-  Future<TaskResult> perform(String task) =>
-      context.read<TaskService>().perform(task);
+  Future<TaskResult> perform(String task, List<PlayerItem> selectedItems) =>
+      context.read<TaskService>().perform(task, selectedItems);
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +64,11 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
               var task = snapshot.data[index];
               return TaskWidget(
                 task,
-                onPerform: () => perform(task.key)
-                    .then(onTaskPerformed)
-                    .catchError(
-                        (e) => ErrorHandler.showError<TaskResult>(context, e)),
+                onPerform: (List<PlayerItem> selectedItems) => perform(
+                  task.key,
+                  selectedItems,
+                ).then(onTaskPerformed).catchError(
+                    (e) => ErrorHandler.showError<TaskResult>(context, e)),
               );
             },
           );

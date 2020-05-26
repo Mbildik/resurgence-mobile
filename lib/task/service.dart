@@ -1,3 +1,4 @@
+import 'package:resurgence/item/item.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/task/task.dart';
 
@@ -12,8 +13,8 @@ class TaskService {
     return _client.allTask();
   }
 
-  Future<TaskResult> perform(String task) {
-    return _client.perform(task);
+  Future<TaskResult> perform(String task, List<PlayerItem> selectedItems) {
+    return _client.perform(task, selectedItems);
   }
 }
 
@@ -30,11 +31,12 @@ class _TaskClient {
         .toList(growable: false));
   }
 
-  Future<TaskResult> perform(String task) {
+  Future<TaskResult> perform(String task, List<PlayerItem> selectedItems) {
+    var selectedItemData = selectedItems
+        .map((e) => {'item': e.item.key, 'quantity': e.quantity})
+        .toList(growable: false);
     return _client.post('task/$task', data: {
-      'selected_items': [
-        {'item': 'KNIFE', 'quantity': 1}
-      ]
+      'selected_items': selectedItemData
     }).then((response) => TaskResult.fromJson(response.data));
   }
 }
