@@ -47,6 +47,7 @@ class S {
   static var medium = 'medium';
   static var hard = 'hard';
   static var playerItemEmpty = 'player.item.empty';
+  static var failedTaskResult = 'failed.task.result';
 }
 
 class W {

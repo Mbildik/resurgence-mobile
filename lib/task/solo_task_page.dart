@@ -4,6 +4,7 @@ import 'package:resurgence/constants.dart';
 import 'package:resurgence/item/item.dart';
 import 'package:resurgence/task/service.dart';
 import 'package:resurgence/task/task.dart';
+import 'package:resurgence/task/task_result.dart';
 import 'package:resurgence/ui/button.dart';
 import 'package:resurgence/ui/error_handler.dart';
 
@@ -79,6 +80,7 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
 
   TaskResult onTaskPerformed(TaskResult result) {
     _refreshTasks();
+    Navigator.push(context, TaskResultRoute(result));
     return result;
   }
 
