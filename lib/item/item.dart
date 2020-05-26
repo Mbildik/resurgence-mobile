@@ -70,18 +70,25 @@ class SelectedPlayerItemState extends ChangeNotifier {
   }
 
   bool canAdd(Item item) {
-    int neededItemCount = item.category
+    int neededItemCount = _needItemCount(item);
+    return _selectedCategoriesCount(item.category) < neededItemCount;
+  }
+
+  int _needItemCount(Item item) {
+    return item.category
         .map((category) => task.requiredItemCategory
             .where((reqItemCat) => reqItemCat.category == category)
             .map((reqItemCat) => reqItemCat.quantity)
             .fold(0, (prev, curr) => prev + curr))
         .fold(0, (prev, curr) => prev + curr);
-
-    return _selectedCategoriesCount(item.category) < neededItemCount;
   }
 
   int maxAmount(Item item) {
-
+    int selectedCount = _selectedCategoriesCount(item.category);
+    int neededCount = _needItemCount(item);
+    int maxAmount = neededCount - selectedCount;
+    if (maxAmount < 0) return 0;
+    return maxAmount;
   }
 }
 
@@ -317,7 +324,8 @@ class _ItemListTileState extends State<ItemListTile> {
               builder: (context, state, child) {
                 return Expanded(
                   child: GestureDetector(
-                    onLongPress: () => print('on long press'),
+                    onLongPress: () => _increase(
+                        amount: state.maxAmount(widget.playerItem.item)),
                     child: IconButton(
                       color: Colors.green,
                       padding: EdgeInsets.zero,
