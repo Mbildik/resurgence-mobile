@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/task/solo_task_page.dart';
@@ -28,6 +29,7 @@ class _MenuPageState extends State<MenuPage> {
         children: <Widget>[
           profileButton(),
           taskButton(),
+          bankButton(),
         ],
       ),
     );
@@ -60,6 +62,17 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }
+
+  Widget bankButton() {
+    return Button(
+      child: Text(S.bank),
+      onPressed: () => Navigator.push(
+        context,
+        BankPageRoute(),
+      ),
+    );
+  }
+
 
   Widget drawer(BuildContext context) {
     return Drawer(
