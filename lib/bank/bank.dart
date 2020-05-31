@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -114,6 +115,10 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
     var bankService = context.read<BankService>();
     bankAccountFuture = bankService.account();
     bankTransactionsFuture = bankService.transactions();
+    context
+        .read<PlayerService>()
+        .info()
+        .then((player) => context.read<PlayerState>().updatePlayer(player));
   }
 
   _refreshAccount() {
@@ -139,13 +144,17 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            FutureBuilder(
+            FutureBuilder<BankAccount>(
               future: bankAccountFuture,
               builder: (context, snapshot) {
                 if (loading ||
                     snapshot.connectionState == ConnectionState.waiting) {
                   return loadingWidget();
                 } else if (snapshot.hasError) {
+                  var error = snapshot.error;
+                  if (error is DioError && error.response.statusCode == 404) {
+                    return accountBalance(BankAccount(amount: 0));
+                  }
                   return errorWidget();
                 }
 
@@ -196,7 +205,7 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
       subtitle: Text(
         // todo format locale
         DateFormat('y-MM-dd HH:mm:ss').format(
-          DateTime.parse(bankTransaction.time),
+          DateTime.parse(bankTransaction.time).toLocal(),
         ),
       ),
     );
