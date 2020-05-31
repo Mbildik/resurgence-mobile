@@ -21,6 +21,18 @@ class BankService {
   Future<List<BankTransactions>> transactions() {
     return _client.transactions();
   }
+
+  Future<List<InterestRate>> interestRates() {
+    return _client.interestRates();
+  }
+
+  Future<CurrentInterest> currentInterest() {
+    return _client.currentInterest();
+  }
+
+  Future<InterestResult> interest(int amount) {
+    return _client.interest(amount);
+  }
 }
 
 class _BankClient {
@@ -48,5 +60,24 @@ class _BankClient {
           .map((e) => BankTransactions.fromJson(e))
           .toList(growable: false);
     });
+  }
+
+  Future<List<InterestRate>> interestRates() {
+    return _client.get('bank/interest-rates').then((response) =>
+        (response.data as List)
+            .map((e) => InterestRate.fromJson(e))
+            .toList(growable: false));
+  }
+
+  Future<CurrentInterest> currentInterest() {
+    return _client
+        .get('bank/interest')
+        .then((response) => CurrentInterest.fromJson(response.data));
+  }
+
+  Future<InterestResult> interest(int amount) {
+    return _client
+        .post('bank/interest/$amount')
+        .then((response) => InterestResult.fromJson(response.data));
   }
 }
