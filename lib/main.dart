@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
+import 'package:resurgence/item/service.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
@@ -36,6 +37,10 @@ void main() {
     create: (_) => TaskService(client),
   );
 
+  final itemServiceProvider = Provider(
+    create: (_) => ItemService(client),
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -49,6 +54,9 @@ void main() {
 
         // Task
         taskServiceProvider,
+
+        // Item
+        itemServiceProvider,
 
       ],
       child: Application(),

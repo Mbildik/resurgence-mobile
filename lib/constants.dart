@@ -41,11 +41,12 @@ class S {
   static var auxiliary = 'auxiliary';
   static var skillGain = 'skillGain';
   static var drop = 'drop';
-  static var requiredItemCategory = 'requiredItemCategory';
+  static var requiredItemCategory = 'required.item.category';
   static var difficulty = 'difficulty';
   static var easy = 'easy';
   static var medium = 'medium';
   static var hard = 'hard';
+  static var playerItemEmpty = 'player.item.empty';
 }
 
 class W {

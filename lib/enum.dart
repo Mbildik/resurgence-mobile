@@ -17,6 +17,16 @@ class AbstractEnum {
     data['value'] = this.value;
     return data;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AbstractEnum &&
+          runtimeType == other.runtimeType &&
+          key == other.key;
+
+  @override
+  int get hashCode => key.hashCode;
 }
 
 class EnumWidget extends StatelessWidget {
