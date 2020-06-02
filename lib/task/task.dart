@@ -78,14 +78,12 @@ class Task extends AbstractEnum {
 class Drop {
   Item item;
   int quantity;
-  double ratio;
 
-  Drop({this.item, this.quantity, this.ratio});
+  Drop({this.item, this.quantity});
 
   Drop.fromJson(Map<String, dynamic> json) {
     item = Item.fromJson(json['item']);
     quantity = json['quantity'];
-    ratio = json['ratio'];
   }
 }
 
@@ -344,19 +342,19 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
                   Divider(),
                   DurationWidget(ISO8601Duration(task.duration)),
                   Divider(),
-                  _EnumWrapper(
+                  EnumWrapper(
                     task.auxiliary,
                     text: S.auxiliary,
                     color: Color(0xFF27671B),
                     divider: true,
                   ),
-                  _EnumWrapper(
+                  EnumWrapper(
                     task.skillGain,
                     text: S.skillGain,
                     color: Color(0xFF3D6538),
                     divider: true,
                   ),
-                  _EnumWrapper(
+                  EnumWrapper(
                     task.drop.map((e) => e.item),
                     text: S.drop,
                     color: Color(0xFF345511),
@@ -470,13 +468,13 @@ class ExperienceWidget extends StatelessWidget {
   }
 }
 
-class _EnumWrapper extends StatelessWidget {
+class EnumWrapper extends StatelessWidget {
   final Iterable<AbstractEnum> enums;
   final String text;
   final Color color;
   final bool divider;
 
-  const _EnumWrapper(
+  const EnumWrapper(
     this.enums, {
     Key key,
     @required this.color,
