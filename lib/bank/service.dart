@@ -55,7 +55,7 @@ class _BankClient {
   }
 
   Future<List<BankTransactions>> transactions() {
-    return _client.get('bank/transactions').then((response) {
+    return _client.get('bank/transactions/account').then((response) {
       return (response.data as List)
           .map((e) => BankTransactions.fromJson(e))
           .toList(growable: false);
