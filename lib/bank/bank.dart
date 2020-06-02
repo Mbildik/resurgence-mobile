@@ -71,6 +71,32 @@ class InterestResult {
   }
 }
 
+class BankTransfer {
+  String from;
+  String to;
+  int amount;
+  String description;
+  String time;
+  String direction;
+
+  BankTransfer(
+      {this.from,
+      this.to,
+      this.amount,
+      this.description,
+      this.time,
+      this.direction});
+
+  BankTransfer.fromJson(Map<String, dynamic> json) {
+    from = json['from'];
+    to = json['to'];
+    amount = json['amount'];
+    description = json['description'];
+    time = json['time'];
+    direction = json['direction'];
+  }
+}
+
 enum Transactions { account, interest, transfer }
 
 class BankPage extends StatefulWidget {
@@ -127,7 +153,7 @@ class _BankPageState extends State<BankPage> {
             case Transactions.interest:
               return InterestPage();
             case Transactions.transfer:
-              return Container();
+              return TransferWidget();
             case Transactions.account:
             default:
               return BankAccountWidget();
@@ -627,6 +653,229 @@ class _InterestPageState extends State<InterestPage> {
           ),
         );
       },
+    );
+  }
+}
+
+class TransferWidget extends StatefulWidget {
+  @override
+  _TransferWidgetState createState() => _TransferWidgetState();
+}
+
+class _TransferWidgetState extends State<TransferWidget> {
+  final _formKey = GlobalKey<FormState>();
+  final toController = TextEditingController();
+  final moneyController = TextEditingController();
+  final descriptionController = TextEditingController();
+
+  Future<List<BankTransfer>> bankTransferFuture;
+  bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    var bankService = context.read<BankService>();
+    bankTransferFuture = bankService.transfers();
+    context
+        .read<PlayerService>()
+        .info()
+        .then((player) => context.read<PlayerState>().updatePlayer(player));
+  }
+
+  _refreshAccount() {
+    var bankService = context.read<BankService>();
+    setState(() {
+      bankTransferFuture = bankService.transfers();
+    });
+    context
+        .read<PlayerService>()
+        .info()
+        .then((player) => context.read<PlayerState>().updatePlayer(player));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            balanceWidget(),
+            playerTextField(),
+            moneyTextField(),
+            descriptionTextField(),
+            footer(context),
+            Divider(),
+            Expanded(
+              child: FutureBuilder<List<BankTransfer>>(
+                future: bankTransferFuture,
+                builder: (context, snapshot) {
+                  if (loading ||
+                      snapshot.connectionState == ConnectionState.waiting) {
+                    return loadingWidget();
+                  } else if (snapshot.hasError) {
+                    return errorWidget();
+                  }
+
+                  var bankTransactions = snapshot.data;
+
+                  return ListView.builder(
+                    primary: false,
+                    itemCount: bankTransactions.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      var bankTransaction = bankTransactions[index];
+                      return bankTransferListTile(bankTransaction);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget bankTransferListTile(BankTransfer bankTransaction) {
+    var player = bankTransaction.direction == 'IN'
+        ? bankTransaction.from
+        : bankTransaction.to;
+    return Tooltip(
+      message: DateFormat('y-MM-dd HH:mm:ss').format(
+        DateTime.parse(bankTransaction.time).toLocal(),
+      ),
+      child: ListTile(
+        leading: Icon(
+          bankTransaction.direction == 'IN'
+              ? Icons.arrow_drop_up
+              : Icons.arrow_drop_down,
+          color: bankTransaction.direction == 'IN' ? Colors.green : Colors.red,
+        ),
+        title: Text(Money.format(bankTransaction.amount)),
+        subtitle: Text(bankTransaction.description),
+        trailing: Text(player),
+      ),
+    );
+  }
+
+  Widget loadingWidget() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget errorWidget() {
+    return Center(
+      child: Column(
+        children: <Widget>[
+          Button(
+            child: Text(S.reload),
+            onPressed: () => this._refreshAccount(),
+          ),
+          Text(S.errorOccurred),
+        ],
+      ),
+    );
+  }
+
+  Widget title(BuildContext context) {
+    return Text(
+      S.bankTitle,
+      style: Theme.of(context).textTheme.headline3,
+    );
+  }
+
+  Widget balanceWidget() {
+    return Table(
+      children: [
+        TableRow(
+          children: [
+            Text(
+              S.currentBalance,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Consumer<PlayerState>(
+              builder: (BuildContext context, PlayerState state, Widget child) {
+                return Text(Money.format(state.player.balance));
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget footer(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 16.0),
+      child: RaisedButton(
+        color: Colors.green,
+        child: Text(S.transfer),
+        onPressed: () {
+          if (!_formKey.currentState.validate())
+            return null; // form is not valid
+
+          FocusScope.of(context).unfocus();
+          setState(() => loading = true);
+
+          return context
+              .read<BankService>()
+              .transfer(
+                toController.text,
+                int.parse(moneyController.text),
+                description: descriptionController.text,
+              )
+              .then((_) {
+                toController.text = '';
+                moneyController.text = '';
+                descriptionController.text = '';
+                return _refreshAccount();
+              })
+              .catchError((e) => ErrorHandler.showError(context, e))
+              .whenComplete(() => setState(() => loading = false));
+        },
+      ),
+    );
+  }
+
+  Widget playerTextField() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: S.to + ' *'),
+      keyboardType: TextInputType.text,
+      textInputAction: TextInputAction.next,
+      controller: toController,
+      onFieldSubmitted: (value) => FocusScope.of(context).nextFocus(),
+      validator: (value) {
+        if (value.isEmpty) return S.validationRequired;
+        return null;
+      },
+    );
+  }
+
+  Widget moneyTextField() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: S.money + ' *'),
+      keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.next,
+      controller: moneyController,
+      onFieldSubmitted: (value) => FocusScope.of(context).nextFocus(),
+      validator: (value) {
+        if (value.isEmpty) return S.validationRequired;
+        if (int.tryParse(value) == null) return S.integerRequired;
+        return null;
+      },
+    );
+  }
+
+  Widget descriptionTextField() {
+    return TextFormField(
+      decoration: InputDecoration(labelText: S.description),
+      keyboardType: TextInputType.text,
+      textInputAction: TextInputAction.done,
+      controller: descriptionController,
+      onFieldSubmitted: (value) => FocusScope.of(context).nextFocus(),
     );
   }
 }
