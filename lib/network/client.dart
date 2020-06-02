@@ -133,6 +133,24 @@ class Client {
       onReceiveProgress: onReceiveProgress,
     );
   }
+
+  Future<Response<T>> delete<T>(
+    String path, {
+    data,
+    Map<String, dynamic> queryParameters,
+    Options options,
+    CancelToken cancelToken,
+    ProgressCallback onSendProgress,
+    ProgressCallback onReceiveProgress,
+  }) {
+    return _dio.delete(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+    );
+  }
 }
 
 class RefreshTokenExpiredError extends DioError {

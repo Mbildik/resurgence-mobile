@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
+import 'package:resurgence/bank/service.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
@@ -41,6 +42,10 @@ void main() {
     create: (_) => ItemService(client),
   );
 
+  final bankServiceProvider = Provider(
+    create: (_) => BankService(client),
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -57,6 +62,9 @@ void main() {
 
         // Item
         itemServiceProvider,
+
+        // Bank
+        bankServiceProvider
 
       ],
       child: Application(),

@@ -48,6 +48,21 @@ class S {
   static var hard = 'hard';
   static var playerItemEmpty = 'player.item.empty';
   static var failedTaskResult = 'failed.task.result';
+  static var bank = 'bank';
+  static var bankBalance = 'bank.balance';
+  static var currentBalance = 'current.balance';
+  static var bankTitle = 'bank';
+  static var money = 'money';
+  static var withdraw = 'withdraw';
+  static var deposit = 'deposit';
+  static var integerRequired = 'integer.required';
+  static var interest = 'interest';
+  static var transfer = 'transfer';
+  static var bankAccount = 'bank.account';
+  static var min = 'min';
+  static var max = 'max';
+  static var noActiveInterest = 'no.active.interest';
+  static var currentInterest = 'current.interest';
 }
 
 class W {
