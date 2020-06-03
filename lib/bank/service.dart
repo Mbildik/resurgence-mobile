@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/network/client.dart';
 
@@ -32,6 +34,14 @@ class BankService {
 
   Future<InterestResult> interest(int amount) {
     return _client.interest(amount);
+  }
+
+  Future<void> transfer(String to, int amount, {String description = ''}) {
+    return _client.transfer(to, amount, description);
+  }
+
+  Future<List<BankTransfer>> transfers() {
+    return _client.transfers();
   }
 }
 
@@ -79,5 +89,17 @@ class _BankClient {
     return _client
         .post('bank/interest/$amount')
         .then((response) => InterestResult.fromJson(response.data));
+  }
+
+  Future<void> transfer(String to, int amount, String description) {
+    description = htmlEscape.convert(description);
+    return _client.post('bank/transfer/$to/$amount?d=$description');
+  }
+
+  Future<List<BankTransfer>> transfers() {
+    return _client.get('bank/transactions/transfer').then((response) =>
+        (response.data as List)
+            .map((e) => BankTransfer.fromJson(e))
+            .toList(growable: false));
   }
 }

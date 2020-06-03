@@ -63,6 +63,8 @@ class S {
   static var max = 'max';
   static var noActiveInterest = 'no.active.interest';
   static var currentInterest = 'current.interest';
+  static var description = 'description';
+  static var to = 'to';
 }
 
 class W {
