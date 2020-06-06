@@ -107,12 +107,6 @@ class BankPage extends StatefulWidget {
 class _BankPageState extends State<BankPage> {
   Transactions _transactions = Transactions.account;
 
-  void _updateTransactions(Transactions transactions) {
-    setState(() {
-      _transactions = transactions;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     var title;
@@ -133,19 +127,26 @@ class _BankPageState extends State<BankPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        actions: Transactions.values.map((e) {
-          switch (e) {
-            case Transactions.interest:
-              return _transactionsButton(
-                  e, Icon(Icons.attach_money), S.interest);
-            case Transactions.transfer:
-              return _transactionsButton(e, Icon(Icons.send), S.transfer);
-            case Transactions.account:
-            default:
-              return _transactionsButton(
-                  e, Icon(Icons.account_balance), S.bankAccount);
-          }
-        }).toList(growable: false),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (int selected) {
+          setState(() => _transactions = Transactions.values[selected]);
+        },
+        currentIndex: _transactions.index,
+        items: [
+          BottomNavigationBarItem(
+            title: Text(S.bankAccount),
+            icon: Icon(Icons.account_balance),
+          ),
+          BottomNavigationBarItem(
+            title: Text(S.interest),
+            icon: Icon(Icons.attach_money),
+          ),
+          BottomNavigationBarItem(
+            title: Text(S.transfer),
+            icon: Icon(Icons.send),
+          ),
+        ],
       ),
       body: Builder(
         builder: (context) {
@@ -160,16 +161,6 @@ class _BankPageState extends State<BankPage> {
           }
         },
       ),
-    );
-  }
-
-  Widget _transactionsButton(Transactions e, Icon icon, String tooltip) {
-    bool isSelected = _transactions == e;
-    return IconButton(
-      icon: icon,
-      tooltip: tooltip,
-      onPressed:
-          isSelected ? null : () => setState(() => this._updateTransactions(e)),
     );
   }
 }
