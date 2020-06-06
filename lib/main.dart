@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/bank/service.dart';
+import 'package:resurgence/chat/service.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
@@ -46,6 +47,11 @@ void main() {
     create: (_) => BankService(client),
   );
 
+  // Mail
+  final mailServiceProvider = Provider(
+    create: (_) => MailService(client),
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -64,7 +70,10 @@ void main() {
         itemServiceProvider,
 
         // Bank
-        bankServiceProvider
+        bankServiceProvider,
+
+        // Mail
+        mailServiceProvider,
 
       ],
       child: Application(),

@@ -16,6 +16,7 @@ class S {
   static var create = 'create';
   static var sendEmail = 'send.email';
   static var submit = 'submit';
+  static var cancel = 'cancel';
   static var password = 'password';
   static var passwordForgot = 'password.forgot';
   static var passwordForgotInfo = 'password.forgot.info';
@@ -65,6 +66,16 @@ class S {
   static var currentInterest = 'current.interest';
   static var description = 'description';
   static var to = 'to';
+  static var mail = 'mail';
+  static var send = 'send';
+  static var sent = 'sent';
+  static var received = 'received';
+  static var delete = 'delete';
+  static var read = 'read';
+  static var noMail = 'no.mail';
+  static var sentSuccessfully = 'sent.successfully';
+  static var reportMail = 'report.mail';
+  static var reportMailDetail = 'report.mail.detail';
 }
 
 class W {

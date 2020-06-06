@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/network/client.dart';
 
@@ -92,8 +90,10 @@ class _BankClient {
   }
 
   Future<void> transfer(String to, int amount, String description) {
-    description = htmlEscape.convert(description);
-    return _client.post('bank/transfer/$to/$amount?d=$description');
+    return _client.post(
+      'bank/transfer/$to/$amount',
+      queryParameters: {'d': description},
+    );
   }
 
   Future<List<BankTransfer>> transfers() {

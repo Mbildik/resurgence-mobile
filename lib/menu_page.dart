@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:resurgence/bank/bank.dart';
+import 'package:resurgence/chat/mail.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/task/solo_task_page.dart';
@@ -30,6 +31,7 @@ class _MenuPageState extends State<MenuPage> {
           profileButton(),
           taskButton(),
           bankButton(),
+          mailButton(),
         ],
       ),
     );
@@ -69,6 +71,16 @@ class _MenuPageState extends State<MenuPage> {
       onPressed: () => Navigator.push(
         context,
         BankPageRoute(),
+      ),
+    );
+  }
+
+  Widget mailButton() {
+    return Button(
+      child: Text(S.mail),
+      onPressed: () => Navigator.push(
+        context,
+        MailPageRoute(),
       ),
     );
   }
