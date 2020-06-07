@@ -8,6 +8,7 @@ import 'package:resurgence/item/service.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
+import 'package:resurgence/real-estate/service.dart';
 import 'package:resurgence/task/service.dart';
 
 import 'application.dart';
@@ -52,6 +53,11 @@ void main() {
     create: (_) => MailService(client),
   );
 
+  // Real Estate
+  final realEstateServiceProvider = Provider(
+    create: (_) => RealEstateService(client),
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -75,6 +81,8 @@ void main() {
         // Mail
         mailServiceProvider,
 
+        // Real Estate
+        realEstateServiceProvider,
       ],
       child: Application(),
     ),
