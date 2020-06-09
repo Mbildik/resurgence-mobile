@@ -3,6 +3,7 @@ import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/chat/mail.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/profile/profile_page.dart';
+import 'package:resurgence/real-estate/read_estate.dart';
 import 'package:resurgence/task/solo_task_page.dart';
 import 'package:resurgence/ui/button.dart';
 //import 'package:provider/provider.dart';
@@ -32,6 +33,7 @@ class _MenuPageState extends State<MenuPage> {
           taskButton(),
           bankButton(),
           mailButton(),
+          realEstateButton(),
         ],
       ),
     );
@@ -47,6 +49,16 @@ class _MenuPageState extends State<MenuPage> {
             return ProfilePage();
           },
         ),
+      ),
+    );
+  }
+
+  Widget realEstateButton() {
+    return Button(
+      child: Text(S.realEstate),
+      onPressed: () => Navigator.push(
+        context,
+        RealEstatePageRoute(),
       ),
     );
   }
@@ -84,7 +96,6 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }
-
 
   Widget drawer(BuildContext context) {
     return Drawer(

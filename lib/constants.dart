@@ -76,6 +76,9 @@ class S {
   static var sentSuccessfully = 'sent.successfully';
   static var reportMail = 'report.mail';
   static var reportMailDetail = 'report.mail.detail';
+  static var realEstate = 'real.estate';
+  static var buy = 'buy';
+  static var sell = 'sell';
 }
 
 class W {
