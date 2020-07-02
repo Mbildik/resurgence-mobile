@@ -47,7 +47,6 @@ class Player {
 }
 
 class PlayerState extends ChangeNotifier {
-
   Player _player;
 
   void updatePlayer(Player player) {
