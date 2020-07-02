@@ -1,18 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:resurgence/authentication/login_page.dart';
+import 'package:resurgence/authentication/authentication_page.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/player/player_control_page.dart';
 
 class Application extends StatelessWidget {
-  // This widget is the root of the application.
   @override
   Widget build(BuildContext context) {
     var authenticationState = context.watch<AuthenticationState>();
+
+    var darkTheme = ThemeData.dark();
+    var theme = darkTheme.copyWith(
+      textTheme: darkTheme.textTheme.copyWith(
+        subtitle2: darkTheme.textTheme.subtitle2.copyWith(
+          color: Colors.grey,
+        ),
+        button: darkTheme.textTheme.button.copyWith(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+
     return MaterialApp(
       title: S.applicationTitle,
-      theme: ThemeData.dark(),
+      theme: theme,
       home: buildBody(context, authenticationState),
     );
   }
@@ -21,6 +34,6 @@ class Application extends StatelessWidget {
     if (state.isLoggedIn) {
       return PlayerControlPage();
     }
-    return LoginPage();
+    return AuthenticationPage();
   }
 }
