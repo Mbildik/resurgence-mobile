@@ -111,7 +111,7 @@ class AuthenticationPage extends StatelessWidget {
   }
 }
 
-typedef ActionCallback = void Function(
+typedef ActionCallback = Future Function(
   BuildContext context,
   String email,
   String password,
@@ -148,6 +148,8 @@ class __LoginPageState extends State<_LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -178,15 +180,7 @@ class __LoginPageState extends State<_LoginPage> {
                 inputAction: TextInputAction.done,
                 controller: passwordController,
                 obscureText: true,
-                onFieldSubmitted: (_) {
-                  if (formKey.currentState.validate()) {
-                    widget.onAction(
-                      context,
-                      emailController.text,
-                      passwordController.text,
-                    );
-                  }
-                },
+                onFieldSubmitted: (_) => onSubmit(context),
               ),
               if (widget.forgotPassword)
                 Align(
@@ -202,20 +196,12 @@ class __LoginPageState extends State<_LoginPage> {
               Container(margin: EdgeInsets.symmetric(vertical: 8.0)),
               _CustomButton(
                 child: Text(widget.actionText),
-                onPressed: () {
-                  if (formKey.currentState.validate())
-                    widget.onAction(
-                      context,
-                      emailController.text,
-                      passwordController.text,
-                    );
-                },
+                onPressed: loading ? null : () => onSubmit(context),
               ),
               Container(margin: EdgeInsets.symmetric(vertical: 8.0)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: FlatButton(
-                  // todo add sign up route
                   onPressed: () => widget.onSecondAction(),
                   child: RichText(
                     text: TextSpan(
@@ -239,6 +225,21 @@ class __LoginPageState extends State<_LoginPage> {
         ),
       ],
     );
+  }
+
+  void onSubmit(BuildContext context) {
+    if (loading) return;
+    if (!formKey.currentState.validate()) return;
+
+    setState(() => loading = true);
+
+    widget
+        .onAction(
+          context,
+          emailController.text,
+          passwordController.text,
+        )
+        .whenComplete(() => setState(() => loading = false));
   }
 }
 
