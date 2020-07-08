@@ -5,9 +5,7 @@ import 'package:resurgence/task/task.dart';
 class TaskService {
   final _TaskClient _client;
 
-  TaskService(Client client) : _client = _TaskClient(client) {
-    print('TaskService created');
-  }
+  TaskService(Client client) : _client = _TaskClient(client);
 
   Future<List<Task>> allTask() {
     return _client.allTask();
@@ -21,9 +19,7 @@ class TaskService {
 class _TaskClient {
   final Client _client;
 
-  _TaskClient(this._client) {
-    print('TaskClient created');
-  }
+  _TaskClient(this._client);
 
   Future<List<Task>> allTask() {
     return _client.get('task').then((response) => (response.data as List)

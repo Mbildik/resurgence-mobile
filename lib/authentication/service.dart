@@ -6,9 +6,7 @@ class AuthenticationService {
   final _AuthenticationClient _client;
 
   AuthenticationService(Client client)
-      : _client = _AuthenticationClient(client) {
-    print('AuthenticationService created');
-  }
+      : _client = _AuthenticationClient(client);
 
   Future<Token> login(String username, String password) {
     return _client.login(username, password);
@@ -26,9 +24,7 @@ class AuthenticationService {
 class _AuthenticationClient {
   final Client _client;
 
-  _AuthenticationClient(this._client) {
-    print('AuthenticationClient created');
-  }
+  _AuthenticationClient(this._client);
 
   Future<Token> login(String username, String password) {
     return _client.post('login', data: {
