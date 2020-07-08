@@ -21,7 +21,7 @@ class AuthenticationPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/img/flutter_logo.png',
+                    A.applicationLogo,
                     width: 100.0,
                     height: 100.0,
                   ),
@@ -62,7 +62,7 @@ class AuthenticationPage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Image.asset(
-                        'assets/img/google.png',
+                        A.googleLogo,
                         width: 18.0,
                         height: 18.0,
                       ),

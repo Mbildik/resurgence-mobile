@@ -337,7 +337,7 @@ class _MailListViewState extends State<MailListView> {
           },
           direction: DismissDirection.endToStart,
           child: ListTile(
-            leading: Image.asset('assets/img/bank.png'),
+            leading: Image.asset(A.bankLogo),
             title: Text(widget.sent ? mail.to : mail.from),
             subtitle: Text(
               mail.content,

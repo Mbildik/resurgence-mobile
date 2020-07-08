@@ -196,7 +196,7 @@ class _TaskWidgetState extends State<TaskWidget> {
       onTap: () => Navigator.push(context, TaskDetailRoute(widget.task)),
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 16),
-        child: Image.asset('assets/img/bank.png'),
+        child: Image.asset(A.bankLogo),
       ),
     );
   }
@@ -374,7 +374,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
       child: Center(
         heightFactor: 1,
         child: Image.asset(
-          'assets/img/bank.png',
+          A.bankLogo,
           height: 100,
           width: 100,
         ),

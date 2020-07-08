@@ -92,3 +92,10 @@ class W {
     title: Text(S.applicationTitle),
   );
 }
+
+/// Assets constants
+class A {
+  static var applicationLogo = 'assets/img/flutter_logo.png';
+  static var googleLogo = 'assets/img/google.png';
+  static var bankLogo = 'assets/img/bank.png';
+}
