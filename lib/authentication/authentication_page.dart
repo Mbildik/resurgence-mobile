@@ -50,7 +50,7 @@ class AuthenticationPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _CustomButton(
-                  child: Text(S.signUp),
+                  child: Text(S.signUpEmail),
                   onPressed: () => Navigator.push(
                     context,
                     _SingUpPageRoute(),
@@ -115,7 +115,10 @@ class AuthenticationPage extends StatelessWidget {
 
   void signInWithGoogle(BuildContext context) async {
     final account = await googleSignIn.signIn();
+    if (account == null) return;
+
     final authentication = await account.authentication;
+    if (authentication == null) return;
 
     return context
         .read<AuthenticationService>()

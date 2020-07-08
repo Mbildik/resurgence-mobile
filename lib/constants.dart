@@ -22,6 +22,7 @@ class S {
   static var passwordForgotInfo = 'password.forgot.info';
   static var logout = 'logout';
   static var signUpGoogle = 'Sign up with Google';
+  static var signUpEmail = 'Sign up with Email';
   static var signUp = 'Sign Up';
   static var signIn = 'Sign In';
   static var doNotHaveAnAccount = 'Don\'t have an account';
