@@ -17,6 +17,10 @@ class AuthenticationService {
   Future<Account> createAccount(String email, String password) {
     return _client.createAccount(email, password);
   }
+
+  Future<Token> oauth2Login(String provider, String token) {
+    return _client.oauth2Login(provider, token);
+  }
 }
 
 class _AuthenticationClient {
@@ -30,6 +34,12 @@ class _AuthenticationClient {
     return _client.post('login', data: {
       'username': username,
       'password': password,
+    }).then((response) => Token.fromJson(response.data));
+  }
+
+  Future<Token> oauth2Login(String provider, String token) {
+    return _client.post('security/oauth2/$provider', data: {
+      'token': token
     }).then((response) => Token.fromJson(response.data));
   }
 

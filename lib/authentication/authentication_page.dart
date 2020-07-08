@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
@@ -6,6 +7,8 @@ import 'package:resurgence/constants.dart';
 import 'package:resurgence/ui/error_handler.dart';
 
 class AuthenticationPage extends StatelessWidget {
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +78,7 @@ class AuthenticationPage extends StatelessWidget {
                   ),
                   splashColor: Colors.grey[400],
                   color: Colors.white,
-                  onPressed: () {},
+                  onPressed: () => signInWithGoogle(context),
                 ),
                 Container(margin: EdgeInsets.symmetric(vertical: 16.0)),
                 Padding(
@@ -108,6 +111,17 @@ class AuthenticationPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void signInWithGoogle(BuildContext context) async {
+    final account = await googleSignIn.signIn();
+    final authentication = await account.authentication;
+
+    return context
+        .read<AuthenticationService>()
+        .oauth2Login('google', authentication.accessToken)
+        .then((token) => context.read<AuthenticationState>().login(token))
+        .catchError((e) => ErrorHandler.showError(context, e));
   }
 }
 
