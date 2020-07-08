@@ -302,7 +302,7 @@ class _ItemListTileState extends State<ItemListTile> {
     var item = widget.playerItem.item;
     var category = item.category;
     return ListTile(
-      leading: Image.asset('assets/img/bank.png'),
+      leading: Image.asset(A.bankLogo),
       title: Text(item.value + ' (${widget.playerItem.quantity})'),
       subtitle: Text(category.isNotEmpty ? category.first.value : 'Empty'),
       trailing: Container(

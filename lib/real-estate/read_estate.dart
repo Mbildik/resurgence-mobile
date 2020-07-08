@@ -82,7 +82,6 @@ class _RealEstatePageState extends State<RealEstatePage> {
         future: realEstateFuture,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            print(snapshot.error);
             return Text('Error');
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());

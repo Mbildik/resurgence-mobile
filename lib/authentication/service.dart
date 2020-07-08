@@ -6,9 +6,7 @@ class AuthenticationService {
   final _AuthenticationClient _client;
 
   AuthenticationService(Client client)
-      : _client = _AuthenticationClient(client) {
-    print('AuthenticationService created');
-  }
+      : _client = _AuthenticationClient(client);
 
   Future<Token> login(String username, String password) {
     return _client.login(username, password);
@@ -17,19 +15,27 @@ class AuthenticationService {
   Future<Account> createAccount(String email, String password) {
     return _client.createAccount(email, password);
   }
+
+  Future<Token> oauth2Login(String provider, String token) {
+    return _client.oauth2Login(provider, token);
+  }
 }
 
 class _AuthenticationClient {
   final Client _client;
 
-  _AuthenticationClient(this._client) {
-    print('AuthenticationClient created');
-  }
+  _AuthenticationClient(this._client);
 
   Future<Token> login(String username, String password) {
     return _client.post('login', data: {
       'username': username,
       'password': password,
+    }).then((response) => Token.fromJson(response.data));
+  }
+
+  Future<Token> oauth2Login(String provider, String token) {
+    return _client.post('security/oauth2/$provider', data: {
+      'token': token
     }).then((response) => Token.fromJson(response.data));
   }
 

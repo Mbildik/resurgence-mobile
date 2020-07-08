@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:resurgence/authentication/token.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,6 +26,9 @@ class AuthenticationState with ChangeNotifier {
 
   void logout() {
     _token = null;
+    try {
+      GoogleSignIn().signOut();
+    } catch (ignored) {}
     _removeToken();
     notifyListeners();
   }

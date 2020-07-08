@@ -34,10 +34,10 @@ class EnumWidget extends StatelessWidget {
   final Color color;
 
   const EnumWidget(
-      this._enum, {
-        Key key,
-        @required this.color,
-      }) : super(key: key);
+    this._enum, {
+    Key key,
+    @required this.color,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

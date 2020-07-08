@@ -11,19 +11,21 @@ class S {
   static var validationRequired = 'validation.required';
 
   // Label
-  static var email = 'email';
+  static var email = 'Email';
   static var nickname = 'nickname';
   static var create = 'create';
   static var sendEmail = 'send.email';
   static var submit = 'submit';
   static var cancel = 'cancel';
-  static var password = 'password';
-  static var passwordForgot = 'password.forgot';
+  static var password = 'Password';
+  static var passwordForgot = 'Forgot password?';
   static var passwordForgotInfo = 'password.forgot.info';
-  static var login = 'login';
   static var logout = 'logout';
-  static var loginGoogle = 'login.google';
-  static var signUp = 'sign_up';
+  static var signUpGoogle = 'Sign up with Google';
+  static var signUp = 'Sign Up';
+  static var signIn = 'Sign In';
+  static var doNotHaveAnAccount = 'Don\'t have an account';
+  static var alreadyHaveAnAccount = 'Already have an account';
   static var signUpInfo = 'sign_up.info';
   static var playerCreationTitle = 'player.creation.title';
   static var race = 'race';
@@ -79,10 +81,21 @@ class S {
   static var realEstate = 'real.estate';
   static var buy = 'buy';
   static var sell = 'sell';
+  static var signInPageTitle = 'Welcome back!';
+  static var signInPageDescription = 'Sign in to your account';
+  static var signUpPageTitle = 'Welcome!';
+  static var signUpPageDescription = 'Sign up with email';
 }
 
 class W {
   static var defaultAppBar = AppBar(
     title: Text(S.applicationTitle),
   );
+}
+
+/// Assets constants
+class A {
+  static var applicationLogo = 'assets/img/flutter_logo.png';
+  static var googleLogo = 'assets/img/google.png';
+  static var bankLogo = 'assets/img/bank.png';
 }
