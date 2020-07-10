@@ -36,8 +36,9 @@ class S {
   static var experience = 'experience';
   static var reload = 'reload';
   static var errorOccurred = 'error.occurred';
-  static var profile = 'profile';
+  static var profile = 'Profile';
   static var task = 'task';
+  static var tasks = 'Tasks';
   static var soloTask = 'solo.task';
   static var info = 'info';
   static var perform = 'perform';
@@ -52,7 +53,7 @@ class S {
   static var hard = 'hard';
   static var playerItemEmpty = 'player.item.empty';
   static var failedTaskResult = 'failed.task.result';
-  static var bank = 'bank';
+  static var bank = 'Bank';
   static var bankBalance = 'bank.balance';
   static var currentBalance = 'current.balance';
   static var bankTitle = 'bank';
@@ -69,7 +70,7 @@ class S {
   static var currentInterest = 'current.interest';
   static var description = 'description';
   static var to = 'to';
-  static var mail = 'mail';
+  static var mail = 'Mail';
   static var send = 'send';
   static var sent = 'sent';
   static var received = 'received';
@@ -79,7 +80,7 @@ class S {
   static var sentSuccessfully = 'sent.successfully';
   static var reportMail = 'report.mail';
   static var reportMailDetail = 'report.mail.detail';
-  static var realEstate = 'real.estate';
+  static var realEstate = 'Real Estate';
   static var buy = 'buy';
   static var sell = 'sell';
   static var signInPageTitle = 'Welcome back!';
