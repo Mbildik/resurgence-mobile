@@ -87,6 +87,7 @@ class S {
   static var signInPageDescription = 'Sign in to your account';
   static var signUpPageTitle = 'Welcome!';
   static var signUpPageDescription = 'Sign up with email';
+  static var family = 'Family';
 }
 
 class W {

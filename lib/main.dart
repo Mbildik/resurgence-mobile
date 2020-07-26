@@ -4,6 +4,7 @@ import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/bank/service.dart';
 import 'package:resurgence/chat/service.dart';
+import 'package:resurgence/family/service.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
@@ -58,6 +59,11 @@ void main() {
     create: (_) => RealEstateService(client),
   );
 
+  // Family Estate
+  final familyServiceProvider = Provider(
+    create: (_) => FamilyService(client),
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -83,6 +89,9 @@ void main() {
 
         // Real Estate
         realEstateServiceProvider,
+
+        // Family
+        familyServiceProvider,
       ],
       child: Application(),
     ),

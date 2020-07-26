@@ -13,6 +13,9 @@ class Application extends StatelessWidget {
     var darkTheme = ThemeData.dark();
     var theme = darkTheme.copyWith(
       textTheme: darkTheme.textTheme.copyWith(
+        headline4: darkTheme.textTheme.headline4.copyWith(
+          color: Colors.white,
+        ),
         subtitle2: darkTheme.textTheme.subtitle2.copyWith(
           color: Colors.grey,
         ),
