@@ -86,11 +86,4 @@ class ProfilePage extends StatelessWidget {
   Widget margin(double vertical) {
     return Container(margin: EdgeInsets.symmetric(vertical: vertical));
   }
-
-  Widget logoutButton(BuildContext context) {
-    return Button(
-      onPressed: () => context.read<AuthenticationState>().logout(),
-      child: Text(S.logout),
-    );
-  }
 }
