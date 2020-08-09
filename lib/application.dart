@@ -8,8 +8,6 @@ import 'package:resurgence/player/player_control_page.dart';
 class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var authenticationState = context.watch<AuthenticationState>();
-
     var darkTheme = ThemeData.dark();
     var theme = darkTheme.copyWith(
       textTheme: darkTheme.textTheme.copyWith(
@@ -26,14 +24,14 @@ class Application extends StatelessWidget {
     return MaterialApp(
       title: S.applicationTitle,
       theme: theme,
-      home: buildBody(context, authenticationState),
+      home: Consumer<AuthenticationState>(
+        builder: (context, state, child) {
+          if (state.isLoggedIn) {
+            return PlayerControlPage();
+          }
+          return AuthenticationPage();
+        },
+      ),
     );
-  }
-
-  Widget buildBody(BuildContext context, AuthenticationState state) {
-    if (state.isLoggedIn) {
-      return PlayerControlPage();
-    }
-    return AuthenticationPage();
   }
 }
