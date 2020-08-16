@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/bank/service.dart';
-import 'package:resurgence/chat/service.dart';
+import 'package:resurgence/chat/client.dart';
+import 'package:resurgence/chat/state.dart';
+import 'package:resurgence/constants.dart';
 import 'package:resurgence/family/service.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/network/client.dart';
@@ -21,8 +23,8 @@ void main() {
   final client = Client(authenticationState);
 
   // Authentication
-  final authenticationStateProvider = ChangeNotifierProvider(
-    create: (BuildContext context) => authenticationState,
+  final authenticationStateProvider = ChangeNotifierProvider.value(
+    value: authenticationState,
   );
   final authenticationServiceProvider = Provider(
     create: (_) => AuthenticationService(client),
@@ -49,11 +51,6 @@ void main() {
     create: (_) => BankService(client),
   );
 
-  // Mail
-  final mailServiceProvider = Provider(
-    create: (_) => MailService(client),
-  );
-
   // Real Estate
   final realEstateServiceProvider = Provider(
     create: (_) => RealEstateService(client),
@@ -62,6 +59,24 @@ void main() {
   // Family Estate
   final familyServiceProvider = Provider(
     create: (_) => FamilyService(client),
+  );
+
+  // Chat
+  final ChatState chatState = ChatState();
+  final chatStateProvider = ChangeNotifierProvider.value(
+    value: chatState,
+  );
+  final chatClientProvider = Provider(
+    create: (_) {
+      var chatClient = ChatClient(S.wsUrl, chatState);
+      authenticationState.addListener(() {
+        if (!authenticationState.isLoggedIn) {
+          chatClient.logout();
+        }
+      });
+      return chatClient;
+    },
+    lazy: false,
   );
 
   runApp(
@@ -84,14 +99,15 @@ void main() {
         // Bank
         bankServiceProvider,
 
-        // Mail
-        mailServiceProvider,
-
         // Real Estate
         realEstateServiceProvider,
 
         // Family
         familyServiceProvider,
+
+        // Chat
+        chatClientProvider,
+        chatStateProvider,
       ],
       child: Application(),
     ),

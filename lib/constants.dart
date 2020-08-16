@@ -1,11 +1,35 @@
 import 'package:flutter/material.dart';
 
+enum _Env { local, dev }
+
 /// Application String Constants
 class S {
+  // Environment
+  static var _env = _Env.local;
+
+  // Urls
+  static var baseUrl = () {
+    switch (_env) {
+      case _Env.local:
+        return 'http://192.168.1.101:8080/';
+      case _Env.dev:
+        return 'https://hezaryar.com/';
+    }
+  }();
+  static var wsUrl = () {
+    switch (_env) {
+      case _Env.local:
+        return 'ws://192.168.1.101:6060/v0/channels?apikey=AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K';
+      case _Env.dev:
+        return 'wss://hezaryar.com:2053/v0/channels?apikey=AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K';
+    }
+  }();
+
   // Misc
   static var applicationTitle = 'Resurgence';
   static var applicationDescription = 'Text-Based Mafia Game';
   static var version = '1.0.0+1'; // todo retrieve from pubspec.yaml
+  static var userAgent = 'ResurgenceMobile/$version';
 
   // Validation
   static var validationRequired = 'validation.required';
@@ -16,7 +40,6 @@ class S {
   static var create = 'create';
   static var sendEmail = 'send.email';
   static var submit = 'submit';
-  static var cancel = 'cancel';
   static var password = 'Password';
   static var passwordForgot = 'Forgot password?';
   static var passwordForgotInfo = 'password.forgot.info';
@@ -70,16 +93,6 @@ class S {
   static var currentInterest = 'current.interest';
   static var description = 'description';
   static var to = 'to';
-  static var mail = 'Mail';
-  static var send = 'send';
-  static var sent = 'sent';
-  static var received = 'received';
-  static var delete = 'delete';
-  static var read = 'read';
-  static var noMail = 'no.mail';
-  static var sentSuccessfully = 'sent.successfully';
-  static var reportMail = 'report.mail';
-  static var reportMailDetail = 'report.mail.detail';
   static var realEstate = 'Real Estate';
   static var buy = 'buy';
   static var sell = 'sell';
@@ -88,6 +101,13 @@ class S {
   static var signUpPageTitle = 'Welcome!';
   static var signUpPageDescription = 'Sign up with email';
   static var family = 'Family';
+
+  static var chat = 'Chat';
+  static var messages = 'Messages';
+  static var search = 'Search';
+  static var offline = 'Offline';
+  static var online = 'Online';
+  static var typeSomething = 'Type something...';
 }
 
 class W {

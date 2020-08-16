@@ -15,9 +15,7 @@ class Client {
 
   Client(this._state) {
     var options = BaseOptions(
-      // todo get base url from configuration
-      baseUrl: 'http://192.168.1.101:8080/',
-//      baseUrl: 'https://hezaryar.com/',
+      baseUrl: S.baseUrl,
       headers: {'version': S.version},
       contentType: 'application/json',
     );
