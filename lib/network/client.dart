@@ -15,7 +15,6 @@ class Client {
 
   Client(this._state) {
     var options = BaseOptions(
-      // todo get base url from configuration
       baseUrl: S.baseUrl,
       headers: {'version': S.version},
       contentType: 'application/json',
