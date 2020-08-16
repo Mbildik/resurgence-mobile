@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/state.dart';
+import 'package:resurgence/chat/client.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/player/service.dart';
@@ -15,7 +16,7 @@ class PlayerCreationPage extends StatefulWidget {
 
 class _PlayerCreationPageState extends State<PlayerCreationPage> {
   final _formKey = GlobalKey<FormState>();
-  final nicknameController = TextEditingController(text: 'Shelby');
+  final nicknameController = TextEditingController();
 
   AbstractEnum race;
   Future<List<AbstractEnum>> futureRaces;
@@ -139,6 +140,10 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
         context
             .read<PlayerService>()
             .create(nickname, race)
+            .then((player) {
+              context.read<ChatClient>().addNickname(nickname);
+              return player;
+            })
             .then((player) => Navigator.pop(context))
             .catchError((e) => ErrorHandler.showError(context, e));
       },
