@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/chat/chat.dart';
-import 'package:resurgence/chat/mail.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/real-estate/read_estate.dart';
@@ -40,11 +39,6 @@ class _MenuPageState extends State<MenuPage> {
             text: S.bank,
             icon: Icons.account_balance,
             onPressed: () => push(context, route: BankPageRoute()),
-          ),
-          _MenuItem(
-            text: S.mail,
-            icon: Icons.mail,
-            onPressed: () => push(context, route: MailPageRoute()),
           ),
           _MenuItem(
             text: S.realEstate,

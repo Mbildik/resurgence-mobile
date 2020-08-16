@@ -4,7 +4,6 @@ import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/bank/service.dart';
 import 'package:resurgence/chat/client.dart';
-import 'package:resurgence/chat/service.dart';
 import 'package:resurgence/chat/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/item/service.dart';
@@ -51,11 +50,6 @@ void main() {
     create: (_) => BankService(client),
   );
 
-  // Mail
-  final mailServiceProvider = Provider(
-    create: (_) => MailService(client),
-  );
-
   // Real Estate
   final realEstateServiceProvider = Provider(
     create: (_) => RealEstateService(client),
@@ -98,9 +92,6 @@ void main() {
 
         // Bank
         bankServiceProvider,
-
-        // Mail
-        mailServiceProvider,
 
         // Real Estate
         realEstateServiceProvider,
