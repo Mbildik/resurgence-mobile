@@ -120,10 +120,10 @@ class __FamiliesState extends State<_Families> {
   @override
   void initState() {
     super.initState();
-    familiesFuture = fetchRaces();
+    familiesFuture = fetchFamilies();
   }
 
-  Future<List<Family>> fetchRaces() =>
+  Future<List<Family>> fetchFamilies() =>
       context.read<FamilyService>().allFamily();
 
   @override
@@ -139,12 +139,21 @@ class __FamiliesState extends State<_Families> {
 
         var families = snapshot.data;
 
-        return ListView.builder(
-          itemCount: families.length,
-          itemBuilder: (context, index) {
-            var family = families[index];
-            return _FamilyListTile(family: family);
+        return RefreshIndicator(
+          onRefresh: () {
+            var families = fetchFamilies();
+            setState(() {
+              familiesFuture = families;
+            });
+            return families;
           },
+          child: ListView.builder(
+            itemCount: families.length,
+            itemBuilder: (context, index) {
+              var family = families[index];
+              return _FamilyListTile(family: family);
+            },
+          ),
         );
       },
     );
@@ -163,7 +172,7 @@ class __FamiliesState extends State<_Families> {
           Button(
             child: Text(S.reload),
             onPressed: () => setState(() {
-              familiesFuture = fetchRaces();
+              familiesFuture = fetchFamilies();
             }),
           ),
           Text(S.errorOccurred),
@@ -239,7 +248,7 @@ class _FamilyDetail extends StatelessWidget {
             ),
           ),
           Text(family.boss),
-          Text(family.consultant),
+          Text(family.consultant ?? ''),
           Text(family.building.value),
           ...family.members.map((e) => Text(e)).toList(growable: false),
         ],
