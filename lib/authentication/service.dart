@@ -19,6 +19,8 @@ class AuthenticationService {
   Future<Token> oauth2Login(String provider, String token) {
     return _client.oauth2Login(provider, token);
   }
+
+  Future<void> pushToken(String token) => _client.pushToken(token);
 }
 
 class _AuthenticationClient {
@@ -45,4 +47,7 @@ class _AuthenticationClient {
       'password': password,
     }).then((response) => Account.fromJson(response.data));
   }
+
+  Future<void> pushToken(String token) =>
+      _client.patch('account/push-token', data: {'token': token});
 }

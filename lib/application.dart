@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/authentication_page.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/notification_handler.dart';
 import 'package:resurgence/player/player_control_page.dart';
 
 class Application extends StatelessWidget {
@@ -21,16 +23,20 @@ class Application extends StatelessWidget {
       ),
     );
 
-    return MaterialApp(
-      title: S.applicationTitle,
-      theme: theme,
-      home: Consumer<AuthenticationState>(
-        builder: (context, state, child) {
-          if (state.isLoggedIn) {
-            return PlayerControlPage();
-          }
-          return AuthenticationPage();
-        },
+    return OverlaySupport(
+      child: MaterialApp(
+        title: S.applicationTitle,
+        theme: theme,
+        home: NotificationHandler(
+          child: Consumer<AuthenticationState>(
+            builder: (context, state, child) {
+              if (state.isLoggedIn) {
+                return PlayerControlPage();
+              }
+              return AuthenticationPage();
+            },
+          ),
+        ),
       ),
     );
   }

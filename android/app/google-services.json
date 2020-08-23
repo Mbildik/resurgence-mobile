@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "203290350160",
+    "firebase_url": "https://rsrgnc.firebaseio.com",
+    "project_id": "rsrgnc",
+    "storage_bucket": "rsrgnc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203290350160:android:c4de194db847354628f755",
+        "android_client_info": {
+          "package_name": "com.hezaryar.resurgence"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203290350160-gc0kddp58jog7has723bccp2ntsq93a5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hezaryar.resurgence",
+            "certificate_hash": "63045480a86e99c2dfa5e10396f7494aaa76cd80"
+          }
+        },
+        {
+          "client_id": "203290350160-b27js5p1b0lj8g7piqci7md3ihj10abe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtKPl8C8ARr3rKviG6kdbKjp9EjLKal-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "203290350160-jcn35n2v3ts985edgnsiclcad32pr7b3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
