@@ -74,27 +74,29 @@ class Client {
           !securityPaths.contains(e.request.path) &&
           e.response.statusCode == 401) {
         var failedRequest = e.request;
-        var refreshTokenOptions = Options(
-          headers: {'Refresh-Token': _state.token.refreshToken},
-        );
-
-        return _dio
-            .post('security/refresh', options: refreshTokenOptions)
-            .then((response) => Token.fromJson(response.data))
-            .catchError((e) {
-              _state.logout();
-              throw RefreshTokenExpiredError(e);
-            })
-            // todo consider login may not need to notify listener
-            .then((token) => _state.login(token))
-            .then((_) => _dio.request(
-                  failedRequest.path,
-                  options: failedRequest,
-                ));
+        return this.refreshToken().then(
+              (_) => _dio.request(
+                failedRequest.path,
+                options: failedRequest,
+              ),
+            );
       }
 
       return e;
     });
+  }
+
+  Future<void> refreshToken() {
+    var refreshTokenOptions = Options(
+      headers: {'Refresh-Token': _state.token.refreshToken},
+    );
+    return _dio
+        .post('security/refresh', options: refreshTokenOptions)
+        .then((response) => Token.fromJson(response.data))
+        .catchError((e) {
+      _state.logout();
+      throw RefreshTokenExpiredError(e);
+    }).then((token) => _state.login(token));
   }
 
   Future<Response<T>> get<T>(
@@ -148,6 +150,26 @@ class Client {
       queryParameters: queryParameters,
       options: options,
       cancelToken: cancelToken,
+    );
+  }
+
+  Future<Response<T>> patch<T>(
+    String path, {
+    data,
+    Map<String, dynamic> queryParameters,
+    Options options,
+    CancelToken cancelToken,
+    ProgressCallback onSendProgress,
+    ProgressCallback onReceiveProgress,
+  }) {
+    return _dio.patch(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
     );
   }
 }
