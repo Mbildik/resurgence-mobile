@@ -37,6 +37,8 @@ dependencies:
   google_sign_in: ^4.5.1
   web_socket_channel: ^1.1.0
   crypto: ^2.1.4
+  firebase_messaging: ^7.0.0
+  overlay_support: ^1.0.5
 
 dev_dependencies:
   flutter_test:

@@ -12,7 +12,10 @@ class PlayerService {
   }
 
   Future<Player> create(String nickname, AbstractEnum race) {
-    return _client.create(nickname, race);
+    return _client.create(nickname, race).then((player) async {
+      await _client.refreshToken();
+      return player;
+    });
   }
 
   Future<List<AbstractEnum>> races() {
@@ -24,6 +27,8 @@ class _PlayerClient {
   final Client _client;
 
   _PlayerClient(this._client);
+
+  Future<void> refreshToken() => _client.refreshToken();
 
   Future<Player> info() {
     return _client
