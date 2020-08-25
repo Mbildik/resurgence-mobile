@@ -108,6 +108,14 @@ class S {
   static var offline = 'Offline';
   static var online = 'Online';
   static var typeSomething = 'Type something...';
+
+  static var boss = 'Boss';
+  static var consultant = 'Consultant';
+  static var chief = 'Chief';
+  static var secret = 'Secret';
+  static var regimes = 'Regimes';
+  static var members = 'Members';
+  static var announcements = 'Announcements';
 }
 
 class W {
