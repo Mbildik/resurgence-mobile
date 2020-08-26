@@ -13,6 +13,22 @@ class FamilyService {
   Future<List<Announcement>> announcement({String family}) {
     return _client.announcement(family: family);
   }
+
+  Future<FamilyBank> bank() {
+    return _client.bank();
+  }
+
+  Future<List<FamilyBankLog>> bankLog() {
+    return _client.bankLog();
+  }
+
+  Future<void> withdraw(int amount) {
+    return _client.withdraw(amount);
+  }
+
+  Future<void> deposit(int amount) {
+    return _client.deposit(amount);
+  }
 }
 
 class _FamilyClient {
@@ -32,5 +48,26 @@ class _FamilyClient {
     return _client.get(url).then((response) => (response.data as List)
         .map((e) => Announcement.fromJson(e))
         .toList(growable: false));
+  }
+
+  Future<FamilyBank> bank() {
+    return _client
+        .get('family/bank')
+        .then((response) => FamilyBank.fromJson(response.data));
+  }
+
+  Future<List<FamilyBankLog>> bankLog() {
+    return _client.get('family/bank/log').then((response) =>
+        (response.data as List)
+            .map((e) => FamilyBankLog.fromJson(e))
+            .toList(growable: false));
+  }
+
+  Future<void> withdraw(int amount) {
+    return _client.post('family/bank/withdraw/$amount');
+  }
+
+  Future<void> deposit(int amount) {
+    return _client.post('family/bank/deposit/$amount');
   }
 }

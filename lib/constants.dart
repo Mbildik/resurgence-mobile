@@ -78,11 +78,11 @@ class S {
   static var failedTaskResult = 'failed.task.result';
   static var bank = 'Bank';
   static var bankBalance = 'bank.balance';
-  static var currentBalance = 'current.balance';
-  static var bankTitle = 'bank';
-  static var money = 'money';
-  static var withdraw = 'withdraw';
-  static var deposit = 'deposit';
+  static var currentBalance = 'Current Balance';
+  static var bankTitle = 'Bank';
+  static var money = 'Money';
+  static var withdraw = 'Withdraw';
+  static var deposit = 'Deposit';
   static var integerRequired = 'integer.required';
   static var interest = 'interest';
   static var transfer = 'transfer';
