@@ -624,10 +624,12 @@ class __BankWidgetState extends State<_BankWidget> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Center(
-                child: Text(
-                  Money.format(familyBank.amount),
-                  style: Theme.of(context).textTheme.headline2.copyWith(
-                    fontWeight: FontWeight.bold
+                child: FittedBox(
+                  child: Text(
+                    Money.format(familyBank.amount),
+                    style: Theme.of(context).textTheme.headline2.copyWith(
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                 ),
               ),
