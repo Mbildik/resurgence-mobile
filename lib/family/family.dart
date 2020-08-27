@@ -535,10 +535,10 @@ class _MembersWidget extends StatelessWidget {
           family.chiefs.map((e) => e.name).contains(member);
     });
     members.insert(0, family.boss);
-    members.insert(1, family.consultant);
+    if (family.consultant != null) members.insert(1, family.consultant);
     var chiefs = family.chiefs.map((e) => e.name).toList(growable: false);
     chiefs.sort();
-    members.insertAll(2, chiefs);
+    if (chiefs.isNotEmpty) members.insertAll(2, chiefs);
 
     return Scaffold(
       appBar: W.defaultAppBar,
@@ -627,9 +627,10 @@ class __BankWidgetState extends State<_BankWidget> {
                 child: FittedBox(
                   child: Text(
                     Money.format(familyBank.amount),
-                    style: Theme.of(context).textTheme.headline2.copyWith(
-                      fontWeight: FontWeight.bold
-                    ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline2
+                        .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
