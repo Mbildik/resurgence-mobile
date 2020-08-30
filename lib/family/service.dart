@@ -10,6 +10,10 @@ class FamilyService {
     return _client.allFamily();
   }
 
+  Future<Family> detail(String family) {
+    return _client.detail(family);
+  }
+
   Future<List<Announcement>> announcement({String family}) {
     return _client.announcement(family: family);
   }
@@ -29,6 +33,40 @@ class FamilyService {
   Future<void> deposit(int amount) {
     return _client.deposit(amount);
   }
+
+  Future<void> fire(String member) => _client.fire(member);
+
+  Future<void> fireConsultant() => _client.fireConsultant();
+
+  Future<void> fireChief(String chief) => _client.fireChief(chief);
+
+  Future<void> makeConsultant(String consultant) =>
+      _client.makeConsultant(consultant);
+
+  Future<void> makeChief(String chief) => _client.makeChief(chief);
+
+  Future<void> invitations() => _client.invitations();
+
+  Future<void> accept(int id) => _client.accept(id);
+
+  Future<void> cancel(int id) => _client.cancel(id);
+
+  Future<void> assign(String chief, String member) =>
+      _client.assign(chief, member);
+
+  Future<void> discharge(String chief, String member) =>
+      _client.discharge(chief, member);
+
+  Future<void> saveAnnouncement(String title, String content, bool secret) =>
+      _client.saveAnnouncement(title, content, secret);
+
+  Future<void> editAnnouncement(
+          int id, String title, String content, bool secret) =>
+      _client.editAnnouncement(id, title, content, secret);
+
+  Future<void> deleteAnnouncement(int id) => _client.deleteAnnouncement(id);
+
+  Future<void> destroy() => _client.destroy();
 }
 
 class _FamilyClient {
@@ -40,6 +78,12 @@ class _FamilyClient {
     return _client.get('family/all').then((response) => (response.data as List)
         .map((e) => Family.fromJson(e))
         .toList(growable: false));
+  }
+
+  Future<Family> detail(String family) {
+    return _client
+        .get('family/$family')
+        .then((response) => Family.fromJson(response.data));
   }
 
   Future<List<Announcement>> announcement({String family}) {
@@ -70,4 +114,50 @@ class _FamilyClient {
   Future<void> deposit(int amount) {
     return _client.post('family/bank/deposit/$amount');
   }
+
+  Future<void> fire(String member) => _client.delete('family/hr/fire/$member');
+
+  Future<void> fireConsultant() => _client.delete('family/consultant');
+
+  Future<void> fireChief(String chief) => _client.delete('family/chief/$chief');
+
+  Future<void> makeConsultant(String consultant) =>
+      _client.post('family/consultant/$consultant');
+
+  Future<void> makeChief(String chief) => _client.post('family/chief/$chief');
+
+  Future<List<Invitation>> invitations() =>
+      _client.get('family/hr').then((response) => (response.data as List)
+          .map((e) => Invitation.fromJson(e))
+          .toList(growable: false));
+
+  Future<void> accept(int id) => _client.post('family/hr/accept/$id');
+
+  Future<void> cancel(int id) => _client.delete('family/hr/cancel/$id');
+
+  Future<void> assign(String chief, String member) =>
+      _client.post('family/chief/member/$chief/$member');
+
+  Future<void> discharge(String chief, String member) =>
+      _client.delete('family/chief/member/$chief/$member');
+
+  Future<void> saveAnnouncement(String title, String content, bool secret) =>
+      _client.post('family/announcement', data: {
+        'title': title,
+        'content': content,
+        'secret': secret,
+      });
+
+  Future<void> editAnnouncement(
+          int id, String title, String content, bool secret) =>
+      _client.patch('family/announcement/$id', data: {
+        'title': title,
+        'content': content,
+        'secret': secret,
+      });
+
+  Future<void> deleteAnnouncement(int id) =>
+      _client.delete('family/announcement/$id');
+
+  Future<void> destroy() => _client.delete('family/hr/destroy');
 }

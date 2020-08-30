@@ -47,9 +47,9 @@ class _MenuPageState extends State<MenuPage> {
             onPressed: () => push(context, route: RealEstatePageRoute()),
           ),
           _MenuItem(
-            text: S.family,
+            text: S.families,
             icon: Icons.people,
-            onPressed: () => push(context, route: FamilyPageRoute()),
+            onPressed: () => push(context, route: FamiliesPageRoute()),
           ),
           _MenuItem(
             text: S.chat,

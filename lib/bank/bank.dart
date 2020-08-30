@@ -275,7 +275,7 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
       title: Text(Money.format(bankTransaction.change)),
       subtitle: Text(
         // todo format locale
-        DateFormat('y-MM-dd HH:mm:ss').format(
+        DateFormat(S.dateFormat).format(
           DateTime.parse(bankTransaction.time).toLocal(),
         ),
       ),
@@ -734,7 +734,7 @@ class _TransferWidgetState extends State<TransferWidget> {
         ? bankTransaction.from
         : bankTransaction.to;
     return Tooltip(
-      message: DateFormat('y-MM-dd HH:mm:ss').format(
+      message: DateFormat(S.dateFormat).format(
         DateTime.parse(bankTransaction.time).toLocal(),
       ),
       child: ListTile(

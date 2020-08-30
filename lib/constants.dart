@@ -30,16 +30,19 @@ class S {
   static var applicationDescription = 'Text-Based Mafia Game';
   static var version = '1.0.0+1'; // todo retrieve from pubspec.yaml
   static var userAgent = 'ResurgenceMobile/$version';
+  static var dateFormat = 'y-MM-dd HH:mm';
+
+  // todo static var dateFormat = 'dd/MM/y HH:mm';
 
   // Validation
-  static var validationRequired = 'validation.required';
+  static var validationRequired = 'Required';
 
   // Label
   static var email = 'Email';
   static var nickname = 'nickname';
   static var create = 'create';
   static var sendEmail = 'send.email';
-  static var submit = 'submit';
+  static var submit = 'Submit';
   static var password = 'Password';
   static var passwordForgot = 'Forgot password?';
   static var passwordForgotInfo = 'password.forgot.info';
@@ -101,6 +104,10 @@ class S {
   static var signUpPageTitle = 'Welcome!';
   static var signUpPageDescription = 'Sign up with email';
   static var family = 'Family';
+  static var families = 'Families';
+
+  static var delete = 'Delete';
+  static var cancel = 'Cancel';
 
   static var chat = 'Chat';
   static var messages = 'Messages';
@@ -116,6 +123,44 @@ class S {
   static var regimes = 'Regimes';
   static var members = 'Members';
   static var announcements = 'Announcements';
+  static var memberDeleteTitle = 'Are you sure!';
+  static var memberDeleteContent = 'You are firing a member!';
+  static var fire = 'Fire';
+  static var disqualify = 'Disqualify';
+  static var consultantDisqualifyTitle = memberDeleteTitle;
+  static var consultantDisqualifyContent = 'You are disqualify a consultant';
+  static var chiefDisqualifyTitle = memberDeleteTitle;
+  static var chiefDisqualifyContent = 'You are disqualify a chief';
+  static var promoteToConsultant = 'Consultant';
+  static var promoteToChief = 'Chief';
+  static var accept = 'Accept';
+  static var revoke = 'Revoke';
+  static var noData = 'There is nothing here!';
+  static var noInvitations = 'There is no invitations!';
+  static var assign = 'Assign';
+  static var titleHintText = 'Enter your announcement title';
+  static var contentHintText = 'Enter your announcement content';
+  static var announcementSecretInfo =
+      'Only family member can see this announcement.';
+  static var management = 'Management';
+  static var humanResources = 'Human Resources';
+  static var applicationsInvitations = 'Applications Invitations';
+  static var regimeManagement = 'Regime Management';
+  static var announcement = 'Announcement';
+  static var destroy = 'Destroy';
+  static var familyDestroyConfirmationTitle = 'Are you sure!';
+  static var familyDestroyConfirmationContent =
+      'You are gonna destroy the whole family.';
+  static var discharge = 'Discharge';
+  static var assignChiefDialogTitle = 'Choose an chief to assign';
+  static var memberDischargeConfirmationTitle = 'Are you sure!';
+  static memberDischargeConfirmationContent(String member, String chief) =>
+      'You are going to discharge $member from $chief';
+  static var edit = 'Edit';
+  static var clear = 'Clear';
+  static var announcementDeleteConfirmationTitle = 'Are you sure!';
+  static var announcementDeleteConfirmationContent =
+      'You are going to delete this announcement!';
 }
 
 class W {

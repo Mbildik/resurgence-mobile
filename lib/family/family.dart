@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
+import 'package:resurgence/family/management.dart';
 import 'package:resurgence/family/service.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/player/player.dart';
@@ -20,6 +21,7 @@ class Family {
   List<String> members;
   AbstractEnum race;
   List<Chief> chiefs;
+  int size;
 
   Family({
     this.name,
@@ -30,6 +32,7 @@ class Family {
     this.members,
     this.race,
     this.chiefs,
+    this.size,
   });
 
   Family.fromJson(Map<String, dynamic> json) {
@@ -39,7 +42,9 @@ class Family {
     consultant = json['consultant'];
     building =
         json['building'] != null ? Building.fromJson(json['building']) : null;
-    members = json['members'].cast<String>();
+    members = json['members'] != null
+        ? List.of(json['members'].cast<String>())
+        : null;
     race = json['race'] != null ? AbstractEnum.fromJson(json['race']) : null;
     if (json['chiefs'] != null) {
       chiefs = List<Chief>();
@@ -47,10 +52,29 @@ class Family {
         chiefs.add(Chief.fromJson(v));
       });
     }
+    size = json['size'];
   }
 
   String available() {
-    return '${members.length} / ${building.size}';
+    return '$size / ${building.size}';
+  }
+
+  List<String> sortMembers() {
+    var members = List.of(this.members);
+    var chiefNames = this.chiefs.map((e) => e.name);
+
+    members.removeWhere((member) {
+      return member == this.boss ||
+          member == this.consultant ||
+          chiefNames.contains(member);
+    });
+    members.insert(0, this.boss);
+    if (this.consultant != null) members.insert(1, this.consultant);
+    var chiefs = chiefNames.toList(growable: false);
+    chiefs.sort();
+    if (chiefs.isNotEmpty)
+      members.insertAll(this.consultant == null ? 1 : 2, chiefs);
+    return members;
   }
 }
 
@@ -98,11 +122,11 @@ class Announcement {
   final DateTime time;
 
   factory Announcement.fromJson(Map<String, dynamic> json) => Announcement(
-        id: json["id"] == null ? null : json["id"],
-        title: json["title"] == null ? null : json["title"],
-        content: json["content"] == null ? null : json["content"],
-        secret: json["secret"] == null ? null : json["secret"],
-        time: json["time"] == null ? null : DateTime.parse(json["time"]),
+        id: json['id'] == null ? null : json['id'],
+        title: json['title'] == null ? null : json['title'],
+        content: json['content'] == null ? null : json['content'],
+        secret: json['secret'] == null ? null : json['secret'],
+        time: json['time'] == null ? null : DateTime.parse(json['time']),
       );
 }
 
@@ -112,7 +136,7 @@ class FamilyBank {
   final int amount;
 
   factory FamilyBank.fromJson(Map<String, dynamic> json) => FamilyBank(
-        amount: json["amount"] == null ? null : json["amount"],
+        amount: json['amount'] == null ? null : json['amount'],
       );
 }
 
@@ -130,10 +154,10 @@ class FamilyBankLog {
   final DateTime date;
 
   factory FamilyBankLog.fromJson(Map<String, dynamic> json) => FamilyBankLog(
-        member: json["member"] == null ? null : json["member"],
-        amount: json["amount"] == null ? null : json["amount"],
-        reason: json["reason"] == null ? null : Reason.fromJson(json["reason"]),
-        date: json["date"] == null ? null : DateTime.parse(json["date"]),
+        member: json['member'] == null ? null : json['member'],
+        amount: json['amount'] == null ? null : json['amount'],
+        reason: json['reason'] == null ? null : Reason.fromJson(json['reason']),
+        date: json['date'] == null ? null : DateTime.parse(json['date']),
       );
 }
 
@@ -151,40 +175,67 @@ class Reason extends AbstractEnum {
     return Reason(
       key: abstractEnum.key,
       value: abstractEnum.value,
-      revenue: json["revenue"] == null ? null : json["revenue"],
+      revenue: json['revenue'] == null ? null : json['revenue'],
     );
   }
 }
 
-class FamilyPage extends StatefulWidget {
-  @override
-  _FamilyPageState createState() => _FamilyPageState();
+enum Direction { family, player, unknown }
+
+extension Directions on Direction {
+  static Direction valueOf(String value) {
+    switch (value.toLowerCase()) {
+      case 'family':
+        return Direction.family;
+      case 'player':
+        return Direction.player;
+      default:
+        return Direction.unknown;
+    }
+  }
 }
 
-class _FamilyPageState extends State<FamilyPage> {
+class Invitation {
+  Invitation({
+    this.id,
+    this.player,
+    this.family,
+    this.time,
+    this.direction,
+  });
+
+  final int id;
+  final String player;
+  final String family;
+  final DateTime time;
+  final Direction direction;
+
+  factory Invitation.fromJson(Map<String, dynamic> json) {
+    return Invitation(
+      id: json['id'] == null ? null : json['id'],
+      player: json['player'] == null ? null : json['player'],
+      family: json['family'] == null ? null : json['family'],
+      time: json['time'] == null ? null : DateTime.parse(json['time']),
+      direction: json['direction'] == null
+          ? null
+          : Directions.valueOf(json['direction']),
+    );
+  }
+}
+
+class FamiliesPage extends StatefulWidget {
+  @override
+  _FamiliesPageState createState() => _FamiliesPageState();
+}
+
+class _FamiliesPageState extends State<FamiliesPage> {
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          bottom: TabBar(
-            tabs: [
-              Tab(text: 'Families'),
-              Tab(text: 'Invitations'),
-              Tab(text: 'Applications'),
-            ],
-          ),
-          title: Text(S.family),
-        ),
-        body: TabBarView(
-          children: [
-            _Families(),
-            Icon(Icons.directions_transit),
-            Icon(Icons.directions_bike),
-          ],
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(S.families),
       ),
+      body: _Families(),
     );
   }
 }
@@ -263,19 +314,20 @@ class _FamilyListTile extends StatelessWidget {
       subtitle: Text(family.race.value),
       trailing: Text(family.available()),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => _FamilyDetail(family: family),
-          ),
-        );
+        var service = context.read<FamilyService>();
+        service.detail(family.name).then((family) {
+          Navigator.push(context, _FamilyDetailRoute(family));
+        }).catchError((e) => ErrorHandler.showError(context, e));
       },
     );
   }
 }
 
 class _FamilyDetail extends StatelessWidget {
-  const _FamilyDetail({Key key, this.family}) : super(key: key);
+  const _FamilyDetail(
+    this.family, {
+    Key key,
+  }) : super(key: key);
 
   final Family family;
 
@@ -382,9 +434,8 @@ class _FamilyDetail extends StatelessWidget {
       floatingActionButton: currentPlayer == family.boss
           ? FloatingActionButton(
               child: Icon(Icons.build),
-              onPressed: () {
-                // todo navigate to family setting page
-              },
+              onPressed: () =>
+                  Navigator.push(context, _ManagementWidgetRoute(family)),
             )
           : null,
     );
@@ -424,7 +475,7 @@ class RegimesWidget extends StatelessWidget {
               return ExpansionTile(
                 title: Text(chief.name),
                 subtitle: Text(
-                  'Chief',
+                  S.chief,
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
                 children:
@@ -463,19 +514,12 @@ class _AnnouncementsWidgetState extends State<AnnouncementsWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: W.defaultAppBar,
-      body: FutureBuilder<List<Announcement>>(
+      body: LoadingFutureBuilder<List<Announcement>>(
         future: announcementsFuture,
+        onError: () => setState(() {
+          announcementsFuture = fetch();
+        }),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget();
-          } else if (snapshot.hasError) {
-            return RefreshOnErrorWidget(onPressed: () {
-              setState(() {
-                announcementsFuture = fetch();
-              });
-            });
-          }
-
           var announcements = snapshot.data;
 
           return RefreshIndicator(
@@ -491,26 +535,38 @@ class _AnnouncementsWidgetState extends State<AnnouncementsWidget> {
               itemCount: announcements.length,
               itemBuilder: (context, index) {
                 var announcement = announcements[index];
+
+                Widget title = Text(announcement.title);
+
+                if (announcement.secret) {
+                  var textStyle = Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .copyWith(fontWeight: FontWeight.bold);
+                  title = Row(
+                    children: [
+                      title,
+                      SizedBox(width: 8.0),
+                      Chip(
+                        label: Text(S.secret, style: textStyle),
+                        backgroundColor: Colors.red,
+                      )
+                    ],
+                  );
+                }
+
                 return ListTile(
-                  title: announcement.secret
-                      ? Row(
-                          children: [
-                            Text(announcement.title),
-                            SizedBox(width: 8.0),
-                            Chip(
-                              label: Text(
-                                S.secret,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              backgroundColor: Colors.red,
-                            )
-                          ],
-                        )
-                      : Text(announcement.title),
-                  subtitle: Text(announcement.content),
+                  title: title,
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(announcement.content),
+                      SizedBox(height: 8.0),
+                      Text(DateFormat(S.dateFormat).format(
+                        announcement.time.toLocal(),
+                      ))
+                    ],
+                  ),
                 );
               },
             ),
@@ -528,17 +584,7 @@ class _MembersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var members = List.of(family.members);
-    members.removeWhere((member) {
-      return member == family.boss ||
-          member == family.consultant ||
-          family.chiefs.map((e) => e.name).contains(member);
-    });
-    members.insert(0, family.boss);
-    if (family.consultant != null) members.insert(1, family.consultant);
-    var chiefs = family.chiefs.map((e) => e.name).toList(growable: false);
-    chiefs.sort();
-    if (chiefs.isNotEmpty) members.insertAll(2, chiefs);
+    var members = family.sortMembers();
 
     return Scaffold(
       appBar: W.defaultAppBar,
@@ -707,7 +753,7 @@ class __BankWidgetState extends State<_BankWidget> {
                             children: [
                               Text(log.reason.value),
                               Text(
-                                DateFormat('y-MM-dd HH:mm:ss').format(
+                                DateFormat(S.dateFormat).format(
                                   log.date.toLocal(),
                                 ),
                                 style: Theme.of(context).textTheme.subtitle2,
@@ -762,8 +808,88 @@ class __BankWidgetState extends State<_BankWidget> {
   }
 }
 
-class FamilyPageRoute<T> extends MaterialPageRoute<T> {
-  FamilyPageRoute() : super(builder: (BuildContext context) => FamilyPage());
+class _ManagementWidget extends StatelessWidget {
+  const _ManagementWidget(this.family, {Key key}) : super(key: key);
+
+  final Family family;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(S.management),
+      ),
+      body: GridView.count(
+        crossAxisCount: 1,
+        padding: EdgeInsets.all(8.0),
+        childAspectRatio: 8.0,
+        crossAxisSpacing: 8.0,
+        mainAxisSpacing: 8.0,
+        children: [
+          OutlineButton(
+            child: Text(
+              S.humanResources,
+              textAlign: TextAlign.center,
+            ),
+            onPressed: () =>
+                Navigator.push(context, HumanResourceRoute(family)),
+          ),
+          OutlineButton(
+            child: Text(
+              S.applicationsInvitations,
+              textAlign: TextAlign.center,
+            ),
+            onPressed: () => Navigator.push(context, InvitationRoute(family)),
+          ),
+          OutlineButton(
+            child: Text(
+              S.regimeManagement,
+              textAlign: TextAlign.center,
+            ),
+            onPressed: () =>
+                Navigator.push(context, ChiefManagementRoute(family)),
+          ),
+          OutlineButton(
+            child: Text(
+              S.announcement,
+              textAlign: TextAlign.center,
+            ),
+            onPressed: () => Navigator.push(context, AnnouncementRoute()),
+          ),
+          Container(),
+          RaisedButton(
+            child: Text(S.destroy, textAlign: TextAlign.center),
+            color: Colors.red,
+            onPressed: () {
+              showConfirmationDialog(
+                context,
+                S.familyDestroyConfirmationTitle,
+                S.familyDestroyConfirmationContent,
+                S.destroy,
+                S.cancel,
+                () {
+                  var service = context.read<FamilyService>();
+                  return service.destroy();
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FamiliesPageRoute<T> extends MaterialPageRoute<T> {
+  FamiliesPageRoute()
+      : super(builder: (BuildContext context) => FamiliesPage());
+}
+
+class _FamilyDetailRoute<T> extends MaterialPageRoute<T> {
+  final Family family;
+
+  _FamilyDetailRoute(this.family)
+      : super(builder: (BuildContext context) => _FamilyDetail(family));
 }
 
 class _RegimesRoute<T> extends MaterialPageRoute<T> {
@@ -792,4 +918,11 @@ class _BankRoute<T> extends MaterialPageRoute<T> {
 
   _BankRoute(this.boss)
       : super(builder: (BuildContext context) => _BankWidget(boss));
+}
+
+class _ManagementWidgetRoute<T> extends MaterialPageRoute<T> {
+  final Family family;
+
+  _ManagementWidgetRoute(this.family)
+      : super(builder: (BuildContext context) => _ManagementWidget(family));
 }
