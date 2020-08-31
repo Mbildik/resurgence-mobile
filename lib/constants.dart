@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:resurgence/money.dart';
 
 enum _Env { local, dev }
 
@@ -168,7 +169,11 @@ class S {
   static var applySuccessInfo = 'Your application has been made.';
   static var myFamily = 'My Family';
   static var noFamilyAnymore = 'You don\'t have a family anymore.';
-  static var XXX = '';
+  static var familyCreationTitle = 'To create a crime family you must meet this requirements.';
+  static var familyCreationMoneyRequirement = '${Money.format(5000000)} in your pocket.';
+  static var familyCreationHonorRequirement = '1K HP (Honour Points)';
+  static var familyName = 'Family name';
+  static var createNewFamily = 'Create new family';
 }
 
 class W {

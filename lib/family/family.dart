@@ -235,6 +235,15 @@ class _FamiliesPageState extends State<FamiliesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.families),
+        actions: [
+          Tooltip(
+            message: S.createNewFamily,
+            child: IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () => Navigator.push(context, _CreateFamilyRoute()),
+            ),
+          )
+        ],
       ),
       body: _Families(),
     );
@@ -914,7 +923,9 @@ class _ManagementWidget extends StatelessWidget {
                 S.cancel,
                 () {
                   var service = context.read<FamilyService>();
-                  return service.destroy();
+                  return service.destroy().then((_) {
+                    context.read<FamilyState>().family = null;
+                  }).catchError((e) => ErrorHandler.showError(context, e));
                 },
               );
             },
@@ -952,6 +963,155 @@ class _FamilyControllerState extends State<FamilyController> {
   @override
   Widget build(BuildContext context) {
     return widget.child;
+  }
+}
+
+class _FamilyCreate extends StatefulWidget {
+  @override
+  __FamilyCreateState createState() => __FamilyCreateState();
+}
+
+class __FamilyCreateState extends State<_FamilyCreate> {
+  final _formKey = GlobalKey<FormState>();
+  final controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: W.defaultAppBar,
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(
+                    S.familyCreationTitle,
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                  SizedBox(height: 16.0),
+                  Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FamilyRequirement(
+                        S.familyCreationMoneyRequirement,
+                        RequirementType.money,
+                        5000000,
+                      ),
+                      FamilyRequirement(
+                        S.familyCreationHonorRequirement,
+                        RequirementType.honor,
+                        1000,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: S.familyName,
+                    ),
+                    keyboardType: TextInputType.name,
+                    textInputAction: TextInputAction.done,
+                    controller: controller,
+                    onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                    validator: (value) {
+                      if (value.isEmpty) return S.validationRequired;
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 8.0),
+                  SizedBox(
+                    width: double.infinity,
+                    child: RaisedButton(
+                      child: Text(S.create),
+                      onPressed: () {
+                        var service = context.read<FamilyService>();
+
+                        return service.found(controller.text).then((_) {
+                          service.info().then((family) {
+                            context.read<FamilyState>().family = family;
+                            return Navigator.pushReplacement(
+                                context, FamilyDetailRoute(family));
+                          });
+                        }).catchError(
+                            (e) => ErrorHandler.showError(context, e));
+                      },
+                      color: Colors.green,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum RequirementType { money, honor }
+
+class FamilyRequirement extends StatelessWidget {
+  const FamilyRequirement(
+    this.requirement,
+    this.type,
+    this.value, {
+    Key key,
+  }) : super(key: key);
+
+  final String requirement;
+  final RequirementType type;
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          margin: EdgeInsets.only(left: 32.0),
+          height: 8.0,
+          width: 8.0,
+          decoration: new BoxDecoration(
+            color: Theme.of(context).colorScheme.secondary,
+            shape: BoxShape.circle,
+          ),
+        ),
+        SizedBox(width: 16.0),
+        Consumer<PlayerState>(
+          builder: (context, state, child) {
+            if (isMeet(state)) {
+              return Text(
+                requirement,
+                style: Theme.of(context)
+                    .textTheme
+                    .subtitle2
+                    .copyWith(decoration: TextDecoration.lineThrough),
+              );
+            }
+            return child;
+          },
+          child: Text(
+            requirement,
+            style: Theme.of(context).textTheme.subtitle2,
+          ),
+        ),
+      ],
+    );
+  }
+
+  bool isMeet(PlayerState state) {
+    switch (type) {
+      case RequirementType.money:
+        return state.player.balance >= value;
+      case RequirementType.honor:
+        return state.player.honor >= value;
+      default:
+        return false;
+    }
   }
 }
 
@@ -1002,4 +1162,9 @@ class _ManagementWidgetRoute<T> extends MaterialPageRoute<T> {
 
   _ManagementWidgetRoute(this.family)
       : super(builder: (BuildContext context) => _ManagementWidget(family));
+}
+
+class _CreateFamilyRoute<T> extends MaterialPageRoute<T> {
+  _CreateFamilyRoute()
+      : super(builder: (BuildContext context) => _FamilyCreate());
 }

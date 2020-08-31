@@ -81,6 +81,8 @@ class FamilyService {
   Future<void> apply(String family) => _client.apply(family);
 
   Future<void> leave() => _client.leave();
+
+  Future<void> found(String name) => _client.found(name);
 }
 
 class _FamilyClient {
@@ -182,4 +184,6 @@ class _FamilyClient {
       _client.post('family/hr/application/$family');
 
   Future<void> leave() => _client.delete('family/hr/leave');
+
+  Future<void> found(String name) => _client.post('family/found/$name');
 }
