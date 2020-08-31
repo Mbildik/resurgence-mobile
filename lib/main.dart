@@ -7,6 +7,7 @@ import 'package:resurgence/chat/client.dart';
 import 'package:resurgence/chat/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/family/service.dart';
+import 'package:resurgence/family/state.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
@@ -60,6 +61,9 @@ void main() {
   final familyServiceProvider = Provider(
     create: (_) => FamilyService(client),
   );
+  final familyStateProvider = ChangeNotifierProvider(
+    create: (context) => FamilyState(),
+  );
 
   // Chat
   final ChatState chatState = ChatState();
@@ -104,6 +108,7 @@ void main() {
 
         // Family
         familyServiceProvider,
+        familyStateProvider,
 
         // Chat
         chatClientProvider,

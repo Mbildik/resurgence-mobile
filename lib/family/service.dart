@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:resurgence/family/family.dart';
 import 'package:resurgence/network/client.dart';
 
@@ -12,6 +13,15 @@ class FamilyService {
 
   Future<Family> detail(String family) {
     return _client.detail(family);
+  }
+
+  Future<Family> info() {
+    return _client.info().catchError((e) {
+      if (e is DioError && e.response?.statusCode == 404) {
+        return null;
+      }
+      throw e;
+    });
   }
 
   Future<List<Announcement>> announcement({String family}) {
@@ -45,7 +55,7 @@ class FamilyService {
 
   Future<void> makeChief(String chief) => _client.makeChief(chief);
 
-  Future<void> invitations() => _client.invitations();
+  Future<List<Invitation>> invitations() => _client.invitations();
 
   Future<void> accept(int id) => _client.accept(id);
 
@@ -67,6 +77,10 @@ class FamilyService {
   Future<void> deleteAnnouncement(int id) => _client.deleteAnnouncement(id);
 
   Future<void> destroy() => _client.destroy();
+
+  Future<void> apply(String family) => _client.apply(family);
+
+  Future<void> leave() => _client.leave();
 }
 
 class _FamilyClient {
@@ -85,6 +99,9 @@ class _FamilyClient {
         .get('family/$family')
         .then((response) => Family.fromJson(response.data));
   }
+
+  Future<Family> info() =>
+      _client.get('family').then((response) => Family.fromJson(response.data));
 
   Future<List<Announcement>> announcement({String family}) {
     var url =
@@ -160,4 +177,9 @@ class _FamilyClient {
       _client.delete('family/announcement/$id');
 
   Future<void> destroy() => _client.delete('family/hr/destroy');
+
+  Future<void> apply(String family) =>
+      _client.post('family/hr/application/$family');
+
+  Future<void> leave() => _client.delete('family/hr/leave');
 }

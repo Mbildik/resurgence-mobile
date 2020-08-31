@@ -7,6 +7,7 @@ import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/family/management.dart';
 import 'package:resurgence/family/service.dart';
+import 'package:resurgence/family/state.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/ui/error_handler.dart';
@@ -316,7 +317,7 @@ class _FamilyListTile extends StatelessWidget {
       onTap: () {
         var service = context.read<FamilyService>();
         service.detail(family.name).then((family) {
-          Navigator.push(context, _FamilyDetailRoute(family));
+          Navigator.push(context, FamilyDetailRoute(family));
         }).catchError((e) => ErrorHandler.showError(context, e));
       },
     );
@@ -337,7 +338,51 @@ class _FamilyDetail extends StatelessWidget {
     bool isMember = family.members.contains(currentPlayer);
 
     return Scaffold(
-      appBar: W.defaultAppBar,
+      appBar: AppBar(
+        title: Text(family.name),
+        actions: [
+          Consumer<FamilyState>(
+            builder: (context, state, child) {
+              if (state.haveFamily) {
+                return Tooltip(
+                  message: S.leave,
+                  child: IconButton(
+                    icon: Icon(Icons.exit_to_app),
+                    onPressed: () {
+                      showConfirmationDialog(
+                        context,
+                        S.leaveFamilyConfirmationTitle,
+                        S.leaveFamilyConfirmationContent,
+                        S.leave,
+                        S.cancel,
+                        () => context.read<FamilyService>().leave().then((_) {
+                          context.read<FamilyState>().family = null;
+                          Navigator.pop(context);
+                        }).catchError(
+                            (e) => ErrorHandler.showError<Null>(context, e)),
+                      );
+                    },
+                  ),
+                );
+              }
+              return child;
+            },
+            child: Tooltip(
+              message: S.apply,
+              child: IconButton(
+                icon: Icon(Icons.mail_outline),
+                onPressed: () => context
+                    .read<FamilyService>()
+                    .apply(family.name)
+                    .then((_) =>
+                        showInformationDialog(context, S.applySuccessInfo))
+                    .catchError(
+                        (e) => ErrorHandler.showError<Null>(context, e)),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -880,15 +925,47 @@ class _ManagementWidget extends StatelessWidget {
   }
 }
 
-class FamiliesPageRoute<T> extends MaterialPageRoute<T> {
-  FamiliesPageRoute()
-      : super(builder: (BuildContext context) => FamiliesPage());
+class FamilyController extends StatefulWidget {
+  const FamilyController({
+    Key key,
+    @required this.child,
+  }) : super(key: key);
+
+  final Widget child;
+
+  @override
+  _FamilyControllerState createState() => _FamilyControllerState();
 }
 
-class _FamilyDetailRoute<T> extends MaterialPageRoute<T> {
+class _FamilyControllerState extends State<FamilyController> {
+  @override
+  void initState() {
+    super.initState();
+    var service = context.read<FamilyService>();
+    var state = context.read<FamilyState>();
+    service
+        .info()
+        .then((family) => state.family = family)
+        .catchError((e) => ErrorHandler.showError<Null>(context, e));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
+class FamiliesPageRoute<T> extends MaterialPageRoute<T> {
+  FamiliesPageRoute()
+      : super(
+            builder: (BuildContext context) =>
+                FamilyController(child: FamiliesPage()));
+}
+
+class FamilyDetailRoute<T> extends MaterialPageRoute<T> {
   final Family family;
 
-  _FamilyDetailRoute(this.family)
+  FamilyDetailRoute(this.family)
       : super(builder: (BuildContext context) => _FamilyDetail(family));
 }
 

@@ -119,3 +119,25 @@ Future<bool> showConfirmationDialog(
     },
   );
 }
+
+Future showInformationDialog(
+  BuildContext context,
+  String content, {
+  String title,
+}) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(
+          title ?? S.info,
+          style: Theme.of(context)
+              .primaryTextTheme
+              .headline6
+              .copyWith(color: Colors.green),
+        ),
+        content: Text(content),
+      );
+    },
+  );
+}

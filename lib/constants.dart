@@ -60,13 +60,13 @@ class S {
   static var health = 'health';
   static var honor = 'honor';
   static var experience = 'experience';
-  static var reload = 'reload';
-  static var errorOccurred = 'error.occurred';
+  static var reload = 'Reload';
+  static var errorOccurred = 'An error occurred!';
   static var profile = 'Profile';
-  static var task = 'task';
+  static var task = 'Task';
   static var tasks = 'Tasks';
   static var soloTask = 'solo.task';
-  static var info = 'info';
+  static var info = 'Information';
   static var perform = 'perform';
   static var duration = 'duration';
   static var auxiliary = 'auxiliary';
@@ -161,6 +161,14 @@ class S {
   static var announcementDeleteConfirmationTitle = 'Are you sure!';
   static var announcementDeleteConfirmationContent =
       'You are going to delete this announcement!';
+  static var leave = 'Leave';
+  static var leaveFamilyConfirmationTitle = 'Leaving family!';
+  static var leaveFamilyConfirmationContent = 'You are leaving the family.';
+  static var apply = 'Apply';
+  static var applySuccessInfo = 'Your application has been made.';
+  static var myFamily = 'My Family';
+  static var noFamilyAnymore = 'You don\'t have a family anymore.';
+  static var XXX = '';
 }
 
 class W {

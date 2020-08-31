@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/family/family.dart';
 import 'package:resurgence/family/service.dart';
-import 'package:resurgence/player/player.dart';
 import 'package:resurgence/ui/error_handler.dart';
 import 'package:resurgence/ui/shared.dart';
 
@@ -218,16 +217,12 @@ class __InvitationState extends State<_Invitation> {
                   subtitle: Text(
                     DateFormat(S.dateFormat).format(invitation.time.toLocal()),
                   ),
-                  trailing: Consumer<PlayerState>(
-                    builder: (context, state, child) {
-                      return _InvitationButton(
-                        widget.family,
-                        invitation,
-                        onComplete: () => setState(() {
-                          invitationsFuture = fetch();
-                        }),
-                      );
-                    },
+                  trailing: _InvitationButton(
+                    widget.family,
+                    invitation,
+                    onComplete: () => setState(() {
+                      invitationsFuture = fetch();
+                    }),
                   ),
                 );
               },
