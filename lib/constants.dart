@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:resurgence/money.dart';
 
 enum _Env { local, dev }
 
@@ -30,16 +31,19 @@ class S {
   static var applicationDescription = 'Text-Based Mafia Game';
   static var version = '1.0.0+1'; // todo retrieve from pubspec.yaml
   static var userAgent = 'ResurgenceMobile/$version';
+  static var dateFormat = 'y-MM-dd HH:mm';
+
+  // todo static var dateFormat = 'dd/MM/y HH:mm';
 
   // Validation
-  static var validationRequired = 'validation.required';
+  static var validationRequired = 'Required';
 
   // Label
   static var email = 'Email';
   static var nickname = 'nickname';
-  static var create = 'create';
+  static var create = 'Create';
   static var sendEmail = 'send.email';
-  static var submit = 'submit';
+  static var submit = 'Submit';
   static var password = 'Password';
   static var passwordForgot = 'Forgot password?';
   static var passwordForgotInfo = 'password.forgot.info';
@@ -57,13 +61,13 @@ class S {
   static var health = 'health';
   static var honor = 'honor';
   static var experience = 'experience';
-  static var reload = 'reload';
-  static var errorOccurred = 'error.occurred';
+  static var reload = 'Reload';
+  static var errorOccurred = 'An error occurred!';
   static var profile = 'Profile';
-  static var task = 'task';
+  static var task = 'Task';
   static var tasks = 'Tasks';
   static var soloTask = 'solo.task';
-  static var info = 'info';
+  static var info = 'Information';
   static var perform = 'perform';
   static var duration = 'duration';
   static var auxiliary = 'auxiliary';
@@ -78,11 +82,11 @@ class S {
   static var failedTaskResult = 'failed.task.result';
   static var bank = 'Bank';
   static var bankBalance = 'bank.balance';
-  static var currentBalance = 'current.balance';
-  static var bankTitle = 'bank';
-  static var money = 'money';
-  static var withdraw = 'withdraw';
-  static var deposit = 'deposit';
+  static var currentBalance = 'Current Balance';
+  static var bankTitle = 'Bank';
+  static var money = 'Money';
+  static var withdraw = 'Withdraw';
+  static var deposit = 'Deposit';
   static var integerRequired = 'integer.required';
   static var interest = 'interest';
   static var transfer = 'transfer';
@@ -100,6 +104,11 @@ class S {
   static var signInPageDescription = 'Sign in to your account';
   static var signUpPageTitle = 'Welcome!';
   static var signUpPageDescription = 'Sign up with email';
+  static var family = 'Family';
+  static var families = 'Families';
+
+  static var delete = 'Delete';
+  static var cancel = 'Cancel';
 
   static var chat = 'Chat';
   static var messages = 'Messages';
@@ -107,6 +116,65 @@ class S {
   static var offline = 'Offline';
   static var online = 'Online';
   static var typeSomething = 'Type something...';
+
+  static var boss = 'Boss';
+  static var consultant = 'Consultant';
+  static var chief = 'Chief';
+  static var secret = 'Secret';
+  static var regimes = 'Regimes';
+  static var members = 'Members';
+  static var announcements = 'Announcements';
+  static var memberDeleteTitle = 'Are you sure!';
+  static var memberDeleteContent = 'You are firing a member!';
+  static var fire = 'Fire';
+  static var disqualify = 'Disqualify';
+  static var consultantDisqualifyTitle = memberDeleteTitle;
+  static var consultantDisqualifyContent = 'You are disqualify a consultant';
+  static var chiefDisqualifyTitle = memberDeleteTitle;
+  static var chiefDisqualifyContent = 'You are disqualify a chief';
+  static var promoteToConsultant = 'Consultant';
+  static var promoteToChief = 'Chief';
+  static var accept = 'Accept';
+  static var revoke = 'Revoke';
+  static var noData = 'There is nothing here!';
+  static var noInvitations = 'There is no invitations!';
+  static var assign = 'Assign';
+  static var titleHintText = 'Enter your announcement title';
+  static var contentHintText = 'Enter your announcement content';
+  static var announcementSecretInfo =
+      'Only family member can see this announcement.';
+  static var management = 'Management';
+  static var humanResources = 'Human Resources';
+  static var applicationsInvitations = 'Applications Invitations';
+  static var regimeManagement = 'Regime Management';
+  static var announcement = 'Announcement';
+  static var destroy = 'Destroy';
+  static var familyDestroyConfirmationTitle = 'Are you sure!';
+  static var familyDestroyConfirmationContent =
+      'You are gonna destroy the whole family.';
+  static var discharge = 'Discharge';
+  static var assignChiefDialogTitle = 'Choose an chief to assign';
+  static var memberDischargeConfirmationTitle = 'Are you sure!';
+  static memberDischargeConfirmationContent(String member, String chief) =>
+      'You are going to discharge $member from $chief';
+  static var edit = 'Edit';
+  static var clear = 'Clear';
+  static var announcementDeleteConfirmationTitle = 'Are you sure!';
+  static var announcementDeleteConfirmationContent =
+      'You are going to delete this announcement!';
+  static var leave = 'Leave';
+  static var leaveFamilyConfirmationTitle = 'Leaving family!';
+  static var leaveFamilyConfirmationContent = 'You are leaving the family.';
+  static var apply = 'Apply';
+  static var applySuccessInfo = 'Your application has been made.';
+  static var myFamily = 'My Family';
+  static var noFamilyAnymore = 'You don\'t have a family anymore.';
+  static var familyCreationTitle = 'To create a crime family you must meet this requirements.';
+  static var familyCreationMoneyRequirement = '${Money.format(5000000)} in your pocket.';
+  static var familyCreationHonorRequirement = '1K HP (Honour Points)';
+  static var familyName = 'Family name';
+  static var createNewFamily = 'Create new family';
+  static var chooseImage = 'Choose an image';
 }
 
 class W {

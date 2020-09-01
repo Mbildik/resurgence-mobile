@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/family/family.dart';
+import 'package:resurgence/family/player.dart';
+import 'package:resurgence/family/service.dart';
+import 'package:resurgence/family/state.dart';
 import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/real-estate/read_estate.dart';
 import 'package:resurgence/task/solo_task_page.dart';
+import 'package:resurgence/ui/shared.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -44,6 +50,40 @@ class _MenuPageState extends State<MenuPage> {
             text: S.realEstate,
             icon: Icons.work,
             onPressed: () => push(context, route: RealEstatePageRoute()),
+          ),
+          _MenuItem(
+            text: S.families,
+            icon: Icons.people,
+            onPressed: () => push(context, route: FamiliesPageRoute()),
+          ),
+          Consumer<FamilyState>(
+            builder: (context, state, child) {
+              if (state.haveFamily) {
+                return _MenuItem(
+                  text: S.myFamily,
+                  icon: Icons.my_location,
+                  onPressed: () {
+                    context.read<FamilyService>().info().then((value) {
+                      state.family = value;
+                      if (value != null) {
+                        push(context, route: FamilyDetailRoute(state.family));
+                      } else {
+                        showInformationDialog(context, S.noFamilyAnymore)
+                            .then((_) {
+                          push(context, route: PlayerInvitationRoute());
+                        });
+                      }
+                    });
+                  },
+                );
+              }
+              return child;
+            },
+            child: _MenuItem(
+              text: S.applicationsInvitations,
+              icon: Icons.merge_type,
+              onPressed: () => push(context, route: PlayerInvitationRoute()),
+            ),
           ),
           _MenuItem(
             text: S.chat,

@@ -135,7 +135,7 @@ class _RealEstatePageState extends State<RealEstatePage> {
           onPressed: () => context
               .read<RealEstateService>()
               .sell(realEstate.building)
-              .catchError((e) => ErrorHandler.showError<Null>(context, e))
+              .catchError((e) => ErrorHandler.showError(context, e))
               .then((_) => this._refresh()),
         );
       }
@@ -152,7 +152,7 @@ class _RealEstatePageState extends State<RealEstatePage> {
       onPressed: () => context
           .read<RealEstateService>()
           .buy(realEstate.building)
-          .catchError((e) => ErrorHandler.showError<Null>(context, e))
+          .catchError((e) => ErrorHandler.showError(context, e))
           .then((_) => this._refresh()),
     );
   }

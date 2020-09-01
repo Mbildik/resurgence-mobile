@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:resurgence/chat/client.dart';
 import 'package:resurgence/chat/client_messages.dart' as client;
 import 'package:resurgence/chat/server_messages.dart';

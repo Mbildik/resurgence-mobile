@@ -6,6 +6,8 @@ import 'package:resurgence/bank/service.dart';
 import 'package:resurgence/chat/client.dart';
 import 'package:resurgence/chat/state.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/family/service.dart';
+import 'package:resurgence/family/state.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
@@ -55,6 +57,14 @@ void main() {
     create: (_) => RealEstateService(client),
   );
 
+  // Family Estate
+  final familyServiceProvider = Provider(
+    create: (_) => FamilyService(client),
+  );
+  final familyStateProvider = ChangeNotifierProvider(
+    create: (context) => FamilyState(),
+  );
+
   // Chat
   final ChatState chatState = ChatState();
   final chatStateProvider = ChangeNotifierProvider.value(
@@ -95,6 +105,10 @@ void main() {
 
         // Real Estate
         realEstateServiceProvider,
+
+        // Family
+        familyServiceProvider,
+        familyStateProvider,
 
         // Chat
         chatClientProvider,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/family/family.dart';
 import 'package:resurgence/menu_page.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/player_creation_page.dart';
@@ -58,7 +59,7 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
           return _onErrorWidget(context);
         }
 
-        return MenuPage();
+        return FamilyController(child: MenuPage());
       },
     );
   }

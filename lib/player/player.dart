@@ -55,4 +55,6 @@ class PlayerState extends ChangeNotifier {
   }
 
   Player get player => _player;
+
+  String get name => _player?.nickname;
 }
