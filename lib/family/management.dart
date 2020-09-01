@@ -104,14 +104,14 @@ class __HumanResourceState extends State<_HumanResource> {
     context.read<FamilyService>().makeConsultant(member).then((value) {
       widget.family.consultant = member;
       setState(() {}); // re-render
-    }).catchError((e) => ErrorHandler.showError<Null>(context, e));
+    }).catchError((e) => ErrorHandler.showError(context, e));
   }
 
   void onPromoteChief(BuildContext context, String member) {
     context.read<FamilyService>().makeChief(member).then((value) {
       widget.family.chiefs.add(Chief(name: member, members: []));
       setState(() {}); // re-render
-    }).catchError((e) => ErrorHandler.showError<Null>(context, e));
+    }).catchError((e) => ErrorHandler.showError(context, e));
   }
 
   void onFire(BuildContext context, String member) {
@@ -129,7 +129,7 @@ class __HumanResourceState extends State<_HumanResource> {
           widget.family.chiefs.removeWhere((c) => c.name == member);
         }
         setState(() {}); // re-render
-      }).catchError((e) => ErrorHandler.showError<Null>(context, e)),
+      }).catchError((e) => ErrorHandler.showError(context, e)),
     );
   }
 
@@ -143,7 +143,7 @@ class __HumanResourceState extends State<_HumanResource> {
       () => context.read<FamilyService>().fireConsultant().then((value) {
         widget.family.consultant = null;
         setState(() {}); // re-render
-      }).catchError((e) => ErrorHandler.showError<Null>(context, e)),
+      }).catchError((e) => ErrorHandler.showError(context, e)),
     );
   }
 
@@ -157,7 +157,7 @@ class __HumanResourceState extends State<_HumanResource> {
       () => context.read<FamilyService>().fireChief(member).then((value) {
         widget.family.chiefs.removeWhere((c) => c.name == member);
         setState(() {}); // re-render
-      }).catchError((e) => ErrorHandler.showError<Null>(context, e)),
+      }).catchError((e) => ErrorHandler.showError(context, e)),
     );
   }
 }

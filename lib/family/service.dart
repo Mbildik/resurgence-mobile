@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:resurgence/family/family.dart';
 import 'package:resurgence/network/client.dart';
@@ -82,7 +84,7 @@ class FamilyService {
 
   Future<void> leave() => _client.leave();
 
-  Future<void> found(String name) => _client.found(name);
+  Future<void> found(String name, File file) => _client.found(name, file);
 }
 
 class _FamilyClient {
@@ -185,5 +187,13 @@ class _FamilyClient {
 
   Future<void> leave() => _client.delete('family/hr/leave');
 
-  Future<void> found(String name) => _client.post('family/found/$name');
+  Future<void> found(String name, File file) async {
+    FormData formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(
+        file.path,
+        // todo add content type
+      ),
+    });
+    return _client.post('family/found/$name', data: formData);
+  }
 }

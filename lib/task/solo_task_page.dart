@@ -69,7 +69,7 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
                   task.key,
                   selectedItems,
                 ).then(onTaskPerformed).catchError(
-                    (e) => ErrorHandler.showError<TaskResult>(context, e)),
+                    (e) => ErrorHandler.showError(context, e)),
               );
             },
           );

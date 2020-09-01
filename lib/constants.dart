@@ -41,7 +41,7 @@ class S {
   // Label
   static var email = 'Email';
   static var nickname = 'nickname';
-  static var create = 'create';
+  static var create = 'Create';
   static var sendEmail = 'send.email';
   static var submit = 'Submit';
   static var password = 'Password';
@@ -174,6 +174,7 @@ class S {
   static var familyCreationHonorRequirement = '1K HP (Honour Points)';
   static var familyName = 'Family name';
   static var createNewFamily = 'Create new family';
+  static var chooseImage = 'Choose an image';
 }
 
 class W {

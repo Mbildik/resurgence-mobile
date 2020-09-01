@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
@@ -368,7 +370,7 @@ class _FamilyDetail extends StatelessWidget {
                           context.read<FamilyState>().family = null;
                           Navigator.pop(context);
                         }).catchError(
-                            (e) => ErrorHandler.showError<Null>(context, e)),
+                            (e) => ErrorHandler.showError(context, e)),
                       );
                     },
                   ),
@@ -385,8 +387,7 @@ class _FamilyDetail extends StatelessWidget {
                     .apply(family.name)
                     .then((_) =>
                         showInformationDialog(context, S.applySuccessInfo))
-                    .catchError(
-                        (e) => ErrorHandler.showError<Null>(context, e)),
+                    .catchError((e) => ErrorHandler.showError(context, e)),
               ),
             ),
           ),
@@ -845,7 +846,7 @@ class __BankWidgetState extends State<_BankWidget> {
         familyBankFuture = fetch();
         familyBankLogFuture = fetchLog();
       });
-    }).catchError((e) => ErrorHandler.showError<Null>(context, e));
+    }).catchError((e) => ErrorHandler.showError(context, e));
   }
 
   Future<void> deposit() {
@@ -858,7 +859,7 @@ class __BankWidgetState extends State<_BankWidget> {
         familyBankFuture = fetch();
         familyBankLogFuture = fetchLog();
       });
-    }).catchError((e) => ErrorHandler.showError<Null>(context, e));
+    }).catchError((e) => ErrorHandler.showError(context, e));
   }
 }
 
@@ -957,7 +958,7 @@ class _FamilyControllerState extends State<FamilyController> {
     service
         .info()
         .then((family) => state.family = family)
-        .catchError((e) => ErrorHandler.showError<Null>(context, e));
+        .catchError((e) => ErrorHandler.showError(context, e));
   }
 
   @override
@@ -974,6 +975,8 @@ class _FamilyCreate extends StatefulWidget {
 class __FamilyCreateState extends State<_FamilyCreate> {
   final _formKey = GlobalKey<FormState>();
   final controller = TextEditingController();
+  final _picker = ImagePicker();
+  File _image;
 
   @override
   Widget build(BuildContext context) {
@@ -1010,6 +1013,12 @@ class __FamilyCreateState extends State<_FamilyCreate> {
                     ],
                   ),
                   SizedBox(height: 8.0),
+                  Builder(builder: (context) {
+                    if (_image == null) return Container();
+
+                    return Image.file(_image, width: 200);
+                  }),
+                  SizedBox(height: 8.0),
                   TextFormField(
                     decoration: InputDecoration(
                       labelText: S.familyName,
@@ -1027,11 +1036,32 @@ class __FamilyCreateState extends State<_FamilyCreate> {
                   SizedBox(
                     width: double.infinity,
                     child: RaisedButton(
+                      child: Text(S.chooseImage),
+                      onPressed: () async {
+                        var pickedFile =
+                            await _picker.getImage(source: ImageSource.gallery);
+                        setState(() {
+                          _image = File(pickedFile.path);
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  SizedBox(
+                    width: double.infinity,
+                    child: RaisedButton(
                       child: Text(S.create),
                       onPressed: () {
+                        if (!_formKey.currentState.validate())
+                          return; // form is not valid
+                        if (_image == null) {
+                          showErrorDialog(context, S.chooseImage);
+                          return;
+                        }
+
                         var service = context.read<FamilyService>();
 
-                        return service.found(controller.text).then((_) {
+                        service.found(controller.text, _image).then((_) {
                           service.info().then((family) {
                             context.read<FamilyState>().family = family;
                             return Navigator.pushReplacement(
