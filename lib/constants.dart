@@ -107,6 +107,7 @@ class S {
   static var family = 'Family';
   static var families = 'Families';
 
+  static var ok = 'Ok';
   static var delete = 'Delete';
   static var cancel = 'Cancel';
 
@@ -155,6 +156,7 @@ class S {
   static var discharge = 'Discharge';
   static var assignChiefDialogTitle = 'Choose an chief to assign';
   static var memberDischargeConfirmationTitle = 'Are you sure!';
+
   static memberDischargeConfirmationContent(String member, String chief) =>
       'You are going to discharge $member from $chief';
   static var edit = 'Edit';
@@ -169,12 +171,38 @@ class S {
   static var applySuccessInfo = 'Your application has been made.';
   static var myFamily = 'My Family';
   static var noFamilyAnymore = 'You don\'t have a family anymore.';
-  static var familyCreationTitle = 'To create a crime family you must meet this requirements.';
-  static var familyCreationMoneyRequirement = '${Money.format(5000000)} in your pocket.';
+  static var familyCreationTitle =
+      'To create a crime family you must meet this requirements.';
+  static var familyCreationMoneyRequirement =
+      '${Money.format(5000000)} in your pocket.';
   static var familyCreationHonorRequirement = '1K HP (Honour Points)';
   static var familyName = 'Family name';
   static var createNewFamily = 'Create new family';
   static var chooseImage = 'Choose an image';
+
+  static var organize = 'Organize';
+  static var planNotFoundOrCompleted =
+      'Plan lider tarafından tamamlandı veya iptal edildi.';
+  static var quit = 'Çık';
+  static var planQuitConfirmationTitle = 'Çıkmak istediğinden emin misin?';
+  static var planQuitConfirmationContent =
+      'Göreve davet ettiğin herkes görevden ayrılacak!';
+  static var refresh = 'Yenile';
+  static var selectItem = 'İtem seç';
+  static var changeItem = 'Item değiştir';
+  static var planPreconditionErrorTitle =
+      'Ekiptekilerin bazılarının malzemeleri eksik';
+
+  static planPrecondition(String member, String category) =>
+      '$member kategoride item seçmedi: $category';
+  static var invitePlayer = 'Oyuncu Davet Et';
+  static var add = 'Ekle';
+  static var item = 'Item';
+
+  static var planRemoveMemberConfirmationTitle = 'Plan üyesi çıkarılacak';
+
+  static planRemoveMemberConfirmationContent(String member) =>
+      '$member gerçekten çıkaracak mısın?';
 }
 
 class W {

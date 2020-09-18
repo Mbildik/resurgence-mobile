@@ -100,14 +100,6 @@ class SelectedPlayerItemState extends ChangeNotifier {
     if (task.requiredItemCategory.isEmpty) return true;
     if (selectedPlayerItem.isEmpty) return false;
 
-    var totalRequiredCategoryCount = task.requiredItemCategory
-        .map((e) => e.quantity)
-        .reduce((a, b) => a + b);
-    var totalSelectedItemCount =
-        selectedPlayerItem.map((e) => e.quantity).reduce((a, b) => a + b);
-
-    if (totalRequiredCategoryCount != totalSelectedItemCount) return false;
-
     var selectedRequiredCategories = selectedPlayerItem
         .map((si) => si.item.category.map((category) =>
             RequiredItemCategory(category: category, quantity: si.quantity)))

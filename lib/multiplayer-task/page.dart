@@ -58,7 +58,7 @@ class _MultiplayerTaskPageState extends State<MultiplayerTaskPage> {
 
         var error = snapshot.error;
         if (error is DioError && error?.response?.statusCode != 404) {
-          log('loading future error', error: snapshot.error);
+          log('plan future error', error: snapshot.error);
           return Scaffold(
             appBar: W.defaultAppBar,
             body: RefreshOnErrorWidget(
@@ -142,7 +142,7 @@ class __MPListTileState extends State<_MPListTile> {
       leading: Image.network('https://picsum.photos/150'),
       title: Text(task.value),
       subtitle: Text(
-        task.positions.map((p) => p.value).join(", "),
+        task.positions.map((p) => p.value).join(', '),
       ),
       trailing: RaisedButton(
         child: Text(buttonText()),
@@ -166,7 +166,7 @@ class __MPListTileState extends State<_MPListTile> {
 
   String buttonText() {
     if (_enabled) {
-      return 'Organize';
+      return S.organize;
     }
     return prettyDuration(_duration, abbreviated: true);
   }
@@ -211,7 +211,7 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
       _future = _service.plan().catchError((e) {
         if (e is DioError && e?.response?.statusCode == 404) {
           Navigator.pop(context);
-          showInformationDialog(context, 'Plan artık yok!');
+          showInformationDialog(context, S.planNotFoundOrCompleted);
         }
         throw e;
       });
@@ -225,16 +225,16 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
         title: Text(widget.task.value),
         actions: [
           Tooltip(
-            message: 'İptal Et',
+            message: S.quit,
             child: IconButton(
               icon: Icon(Icons.exit_to_app),
               onPressed: () {
                 showConfirmationDialog(
                     context,
-                    'Çıkmak istediğinden emin misin?',
-                    'Göreve davet ettiğin herkes görevden ayrılacak!',
-                    'Evet',
-                    'Hayır',
+                    S.planQuitConfirmationTitle,
+                    S.planQuitConfirmationContent,
+                    S.ok,
+                    S.cancel,
                     () => _service
                         .leave()
                         .then((_) => Navigator.pop(context))
@@ -243,7 +243,7 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
             ),
           ),
           Tooltip(
-            message: 'Yenile',
+            message: S.refresh,
             child: IconButton(
               icon: Icon(Icons.refresh),
               onPressed: this._reload,
@@ -302,8 +302,8 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
 
                   return RaisedButton(
                     child: Text(currentMember.status == Status.ready
-                        ? 'İtem Değiştir'
-                        : 'Item Seç'),
+                        ? S.changeItem
+                        : S.selectItem),
                     onPressed: () {
                       var task = currentMember.task;
                       Navigator.push<List<PlayerItem>>(
@@ -322,7 +322,7 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: RaisedButton(
-                    child: Text('Yap'),
+                    child: Text(S.perform),
                     onPressed: () => _service.perform().then((value) {
                       print(value);
 
@@ -330,7 +330,6 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
                       value.forEach((element) {
                         Navigator.push(context, TaskResultRoute(element));
                       });
-
 
                       return value;
                     }).catchError((e) {
@@ -340,13 +339,14 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
 
                         var content = (e.response.data as List).map((e) {
                           var category = AbstractEnum.fromJson(e['category']);
-                          return '${e['player']} not have ${category.value}';
+                          var member = e['player'];
+                          return S.planPrecondition(member, category.value);
                         }).join('\n');
 
                         showErrorDialog(
                           context,
                           content,
-                          title: 'Ekiptekilerin bazılarının malzemeleri eksik',
+                          title: S.planPreconditionErrorTitle,
                         );
                       } else {
                         return ErrorHandler.showError(context, e);
@@ -367,7 +367,7 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: Text('Oyuncu Davet Et'),
+          title: Text(S.invitePlayer),
           contentPadding: EdgeInsets.all(16.0),
           children: [
             TextField(
@@ -380,7 +380,7 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
               ),
             ),
             RaisedButton(
-              child: Text('Ekle'),
+              child: Text(S.add),
               onPressed: () => _onAdd(position),
             ),
           ],
@@ -440,7 +440,7 @@ class _PlanMemberWidget extends StatelessWidget {
                     .copyWith(color: Colors.black87, fontSize: 16.0),
               ),
               Text(
-                '${member.selectedItems.length} item',
+                '${member.selectedItems.length} ${S.item}',
                 style: Theme.of(context)
                     .textTheme
                     .bodyText1
@@ -460,10 +460,10 @@ class _PlanMemberWidget extends StatelessWidget {
       onLongPress: () {
         return showConfirmationDialog(
           context,
-          'Plan üyesi çıkarılacak',
-          '${member.name} gerçekten çıkaracak mısın?',
-          'Evet',
-          'Hayır',
+          S.planRemoveMemberConfirmationTitle,
+          S.planRemoveMemberConfirmationContent(member.name),
+          S.ok,
+          S.cancel,
           () => onMemberRemove(member.name),
         );
       },
