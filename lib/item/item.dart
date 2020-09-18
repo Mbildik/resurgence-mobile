@@ -35,6 +35,11 @@ class PlayerItem {
     item = Item.fromJson(json['item']);
     quantity = json['quantity'];
   }
+
+  Map<String, dynamic> toJson() => {
+        "item": item == null ? null : item.key,
+        "quantity": quantity == null ? null : quantity,
+      };
 }
 
 class SelectedPlayerItemState extends ChangeNotifier {
@@ -89,6 +94,29 @@ class SelectedPlayerItemState extends ChangeNotifier {
     int maxAmount = neededCount - selectedCount;
     if (maxAmount < 0) return 0;
     return maxAmount;
+  }
+
+  bool isMeet() {
+    if (task.requiredItemCategory.isEmpty) return true;
+    if (selectedPlayerItem.isEmpty) return false;
+
+    var selectedRequiredCategories = selectedPlayerItem
+        .map((si) => si.item.category.map((category) =>
+            RequiredItemCategory(category: category, quantity: si.quantity)))
+        .expand((e) => e)
+        .toList(growable: false);
+
+    var requires = Set.of(task.requiredItemCategory);
+    requires.removeWhere((req) {
+      var count = selectedRequiredCategories
+          .where((element) => element.category == req.category)
+          .map((e) => e.quantity)
+          .reduce((a, b) => a + b);
+
+      return req.quantity == count;
+    });
+
+    return requires.isEmpty;
   }
 }
 
@@ -212,14 +240,25 @@ class _ItemListPageState extends State<ItemListPage> {
         ),
         Builder(
           builder: (context) {
-            return IconButton(
-              // todo disable when player does not meet the needs
-              onPressed: () => Navigator.pop<List<PlayerItem>>(
-                context,
-                context.read<SelectedPlayerItemState>().selectedPlayerItem,
+            return Consumer<SelectedPlayerItemState>(
+              builder: (context, state, child) {
+                if (!state.isMeet()) {
+                  return IconButton(
+                    onPressed: null,
+                    color: Colors.green,
+                    icon: Icon(Icons.done),
+                  );
+                }
+                return child;
+              },
+              child: IconButton(
+                onPressed: () => Navigator.pop<List<PlayerItem>>(
+                  context,
+                  context.read<SelectedPlayerItemState>().selectedPlayerItem,
+                ),
+                color: Colors.green,
+                icon: Icon(Icons.done),
               ),
-              color: Colors.green,
-              icon: Icon(Icons.done),
             );
           },
         ),
@@ -318,7 +357,8 @@ class _ItemListTileState extends State<ItemListTile> {
               ),
             ),
             Expanded(
-              child: Center(child: Text('$quantity')),
+              // todo refactor trailing. get rid of container width
+              child: Center(child: FittedBox(child: Text('$quantity'))),
             ),
             Consumer<SelectedPlayerItemState>(
               builder: (context, state, child) {

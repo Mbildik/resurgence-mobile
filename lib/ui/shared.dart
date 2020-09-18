@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/ui/button.dart';
@@ -78,6 +80,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const LoadingWidget();
         } else if (snapshot.hasError) {
+          log('loading future error', error: snapshot.error);
           return RefreshOnErrorWidget(
             onPressed: onError,
           );

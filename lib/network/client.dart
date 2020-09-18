@@ -48,6 +48,7 @@ class Client {
         if (e.type == DioErrorType.RESPONSE &&
             e.response?.data != null &&
             e.response?.data != '' &&
+            e.response?.data is Map &&
             e.response?.data['message'] != null) {
           throw ApiError(e);
         } else {

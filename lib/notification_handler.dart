@@ -57,7 +57,7 @@ class _NotificationHandlerState extends State<NotificationHandler> {
               ),
             ),
           );
-        }, duration: Duration(seconds: 4));
+        }, duration: Duration(seconds: 10));
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/money.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/ui/button.dart';
 
@@ -36,7 +37,7 @@ class ProfilePage extends StatelessWidget {
                 defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
                 children: [
                   keyValueTableRow(context, S.race, player.race.value),
-                  keyValueTableRow(context, S.balance, player.balance),
+                  keyValueTableRow(context, S.balance, Money.format(player.balance)),
                   keyValueTableRow(context, S.health, player.health),
                   keyValueTableRow(context, S.honor, player.honor),
                   keyValueTableRow(context, S.experience, player.experience),

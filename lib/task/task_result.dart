@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/money.dart';
+import 'package:resurgence/multiplayer-task/data.dart';
 import 'package:resurgence/task/task.dart';
 
 class TaskResultPage extends StatelessWidget {
@@ -21,7 +22,21 @@ class TaskResultPage extends StatelessWidget {
         ),
         color: Color(0xFF28474A),
         margin: EdgeInsets.symmetric(horizontal: 16.0),
-        child: result.succeed ? succeedWidget() : failedWidget(),
+        child: result is MultiplayerTaskResult
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      (result as MultiplayerTaskResult).player,
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                  ),
+                  result.succeed ? succeedWidget() : failedWidget()
+                ],
+              )
+            : result.succeed ? succeedWidget() : failedWidget(),
       ),
     );
   }
