@@ -47,10 +47,12 @@ class Player {
 }
 
 class PlayerState extends ChangeNotifier {
+  static String playerName;
   Player _player;
 
   void updatePlayer(Player player) {
     _player = player;
+    playerName = name;
     notifyListeners();
   }
 

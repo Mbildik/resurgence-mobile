@@ -7,6 +7,7 @@ import 'package:resurgence/family/family.dart';
 import 'package:resurgence/family/player.dart';
 import 'package:resurgence/family/service.dart';
 import 'package:resurgence/family/state.dart';
+import 'package:resurgence/multiplayer-task/page.dart';
 import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/real-estate/read_estate.dart';
 import 'package:resurgence/task/solo_task_page.dart';
@@ -40,6 +41,11 @@ class _MenuPageState extends State<MenuPage> {
             text: S.tasks,
             icon: Icons.format_list_numbered,
             onPressed: () => push(context, widget: SoloTaskPage()),
+          ),
+          _MenuItem(
+            text: 'Multiplayer Tasks',
+            icon: Icons.extension,
+            onPressed: () => push(context, route: MultiplayerTaskPageRoute()),
           ),
           _MenuItem(
             text: S.bank,

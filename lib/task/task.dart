@@ -106,12 +106,13 @@ class TaskResult {
   Set<AbstractEnum> skillGain;
   Set<Drop> drop;
 
-  TaskResult(
-      {this.succeed,
-      this.experienceGain,
-      this.moneyGain,
-      this.skillGain,
-      this.drop});
+  TaskResult({
+    this.succeed,
+    this.experienceGain,
+    this.moneyGain,
+    this.skillGain,
+    this.drop,
+  });
 
   TaskResult.fromJson(Map<String, dynamic> json) {
     succeed = json['succeed'];

@@ -9,6 +9,7 @@ import 'package:resurgence/constants.dart';
 import 'package:resurgence/family/service.dart';
 import 'package:resurgence/family/state.dart';
 import 'package:resurgence/item/service.dart';
+import 'package:resurgence/multiplayer-task/service.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
@@ -83,6 +84,11 @@ void main() {
     lazy: false,
   );
 
+  // Multiplayer Task
+  final multiplayerServiceProvider = Provider(
+    create: (_) => MultiplayerService(client),
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -113,6 +119,9 @@ void main() {
         // Chat
         chatClientProvider,
         chatStateProvider,
+
+        // Multiplayer Task
+        multiplayerServiceProvider,
       ],
       child: Application(),
     ),
