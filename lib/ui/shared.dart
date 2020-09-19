@@ -163,3 +163,22 @@ Future showErrorDialog(
     },
   );
 }
+
+Future showHelpDialog({
+  @required BuildContext context,
+  String title,
+  String content,
+}) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return SimpleDialog(
+        title: Text(title),
+        contentPadding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        children: [
+          Text(content),
+        ],
+      );
+    },
+  );
+}

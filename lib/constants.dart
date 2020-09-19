@@ -81,16 +81,22 @@ class S {
   static var playerItemEmpty = 'player.item.empty';
   static var failedTaskResult = 'failed.task.result';
   static var bank = 'Bank';
-  static var bankBalance = 'bank.balance';
-  static var currentBalance = 'Current Balance';
+  static var bankBalance = 'Banka Bakiyesi';
+  static var currentBalance = 'Nakit';
   static var bankTitle = 'Bank';
   static var money = 'Money';
   static var withdraw = 'Withdraw';
   static var deposit = 'Deposit';
   static var integerRequired = 'integer.required';
-  static var interest = 'interest';
-  static var transfer = 'transfer';
-  static var bankAccount = 'bank.account';
+  static var interest = 'Faiz';
+  static var interestHelp =
+      'Faize yatırmak istediğin tutara göre tablodaki faiz karşılığını bir günün sonunda alırsın.';
+  static var transfer = 'Transfer';
+  static var transferHelp =
+      'Para transferi etmek istediğin oyuncunun adını ve transfer edeceğin miktarı gir. Eğer istersen açıklama girebilirsin.';
+  static var bankAccount = 'Banka Hesabı';
+  static var bankAccountHelp =
+      'Saldırı alırsanız cebinizdeki para saldırgana geçer. Paranı korumak için bankaya yatırmalısın.';
   static var min = 'min';
   static var max = 'max';
   static var noActiveInterest = 'no.active.interest';
