@@ -134,7 +134,7 @@ class _BankPageState extends State<BankPage> {
         title: Text(title),
         actions: [
           Tooltip(
-            message: 'Yardım',
+            message: S.help,
             child: IconButton(
               icon: Icon(Icons.help),
               onPressed: () {
@@ -479,18 +479,20 @@ class _InterestPageState extends State<InterestPage> {
 
   Future<List<InterestRate>> interestRateFuture;
   Future<CurrentInterest> currentInterestFuture;
+  BankService _service;
 
   @override
   void initState() {
     super.initState();
-    interestRateFuture = context.read<BankService>().interestRates();
-    currentInterestFuture = context.read<BankService>().currentInterest();
+    _service = context.read<BankService>();
+    interestRateFuture = _service.interestRates();
+    currentInterestFuture = _service.currentInterest();
   }
 
   void _refresh() {
     setState(() {
-      interestRateFuture = context.read<BankService>().interestRates();
-      currentInterestFuture = context.read<BankService>().currentInterest();
+      interestRateFuture = _service.interestRates();
+      currentInterestFuture = _service.currentInterest();
     });
   }
 
@@ -645,8 +647,7 @@ class _InterestPageState extends State<InterestPage> {
 
           FocusScope.of(context).nextFocus();
 
-          return context
-              .read<BankService>()
+          return _service
               .interest(int.parse(moneyController.text))
               .catchError((e) => ErrorHandler.showError(context, e))
               .then((_) => this._refresh());

@@ -211,6 +211,7 @@ class S {
       '$member gerçekten çıkaracak mısın?';
 
   static var sentAMessageNotificationContent = 'Mesaj gönderdi';
+  static var help = 'Yardım';
 }
 
 class W {
