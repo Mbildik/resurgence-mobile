@@ -1,6 +1,8 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/chat/client.dart';
 import 'package:resurgence/chat/server_messages.dart';
@@ -33,10 +35,11 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     var chatClient = context.read<ChatClient>();
     filterController.addListener(() {
-      setState(() {
-        filter = filterController.text.trim();
-        if (filter.isNotEmpty) chatClient.searchUser(filter);
-      });
+      var value = filterController.text.trim();
+      if (value.isNotEmpty) {
+        chatClient.searchUser(filter);
+      }
+      setState(() => filter = value);
     });
   }
 
@@ -68,7 +71,10 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: Consumer<ChatState>(
               builder: (context, state, child) {
-                var subscriptions = state.subs;
+                var subscriptions = SplayTreeSet<Sub>.from(
+                  state.subs,
+                  (sub1, sub2) => sub2.updated.compareTo(sub1.updated),
+                );
                 var fndSubscriptions = state.fndSub;
                 subscriptions.addAll(state.fndSub);
 
@@ -86,11 +92,14 @@ class _ChatPageState extends State<ChatPage> {
                     var online = state.onlineUsers.contains(currentSub.topic);
                     var read = currentSub.seq - currentSub.read <= 0;
                     var image = getImage(currentSub);
+                    var lastUpdate = currentSub.updated;
 
                     return _ChatListItem(
                       image: image,
                       title: sender,
-                      content: '', // todo show latest message
+                      content: DateFormat(S.dateFormat).format(
+                        lastUpdate.toLocal(),
+                      ),
                       read: read,
                       online: online,
                       onClick: () {
