@@ -1,10 +1,14 @@
 import 'dart:collection';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/chat/client.dart';
 import 'package:resurgence/chat/client_messages.dart' as client;
 import 'package:resurgence/chat/server_messages.dart';
+import 'package:resurgence/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatState extends ChangeNotifier {
@@ -172,6 +176,34 @@ class ChatState extends ChangeNotifier {
             .where((s) => s.topic == message.src)
             .forEach((s) => s.seq = message.seq);
         notify = true;
+
+        showOverlayNotification((context) {
+          String sender = subs
+                  .firstWhere(
+                    (e) => e.topic == message.src,
+                    orElse: () => null,
+                  )
+                  ?.public
+                  ?.fn ??
+              '';
+          return GestureDetector(
+            onVerticalDragUpdate: (details) {
+              if (details.delta.dy > -1.4) return;
+              // on swipe up
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            onTap: () => Navigator.push(context, ChatRoute()),
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              child: SafeArea(
+                child: ListTile(
+                  title: Text(sender),
+                  subtitle: Text(S.sentAMessageNotificationContent),
+                ),
+              ),
+            ),
+          );
+        }, duration: Duration(seconds: 2));
       } else if (message.what == 'acs') {
         _sendMessage(
           client.Get(

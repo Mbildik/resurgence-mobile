@@ -90,9 +90,6 @@ class _NotificationHandlerState extends State<NotificationHandler> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthenticationState>(
-      builder: (context, state, child) => child,
-      child: widget.child,
-    );
+    return widget.child;
   }
 }

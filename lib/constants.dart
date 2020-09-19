@@ -203,6 +203,8 @@ class S {
 
   static planRemoveMemberConfirmationContent(String member) =>
       '$member gerçekten çıkaracak mısın?';
+
+  static var sentAMessageNotificationContent = 'Mesaj gönderdi';
 }
 
 class W {
