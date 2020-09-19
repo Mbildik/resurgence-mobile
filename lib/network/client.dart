@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:intl/locale.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/authentication/token.dart';
 import 'package:resurgence/constants.dart';
@@ -25,6 +27,7 @@ class Client {
 
   loadInterceptors() {
     _dio.interceptors.add(logInterceptor());
+    _dio.interceptors.add(AcceptLanguageInterceptor(Locale.parse('tr-TR')));
     _dio.interceptors.add(accessTokenFilter());
     _dio.interceptors.add(refreshTokenFilter());
     _dio.interceptors.add(apiErrorInterceptor());
@@ -62,7 +65,7 @@ class Client {
     return InterceptorsWrapper(
       onRequest: (RequestOptions options) {
         if (_state.isLoggedIn && !securityPaths.contains(options.path)) {
-          options.headers['Authorization'] =
+          options.headers[HttpHeaders.authorizationHeader] =
               'Bearer ${_state.token.accessToken}';
         }
       },
@@ -191,5 +194,17 @@ class RefreshTokenExpiredError extends DioError {
       msg += '\n${error.stackTrace}';
     }
     return msg;
+  }
+}
+
+class AcceptLanguageInterceptor extends Interceptor {
+  final Locale _locale;
+
+  AcceptLanguageInterceptor(this._locale);
+
+  @override
+  Future onRequest(RequestOptions options) async {
+    options.headers[HttpHeaders.acceptLanguageHeader] = _locale.toString();
+    return options;
   }
 }
