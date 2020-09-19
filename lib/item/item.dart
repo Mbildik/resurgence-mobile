@@ -111,7 +111,7 @@ class SelectedPlayerItemState extends ChangeNotifier {
       var count = selectedRequiredCategories
           .where((element) => element.category == req.category)
           .map((e) => e.quantity)
-          .reduce((a, b) => a + b);
+          .fold(0, (a, b) => a + b);
 
       return req.quantity == count;
     });
