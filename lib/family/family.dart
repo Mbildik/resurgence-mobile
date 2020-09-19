@@ -1040,6 +1040,9 @@ class __FamilyCreateState extends State<_FamilyCreate> {
                       onPressed: () async {
                         var pickedFile =
                             await _picker.getImage(source: ImageSource.gallery);
+                        if (pickedFile == null || pickedFile.path == null) {
+                          return;
+                        }
                         setState(() {
                           _image = File(pickedFile.path);
                         });
@@ -1061,6 +1064,7 @@ class __FamilyCreateState extends State<_FamilyCreate> {
 
                         var service = context.read<FamilyService>();
 
+                        // todo add loading state
                         service.found(controller.text, _image).then((_) {
                           service.info().then((family) {
                             context.read<FamilyState>().family = family;
