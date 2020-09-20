@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:resurgence/constants.dart';
-import 'package:resurgence/ui/button.dart';
 
 typedef OnConfirm = Future Function();
 
@@ -29,9 +28,20 @@ class RefreshOnErrorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Button(child: Text(S.reload), onPressed: onPressed),
-          Text(S.errorOccurred),
+          Text(
+            S.errorOccurred,
+            style: Theme.of(context).textTheme.headline6,
+          ),
+          Tooltip(
+            message: S.refresh,
+            child: IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: onPressed,
+            ),
+          ),
         ],
       ),
     );
@@ -65,11 +75,13 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
     @required this.future,
     @required this.builder,
     @required this.onError,
+    this.onEmpty,
   }) : super(key: key);
 
   final Future<T> future;
   final Function onError;
   final AsyncWidgetBuilder<T> builder;
+  final Widget onEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +97,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
             onPressed: onError,
           );
         } else if (data is Iterable && data.isEmpty) {
-          return EmptyDataWidget.noData();
+          return onEmpty ?? EmptyDataWidget.noData();
         }
 
         return builder(context, snapshot);

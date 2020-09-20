@@ -35,22 +35,12 @@ class ISO8601Duration {
     );
   }
 
-  String pretty({Locale locale = const Locale('en'), abbreviated: false}) {
+  String pretty({DurationLocale locale = turkishLocale, abbreviated: false}) {
     return prettyDuration(
       _duration,
-      locale: _locale(locale),
+      locale: locale,
       abbreviated: abbreviated,
     );
-  }
-
-  DurationLocale _locale(Locale locale) {
-    switch (locale.languageCode) {
-      case 'tr':
-        return const TurkishDurationLocale();
-      case 'en':
-      default:
-        return const EnglishDurationLocale();
-    }
   }
 
   _parseTime(String duration, String timeUnit) {
