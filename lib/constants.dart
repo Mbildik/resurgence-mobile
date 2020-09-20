@@ -62,17 +62,17 @@ class S {
   static var honor = 'honor';
   static var experience = 'experience';
   static var reload = 'Reload';
-  static var errorOccurred = 'An error occurred!';
+  static var errorOccurred = 'Bir hata oluştu.';
   static var profile = 'Profile';
   static var task = 'Task';
   static var tasks = 'Tasks';
-  static var soloTask = 'solo.task';
+  static var soloTask = 'Solo Görevler';
   static var info = 'Information';
-  static var perform = 'perform';
+  static var perform = 'Yap';
   static var duration = 'duration';
-  static var auxiliary = 'auxiliary';
-  static var skillGain = 'skillGain';
-  static var drop = 'drop';
+  static var auxiliary = 'Yardımcı Skiller';
+  static var skillGain = 'Kazanılacak Skiller';
+  static var drop = 'Drop';
   static var requiredItemCategory = 'required.item.category';
   static var difficulty = 'difficulty';
   static var easy = 'easy';
@@ -212,6 +212,13 @@ class S {
 
   static var sentAMessageNotificationContent = 'Mesaj gönderdi';
   static var help = 'Yardım';
+
+  static var soloTaskHelp = 'Suç işleyerek para, malzeme ve seviye'
+      ' kazanabilirsin. Her suç belirli bir süre sonra tekrar aktif hale gelir.'
+      '\nBazı suçları işlemek için bir takım malzemelere ihtiyaç duyabilirsin.'
+      ' Gerekli kategorideki malzemenin tamamını seçmek için + butonuna basılı'
+      ' tut.'
+      '\nResimlere tıklayarak suça ait detayları öğrenebilirsin.';
 }
 
 class W {

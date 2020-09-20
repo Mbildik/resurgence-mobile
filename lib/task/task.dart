@@ -23,6 +23,7 @@ class Task extends AbstractEnum {
   bool solo;
   bool smuggling;
   bool multiPlayer;
+  String image;
 
   Task({
     this.difficulty,
@@ -37,6 +38,7 @@ class Task extends AbstractEnum {
     this.solo,
     this.smuggling,
     this.multiPlayer,
+    this.image,
   });
 
   Task.fromJson(Map<String, dynamic> json) {
@@ -72,6 +74,7 @@ class Task extends AbstractEnum {
     solo = json['solo'];
     smuggling = json['smuggling'];
     multiPlayer = json['multi_player'];
+    image = json['image'] == null ? null : S.baseUrl + json['image'];
   }
 }
 
@@ -197,7 +200,7 @@ class _TaskWidgetState extends State<TaskWidget> {
       onTap: () => Navigator.push(context, TaskDetailRoute(widget.task)),
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 16),
-        child: Image.asset(A.bankLogo),
+        child: Image.network(widget.task.image, width: 100),
       ),
     );
   }
@@ -374,11 +377,7 @@ class _TaskDetailPageState extends State<TaskDetailPage> {
       tag: 'TASK-IMAGE-${widget.task.key}',
       child: Center(
         heightFactor: 1,
-        child: Image.asset(
-          A.bankLogo,
-          height: 100,
-          width: 100,
-        ),
+        child: Image.network(widget.task.image, width: 100, height: 100),
       ),
     );
   }

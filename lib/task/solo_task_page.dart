@@ -5,8 +5,8 @@ import 'package:resurgence/item/item.dart';
 import 'package:resurgence/task/service.dart';
 import 'package:resurgence/task/task.dart';
 import 'package:resurgence/task/task_result.dart';
-import 'package:resurgence/ui/button.dart';
 import 'package:resurgence/ui/error_handler.dart';
+import 'package:resurgence/ui/shared.dart';
 
 class SoloTaskPage extends StatefulWidget {
   @override
@@ -32,44 +32,40 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(S.soloTask),
+        actions: [
+          Tooltip(
+            message: S.help,
+            child: IconButton(
+              icon: Icon(Icons.help),
+              onPressed: () {
+                showHelpDialog(
+                  context: context,
+                  title: S.soloTask,
+                  content: S.soloTaskHelp,
+                );
+              },
+            ),
+          )
+        ],
       ),
-      body: FutureBuilder<List<Task>>(
+      body: LoadingFutureBuilder<List<Task>>(
         future: futureTasks,
+        onError: this._refreshTasks,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            return Scaffold(
-              body: Center(
-                child: Column(
-                  children: <Widget>[
-                    Button(
-                      child: Text(S.reload),
-                      onPressed: () => this._refreshTasks(),
-                    ),
-                    Text(S.errorOccurred),
-                  ],
-                ),
-              ),
-            );
-          }
-
+          var tasks = snapshot.data;
           return ListView.builder(
             primary: false,
-            itemCount: snapshot.data.length,
+            itemCount: tasks.length,
             itemBuilder: (BuildContext context, int index) {
-              var task = snapshot.data[index];
+              var task = tasks[index];
               return TaskWidget(
                 task,
                 onPerform: (List<PlayerItem> selectedItems) => perform(
                   task.key,
                   selectedItems,
-                ).then(onTaskPerformed).catchError(
-                    (e) => ErrorHandler.showError(context, e)),
+                )
+                    .then(onTaskPerformed)
+                    .catchError((e) => ErrorHandler.showError(context, e)),
               );
             },
           );
