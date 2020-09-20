@@ -10,6 +10,7 @@ import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
 import 'package:resurgence/ui/button.dart';
 import 'package:resurgence/ui/error_handler.dart';
+import 'package:resurgence/ui/shared.dart';
 
 class BankAccount {
   int amount;
@@ -110,23 +111,42 @@ class _BankPageState extends State<BankPage> {
   @override
   Widget build(BuildContext context) {
     var title;
+    var helpText;
 
     switch (_transactions) {
       case Transactions.interest:
         title = S.interest;
+        helpText = S.interestHelp;
         break;
       case Transactions.transfer:
         title = S.transfer;
+        helpText = S.transferHelp;
         break;
       case Transactions.account:
       default:
         title = S.bankAccount;
+        helpText = S.bankAccountHelp;
         break;
     }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        actions: [
+          Tooltip(
+            message: S.help,
+            child: IconButton(
+              icon: Icon(Icons.help),
+              onPressed: () {
+                showHelpDialog(
+                  context: context,
+                  title: title,
+                  content: helpText,
+                );
+              },
+            ),
+          )
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (int selected) {
@@ -204,12 +224,10 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
 
   @override
   Widget build(BuildContext context) {
-    moneyController.text = ''; // reset text field
-
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+        padding: const EdgeInsets.fromLTRB(4.0, 4.0, 4.0, 0.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -220,12 +238,6 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
                     snapshot.connectionState == ConnectionState.waiting) {
                   return loadingWidget();
                 } else if (snapshot.hasError) {
-                  var error = snapshot.error;
-                  if (error is DioError &&
-                      error.type == DioErrorType.RESPONSE &&
-                      error.response.statusCode == 404) {
-                    return accountBalance(BankAccount(amount: 0));
-                  }
                   return errorWidget();
                 }
 
@@ -233,9 +245,93 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
                 return accountBalance(bankAccount);
               },
             ),
-            moneyTextField(),
-            footer(context),
-            Divider(),
+            SizedBox(height: 4.0),
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 4.0,
+                  horizontal: 8.0,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        decoration:
+                            InputDecoration.collapsed(hintText: S.money),
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        controller: moneyController,
+                        onFieldSubmitted: (value) =>
+                            FocusScope.of(context).nextFocus(),
+                        validator: (value) {
+                          if (value.isEmpty) return S.validationRequired;
+                          if (int.tryParse(value) == null)
+                            return S.integerRequired;
+                          return null;
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 8.0),
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: EdgeInsets.zero,
+                      color: Colors.red[700],
+                      child: Text(S.withdraw),
+                      onPressed: () {
+                        if (!_formKey.currentState.validate())
+                          return null; // form is not valid
+
+                        FocusScope.of(context).nextFocus();
+                        setState(() => loading = true);
+
+                        return context
+                            .read<BankService>()
+                            .withdraw(int.parse(moneyController.text))
+                            .then((_) => _refreshAccount())
+                            .catchError(
+                                (e) => ErrorHandler.showError(context, e))
+                            .whenComplete(() {
+                          setState(() => loading = false);
+                          moneyController.text = '';
+                        });
+                      },
+                    ),
+                    SizedBox(width: 8.0),
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      color: Colors.green[700],
+                      child: Text(S.deposit),
+                      onPressed: () {
+                        if (!_formKey.currentState.validate())
+                          return null; // form is not valid
+
+                        FocusScope.of(context).nextFocus();
+                        setState(() => loading = true);
+
+                        return context
+                            .read<BankService>()
+                            .deposit(int.parse(moneyController.text))
+                            .then((_) => _refreshAccount())
+                            .catchError(
+                                (e) => ErrorHandler.showError(context, e))
+                            .whenComplete(() {
+                          setState(() => loading = false);
+                          moneyController.text = '';
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 4.0),
             Expanded(
               child: FutureBuilder<List<BankTransactions>>(
                 future: bankTransactionsFuture,
@@ -271,10 +367,10 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
       leading: Icon(
         bankTransaction.increased ? Icons.arrow_drop_up : Icons.arrow_drop_down,
         color: bankTransaction.increased ? Colors.green : Colors.red,
+        size: 42.0,
       ),
       title: Text(Money.format(bankTransaction.change)),
       subtitle: Text(
-        // todo format locale
         DateFormat(S.dateFormat).format(
           DateTime.parse(bankTransaction.time).toLocal(),
         ),
@@ -310,99 +406,64 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
   }
 
   Widget accountBalance(BankAccount bankAccount) {
-    return Table(
+    return Row(
       children: [
-        TableRow(
-          children: [
-            Text(
-              S.bankBalance,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(Money.format(bankAccount.amount)),
-          ],
+        Expanded(
+          child: _InfoCard(
+              header: S.bankBalance, body: Money.format(bankAccount.amount)),
         ),
-        TableRow(
-          children: [
-            SizedBox(height: 8.0),
-            SizedBox(height: 8.0),
-          ],
-        ),
-        TableRow(
-          children: [
-            Text(
-              S.currentBalance,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Consumer<PlayerState>(
-              builder: (BuildContext context, PlayerState state, Widget child) {
-                return Text(Money.format(state.player.balance));
-              },
-            ),
-          ],
+        Expanded(
+          child: Consumer<PlayerState>(
+            builder: (context, state, child) {
+              return _InfoCard(
+                header: S.currentBalance,
+                body: Money.format(state.player.balance),
+              );
+            },
+          ),
         ),
       ],
     );
   }
+}
 
-  Widget footer(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          RaisedButton(
-            color: Colors.red[700],
-            child: Text(S.withdraw),
-            onPressed: () {
-              if (!_formKey.currentState.validate())
-                return null; // form is not valid
+class _InfoCard extends StatelessWidget {
+  final String header;
+  final String body;
 
-              FocusScope.of(context).nextFocus();
-              setState(() => loading = true);
+  const _InfoCard({
+    Key key,
+    @required this.header,
+    @required this.body,
+  }) : super(key: key);
 
-              return context
-                  .read<BankService>()
-                  .withdraw(int.parse(moneyController.text))
-                  .then((_) => _refreshAccount())
-                  .catchError((e) => ErrorHandler.showError(context, e))
-                  .whenComplete(() => setState(() => loading = false));
-            },
-          ),
-          RaisedButton(
-            color: Colors.green,
-            child: Text(S.deposit),
-            onPressed: () {
-              if (!_formKey.currentState.validate())
-                return null; // form is not valid
-
-              FocusScope.of(context).nextFocus();
-              setState(() => loading = true);
-
-              return context
-                  .read<BankService>()
-                  .deposit(int.parse(moneyController.text))
-                  .then((_) => _refreshAccount())
-                  .catchError((e) => ErrorHandler.showError(context, e))
-                  .whenComplete(() => setState(() => loading = false));
-            },
-          ),
-        ],
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.all(
+          const Radius.circular(8),
+        ),
       ),
-    );
-  }
-
-  Widget moneyTextField() {
-    return TextFormField(
-      decoration: InputDecoration(labelText: S.money),
-      keyboardType: TextInputType.number,
-      textInputAction: TextInputAction.done,
-      controller: moneyController,
-      onFieldSubmitted: (value) => FocusScope.of(context).nextFocus(),
-      validator: (value) {
-        if (value.isEmpty) return S.validationRequired;
-        if (int.tryParse(value) == null) return S.integerRequired;
-        return null;
-      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              header,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Text(
+              body,
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6
+                  .copyWith(color: Theme.of(context).textTheme.caption.color),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
@@ -418,18 +479,20 @@ class _InterestPageState extends State<InterestPage> {
 
   Future<List<InterestRate>> interestRateFuture;
   Future<CurrentInterest> currentInterestFuture;
+  BankService _service;
 
   @override
   void initState() {
     super.initState();
-    interestRateFuture = context.read<BankService>().interestRates();
-    currentInterestFuture = context.read<BankService>().currentInterest();
+    _service = context.read<BankService>();
+    interestRateFuture = _service.interestRates();
+    currentInterestFuture = _service.currentInterest();
   }
 
   void _refresh() {
     setState(() {
-      interestRateFuture = context.read<BankService>().interestRates();
-      currentInterestFuture = context.read<BankService>().currentInterest();
+      interestRateFuture = _service.interestRates();
+      currentInterestFuture = _service.currentInterest();
     });
   }
 
@@ -584,8 +647,7 @@ class _InterestPageState extends State<InterestPage> {
 
           FocusScope.of(context).nextFocus();
 
-          return context
-              .read<BankService>()
+          return _service
               .interest(int.parse(moneyController.text))
               .catchError((e) => ErrorHandler.showError(context, e))
               .then((_) => this._refresh());
