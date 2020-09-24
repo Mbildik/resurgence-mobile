@@ -55,7 +55,7 @@ class TaskResultPage extends StatelessWidget {
             EnumWrapper(
               result.skillGain,
               color: Colors.green,
-              text: S.skillGain,
+              text: S.skillGained,
             ),
           if (result.drop.isNotEmpty) Divider(),
           if (result.drop.isNotEmpty)

@@ -72,6 +72,7 @@ class S {
   static var duration = 'duration';
   static var auxiliary = 'Yardımcı Skiller';
   static var skillGain = 'Kazanılacak Skiller';
+  static var skillGained = 'Kazanılan Skiller';
   static var drop = 'Drop';
   static var requiredItemCategory = 'required.item.category';
   static var difficulty = 'difficulty';
