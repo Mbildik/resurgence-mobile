@@ -220,6 +220,8 @@ class S {
       ' Gerekli kategorideki malzemenin tamamını seçmek için + butonuna basılı'
       ' tut.'
       '\nResimlere tıklayarak suça ait detayları öğrenebilirsin.';
+
+  static var timeToLeftToInterestComplete = 'Faizin tamamlanmasına kalan süre';
 }
 
 class W {

@@ -1,10 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:resurgence/bank/interest.dart';
 import 'package:resurgence/bank/service.dart';
 import 'package:resurgence/constants.dart';
-import 'package:resurgence/duration.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
@@ -52,13 +51,15 @@ class InterestRate {
 
 class CurrentInterest {
   int amount;
-  ISO8601Duration duration;
+  int deposit;
+  int left;
 
-  CurrentInterest({this.amount, this.duration});
+  CurrentInterest({this.amount, this.deposit, this.left});
 
   CurrentInterest.fromJson(Map<String, dynamic> json) {
     amount = json['amount'];
-    duration = ISO8601Duration(json['duration']);
+    deposit = json['deposit'];
+    left = json['left'];
   }
 }
 
@@ -475,26 +476,6 @@ class InterestPage extends StatefulWidget {
 
 class _InterestPageState extends State<InterestPage> {
   final _formKey = GlobalKey<FormState>();
-  final moneyController = TextEditingController();
-
-  Future<List<InterestRate>> interestRateFuture;
-  Future<CurrentInterest> currentInterestFuture;
-  BankService _service;
-
-  @override
-  void initState() {
-    super.initState();
-    _service = context.read<BankService>();
-    interestRateFuture = _service.interestRates();
-    currentInterestFuture = _service.currentInterest();
-  }
-
-  void _refresh() {
-    setState(() {
-      interestRateFuture = _service.interestRates();
-      currentInterestFuture = _service.currentInterest();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -502,210 +483,16 @@ class _InterestPageState extends State<InterestPage> {
       padding: const EdgeInsets.all(8.0),
       child: Form(
         key: _formKey,
-        child: Column(
-          children: <Widget>[
-            interestRateTable(),
-            Divider(),
-            interestCard(context),
-          ],
+        child: ChangeNotifierProvider<InterestRateState>(
+          create: (context) => InterestRateState(),
+          child: Column(
+            children: <Widget>[
+              InterestRatesWidget(),
+              InterestWidget(),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Widget interestRateTable() {
-    return FutureBuilder<List<InterestRate>>(
-      future: interestRateFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return loadingWidget();
-        } else if (snapshot.hasError) {
-          return errorWidget();
-        }
-
-        var interestRates = snapshot.data;
-
-        List<TableRow> tableChildren = [];
-
-        tableChildren.add(
-          TableRow(
-            children: [
-              Text(
-                S.min,
-                textAlign: TextAlign.end,
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                S.max,
-                textAlign: TextAlign.end,
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                S.interest,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        );
-
-        tableChildren.add(
-          TableRow(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: Colors.grey),
-              ),
-            ),
-            children: [
-              SizedBox(height: 8.0),
-              SizedBox(height: 8.0),
-              SizedBox(height: 8.0),
-            ],
-          ),
-        );
-
-        tableChildren.add(
-          TableRow(
-            children: [
-              SizedBox(height: 8.0),
-              SizedBox(height: 8.0),
-              SizedBox(height: 8.0),
-            ],
-          ),
-        );
-
-        tableChildren.addAll(interestRates.map((e) {
-          return TableRow(
-            children: [
-              Text(
-                Money.format(e.min),
-                textAlign: TextAlign.end,
-              ),
-              Text(
-                Money.format(e.max),
-                textAlign: TextAlign.end,
-              ),
-              Text(
-                '${e.ratio * 100}%',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          );
-        }).toList(growable: false));
-
-        return Table(
-          children: tableChildren,
-        );
-      },
-    );
-  }
-
-  Widget loadingWidget() {
-    return Center(
-      child: CircularProgressIndicator(),
-    );
-  }
-
-  Widget errorWidget() {
-    return Center(
-      child: Column(
-        children: <Widget>[
-          Button(
-            child: Text(S.reload),
-            onPressed: _refresh,
-          ),
-          Text(S.errorOccurred),
-        ],
-      ),
-    );
-  }
-
-  Widget moneyTextField(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(labelText: S.money),
-      keyboardType: TextInputType.number,
-      textInputAction: TextInputAction.done,
-      controller: moneyController,
-      onFieldSubmitted: (value) => FocusScope.of(context).nextFocus(),
-      validator: (value) {
-        if (value.isEmpty) return S.validationRequired;
-        if (int.tryParse(value) == null) return S.integerRequired;
-        return null;
-      },
-    );
-  }
-
-  Widget footer(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 16.0),
-      child: RaisedButton(
-        color: Colors.green,
-        child: Text(S.interest),
-        onPressed: () {
-          if (!_formKey.currentState.validate())
-            return null; // form is not valid
-
-          FocusScope.of(context).nextFocus();
-
-          return _service
-              .interest(int.parse(moneyController.text))
-              .catchError((e) => ErrorHandler.showError(context, e))
-              .then((_) => this._refresh());
-        },
-      ),
-    );
-  }
-
-  Widget interestCard(BuildContext context) {
-    return FutureBuilder<CurrentInterest>(
-      future: currentInterestFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return loadingWidget();
-        } else if (snapshot.hasError) {
-          var error = snapshot.error;
-          if (error is DioError &&
-              error.type == DioErrorType.RESPONSE &&
-              error.response.statusCode == 404)
-            return Container(
-              width: double.infinity,
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: <Widget>[
-                      Text(S.noActiveInterest),
-                      moneyTextField(context),
-                      footer(context),
-                    ],
-                  ),
-                ),
-              ),
-            );
-
-          return errorWidget();
-        }
-
-        var currentInterest = snapshot.data;
-
-        return Container(
-          width: double.infinity,
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: <Widget>[
-                  Text(S.currentInterest),
-                  SizedBox(height: 16.0),
-                  Text(Money.format(currentInterest.amount)),
-                  SizedBox(height: 8.0),
-                  Text(currentInterest.duration.pretty()),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
