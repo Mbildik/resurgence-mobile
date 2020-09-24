@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:duration/duration.dart';
+import 'package:duration/locale.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
@@ -131,8 +132,8 @@ class __MPListTileState extends State<_MPListTile> {
 
   @override
   void dispose() {
-    super.dispose();
     _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -168,7 +169,11 @@ class __MPListTileState extends State<_MPListTile> {
     if (_enabled) {
       return S.organize;
     }
-    return prettyDuration(_duration, abbreviated: true);
+    return prettyDuration(
+      _duration,
+      locale: const TurkishDurationLocale(),
+      abbreviated: true,
+    );
   }
 }
 
@@ -247,6 +252,19 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
             child: IconButton(
               icon: Icon(Icons.refresh),
               onPressed: this._reload,
+            ),
+          ),
+          Tooltip(
+            message: S.help,
+            child: IconButton(
+              icon: Icon(Icons.help),
+              onPressed: () {
+                showHelpDialog(
+                  context: context,
+                  title: widget.task.value,
+                  content: S.multiplayerTaskHelp,
+                );
+              },
             ),
           )
         ],

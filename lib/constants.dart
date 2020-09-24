@@ -214,6 +214,10 @@ class S {
   static var sentAMessageNotificationContent = 'Mesaj gönderdi';
   static var help = 'Yardım';
 
+    static var multiplayerTaskHelp = 'Ekibin durumunu kontrol etmek için yenile tuşunu kullan.'
+        '\n\nGörevi tamamladığında üyelerin sonuçlarını görebilirsin.'
+        '\n\nİstersen görevi çıkış butonuna basarak iptal edebilirsin.';
+
   static var soloTaskHelp = 'Suç işleyerek para, malzeme ve seviye'
       ' kazanabilirsin. Her suç belirli bir süre sonra tekrar aktif hale gelir.'
       '\nBazı suçları işlemek için bir takım malzemelere ihtiyaç duyabilirsin.'
