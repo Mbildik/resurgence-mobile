@@ -171,8 +171,8 @@ class _TaskWidgetState extends State<TaskWidget> {
 
   @override
   void dispose() {
+    timer?.cancel();
     super.dispose();
-    if (timer != null) timer.cancel();
   }
 
   @override

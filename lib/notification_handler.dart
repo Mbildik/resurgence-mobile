@@ -84,8 +84,8 @@ class _NotificationHandlerState extends State<NotificationHandler> {
 
   @override
   void dispose() {
-    super.dispose();
     iosSubscription?.cancel();
+    super.dispose();
   }
 
   @override
