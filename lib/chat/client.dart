@@ -14,6 +14,8 @@ typedef SendMessage = void Function(
   bool removeOnEvent,
 });
 
+enum _ConnectionState { closed, open }
+
 class ChatClient {
   final String url;
   final ChatState chatState;
@@ -21,6 +23,7 @@ class ChatClient {
   IOWebSocketChannel _channel;
   StreamSubscription _streamSubscription;
   Map<String, OnServerMessage> _onResponses = {};
+  _ConnectionState _connectionState = _ConnectionState.closed;
 
   ChatClient(this.url, this.chatState) {
     chatState.sendMessage = this.sendMessage;
@@ -120,6 +123,9 @@ class ChatClient {
     ServerMessageCallback callback,
     bool removeOnEvent: true,
   }) {
+    if (_connectionState != _ConnectionState.open) {
+      return; // todo reconnect with retry option
+    }
     var json = message.json();
     log('Sent message: $json');
     _channel.sink.add(json);
@@ -129,6 +135,7 @@ class ChatClient {
   }
 
   void _connect() {
+    _connectionState = _ConnectionState.open;
     _channel = IOWebSocketChannel.connect(url);
     sendMessage(client.Hi());
     _streamSubscription = _channel.stream.map((event) {
@@ -146,8 +153,10 @@ class ChatClient {
       chatState.on(message);
     }, onError: (error) {
       log('websocket error', error: error);
+      _connectionState = _ConnectionState.closed;
     }, onDone: () {
       log('websocket connection closed!');
+      _connectionState = _ConnectionState.closed;
     });
 
     if (!chatState.isLogin()) {
