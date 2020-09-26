@@ -27,20 +27,30 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final TextEditingController filterController = new TextEditingController();
+  final TextEditingController _filterController = new TextEditingController();
+
   String filter = '';
+  ChatClient _client;
 
   @override
   void initState() {
     super.initState();
-    var chatClient = context.read<ChatClient>();
-    filterController.addListener(() {
-      var value = filterController.text.trim();
-      if (value.isNotEmpty) {
-        chatClient.searchUser(filter);
+    _client = context.read<ChatClient>();
+    _filterController.addListener(() {
+      var value = _filterController.text.trim();
+      if (filter == value) return; // same filter. do not search.
+      if (value.isNotEmpty) { // search only user enter some text.
+        _client.searchUser(value);
       }
       setState(() => filter = value);
     });
+  }
+
+  @override
+  void dispose() {
+    _client?.searchUser(null);
+    _filterController.dispose();
+    super.dispose();
   }
 
   @override
@@ -52,7 +62,7 @@ class _ChatPageState extends State<ChatPage> {
       body: Column(
         children: [
           TextField(
-            controller: filterController,
+            controller: _filterController,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.all(16.0),
@@ -62,7 +72,7 @@ class _ChatPageState extends State<ChatPage> {
                 icon:
                     filter.isNotEmpty ? Icon(Icons.clear) : Icon(Icons.search),
                 onPressed: () {
-                  if (filter.isNotEmpty) filterController.clear();
+                  if (filter.isNotEmpty) _filterController.clear();
                 },
               ),
             ),
@@ -71,21 +81,22 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: Consumer<ChatState>(
               builder: (context, state, child) {
+                var currentSubs = HashSet<Sub>.from(state.subs);
+                var fndSubscriptions = state.fndSub;
+                currentSubs.addAll(state.fndSub);
                 var subscriptions = SplayTreeSet<Sub>.from(
-                  state.subs,
+                  currentSubs,
                   (sub1, sub2) => sub2.updated.compareTo(sub1.updated),
                 );
-                var fndSubscriptions = state.fndSub;
-                subscriptions.addAll(state.fndSub);
 
                 return ListView.builder(
                   primary: false,
                   itemCount: subscriptions.length,
                   itemBuilder: (context, index) {
                     var currentSub = subscriptions.elementAt(index);
-                    var sender = currentSub.public.fn;
-
-                    if (!sender.toLowerCase().contains(filter.toLowerCase())) {
+                    var fn = currentSub.public.fn;
+                    if (filter.isNotEmpty &&
+                        !fn.toLowerCase().contains(filter.toLowerCase())) {
                       return Container();
                     }
 
@@ -96,7 +107,7 @@ class _ChatPageState extends State<ChatPage> {
 
                     return _ChatListItem(
                       image: image,
-                      title: sender,
+                      title: fn,
                       content: DateFormat(S.dateFormat).format(
                         lastUpdate.toLocal(),
                       ),

@@ -85,9 +85,10 @@ class ChatClient {
   void searchUser(String nickname) {
     sendMessage(client.Set(
       topic: 'fnd',
-      desc: client.SetDesc(publicString: 'nick:$nickname'),
-    ));
-    sendMessage(client.Get(topic: 'fnd', what: 'sub'));
+      desc: client.SetDesc(publicString: nickname == null ? '␡' : 'nick:$nickname'),
+    ), callback: (_) {
+      sendMessage(client.Get(topic: 'fnd', what: 'sub'));
+    });
   }
 
   void subscribeUser(String username) {
