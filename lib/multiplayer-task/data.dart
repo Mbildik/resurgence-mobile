@@ -1,6 +1,6 @@
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/item/item.dart';
-import 'package:resurgence/task/task.dart';
+import 'package:resurgence/task/model.dart';
 
 class MultiplayerTask extends AbstractEnum {
   MultiplayerTask({

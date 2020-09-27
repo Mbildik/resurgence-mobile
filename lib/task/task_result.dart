@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/enum.dart';
 import 'package:resurgence/money.dart';
-import 'package:resurgence/multiplayer-task/data.dart';
-import 'package:resurgence/task/task.dart';
+import 'package:resurgence/task/model.dart';
 
 class TaskResultPage extends StatelessWidget {
   final TaskResult result;
@@ -11,68 +12,123 @@ class TaskResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return result.succeed ? TaskSucceed(result) : TaskFailed();
+  }
+}
+
+class TaskSucceed extends StatelessWidget {
+  final TaskResult result;
+
+  const TaskSucceed(
+    this.result, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
-      child: Card(
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: result.succeed ? Colors.green[300] : Colors.red[300],
-            width: 2.0,
-          ),
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        color: Color(0xFF28474A),
-        margin: EdgeInsets.symmetric(horizontal: 16.0),
-        child: result is MultiplayerTaskResult
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+      child: Container(
+        width: double.infinity,
+        child: Card(
+          margin: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(A.MONEY, width: 128, height: 128),
+                Text(
+                  Money.format(result.moneyGain),
+                  style: Theme.of(context).textTheme.headline4.copyWith(
+                        color: Colors.green[700],
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                SizedBox(height: 8.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: Theme.of(context).textTheme.headline4.fontSize,
+                    ),
+                    Text(
+                      NumberFormat.compact().format(
+                        result.experienceGain,
+                      ),
+                      style: Theme.of(context).textTheme.headline4.copyWith(
+                            color: Colors.amber,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.0),
+                if (result.skillGain.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      (result as MultiplayerTaskResult).player,
-                      style: Theme.of(context).textTheme.headline6,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: EnumWrapper(
+                      result.skillGain,
+                      color: Colors.green[700],
+                      text: S.skillGained,
                     ),
                   ),
-                  result.succeed ? succeedWidget() : failedWidget()
-                ],
-              )
-            : result.succeed ? succeedWidget() : failedWidget(),
+                SizedBox(height: 8.0),
+                if (result.drop.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: EnumWrapper(
+                      result.drop.map((e) => e.item).toList(growable: false),
+                      color: Colors.blueGrey[700],
+                      text: S.drop,
+                    ),
+                  ),
+                SizedBox(height: 8.0),
+                RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  child: Text(S.ok),
+                  onPressed: () => Navigator.pop(context),
+                )
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
+}
 
-  Widget succeedWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          ExperienceWidget(result.experienceGain),
-          Divider(),
-          MoneyWidget(result.moneyGain),
-          if (result.skillGain.isNotEmpty) Divider(),
-          if (result.skillGain.isNotEmpty)
-            EnumWrapper(
-              result.skillGain,
-              color: Colors.green,
-              text: S.skillGained,
+class TaskFailed extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: double.infinity,
+        child: Card(
+          margin: EdgeInsets.symmetric(horizontal: 8.0),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(A.BUSTED, width: 128, height: 128),
+                Text(S.failedTaskResult),
+                SizedBox(height: 8.0),
+                RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  child: Text(S.ok),
+                  onPressed: () => Navigator.pop(context),
+                )
+              ],
             ),
-          if (result.drop.isNotEmpty) Divider(),
-          if (result.drop.isNotEmpty)
-            EnumWrapper(
-              result.drop.map((e) => e.item).toList(growable: false),
-              color: Colors.green,
-              text: S.drop,
-            ),
-        ],
+          ),
+        ),
       ),
-    );
-  }
-
-  Widget failedWidget() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Text(S.failedTaskResult),
     );
   }
 }
@@ -87,7 +143,7 @@ class TaskResultRoute<T> extends PageRouteBuilder<T> {
   bool get barrierDismissible => true;
 
   @override
-  Color get barrierColor => Colors.black38;
+  Color get barrierColor => Colors.black54;
 
   TaskResultRoute(this.result)
       : super(

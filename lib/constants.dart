@@ -79,8 +79,18 @@ class S {
   static var easy = 'easy';
   static var medium = 'medium';
   static var hard = 'hard';
-  static var playerItemEmpty = 'player.item.empty';
-  static var failedTaskResult = 'failed.task.result';
+  static const playerItemEmpty = 'Hiç itemin yok.';
+
+  static playerItemEmptyCategories(Set<String> categories) {
+    if (categories.isEmpty) return playerItemEmpty;
+
+    if (categories.length == 1)
+      return '${categories.first} kategorisine ait hiç itemin yok.';
+
+    return '${categories.join(', ')} kategorilerine ait hiç itemin yok.';
+  }
+
+  static const failedTaskResult = 'Beceremedin';
   static var bank = 'Bank';
   static var bankBalance = 'Banka Bakiyesi';
   static var currentBalance = 'Nakit';
@@ -214,9 +224,10 @@ class S {
   static var sentAMessageNotificationContent = 'Mesaj gönderdi';
   static var help = 'Yardım';
 
-    static var multiplayerTaskHelp = 'Ekibin durumunu kontrol etmek için yenile tuşunu kullan.'
-        '\n\nGörevi tamamladığında üyelerin sonuçlarını görebilirsin.'
-        '\n\nİstersen görevi çıkış butonuna basarak iptal edebilirsin.';
+  static var multiplayerTaskHelp =
+      'Ekibin durumunu kontrol etmek için yenile tuşunu kullan.'
+      '\n\nGörevi tamamladığında üyelerin sonuçlarını görebilirsin.'
+      '\n\nİstersen görevi çıkış butonuna basarak iptal edebilirsin.';
 
   static var soloTaskHelp = 'Suç işleyerek para, malzeme ve seviye'
       ' kazanabilirsin. Her suç belirli bir süre sonra tekrar aktif hale gelir.'
@@ -226,6 +237,11 @@ class S {
       '\nResimlere tıklayarak suça ait detayları öğrenebilirsin.';
 
   static var timeToLeftToInterestComplete = 'Faizin tamamlanmasına kalan süre';
+
+  static haveItem(quantity) {
+    if (quantity < 1) return 'Kalmadı';
+    return '$quantity tane kaldı';
+  }
 }
 
 class W {
@@ -236,7 +252,12 @@ class W {
 
 /// Assets constants
 class A {
-  static var applicationLogo = 'assets/img/flutter_logo.png';
-  static var googleLogo = 'assets/img/google.png';
-  static var bankLogo = 'assets/img/bank.png';
+  static const FOLDER = 'assets/img';
+  static const applicationLogo = '$FOLDER/flutter_logo.png';
+  static const googleLogo = '$FOLDER/google.png';
+  static const bankLogo = '$FOLDER/bank.png';
+  static const EMPTY_IMAGE = '$FOLDER/no-item.png';
+  static const BUSTED = '$FOLDER/busted.png';
+  static const MONEY = '$FOLDER/money.png';
+  static const SHOUT_GUN = '$FOLDER/shoutgun.png';
 }

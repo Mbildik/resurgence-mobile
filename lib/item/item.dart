@@ -3,13 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/item/service.dart';
-import 'package:resurgence/task/task.dart';
+import 'package:resurgence/task/model.dart';
 
 class Item extends AbstractEnum {
   Set<AbstractEnum> category;
   int price;
+  String image;
 
-  Item({String key, String value, this.category, this.price})
+  Item({String key, String value, this.category, this.price, this.image})
       : super(key: key, value: value);
 
   Item.fromJson(Map<String, dynamic> json) {
@@ -22,6 +23,7 @@ class Item extends AbstractEnum {
           .toSet();
     }
     price = json['price'];
+    image = json['image'] == null ? null : S.baseUrl + json['image'];
   }
 }
 
@@ -160,7 +162,9 @@ class _ItemListPageState extends State<ItemListPage> {
           var playerItems = snapshot.data;
 
           if (playerItems.isEmpty) {
-            return _emptyPlayerItemWidget();
+            return EmptyPlayerItem(
+              categories: widget.task.requiredItemCategory,
+            );
           }
 
           var requiredCategoryTextList = widget.task.requiredItemCategory
@@ -208,19 +212,6 @@ class _ItemListPageState extends State<ItemListPage> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _emptyPlayerItemWidget() {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16.0),
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: Colors.white30, width: 2.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(S.playerItemEmpty),
       ),
     );
   }
@@ -274,11 +265,14 @@ class _ItemListPageState extends State<ItemListPage> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(S.errorOccurred),
-            IconButton(
-              icon: Icon(Icons.refresh),
-              onPressed: () => setState(() {
-                playerItemFuture = retrieveItems();
-              }),
+            Tooltip(
+              message: S.refresh,
+              child: IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () => setState(() {
+                  playerItemFuture = retrieveItems();
+                }),
+              ),
             ),
           ],
         ),
@@ -383,6 +377,48 @@ class _ItemListTileState extends State<ItemListTile> {
   }
 }
 
+class EmptyPlayerItem extends StatelessWidget {
+  final Set<String> _categories;
+
+  EmptyPlayerItem({
+    Key key,
+    Set<RequiredItemCategory> categories,
+  })  : _categories = categories.map((e) => e.category.value).toSet(),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(A.EMPTY_IMAGE, width: 64, height: 64),
+              const SizedBox(height: 8.0),
+              Text(S.playerItemEmptyCategories(_categories)),
+              const SizedBox(height: 8.0),
+              RaisedButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+                child: Text(S.ok),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class ItemListPageRoute<T> extends PageRouteBuilder<T> {
   final Task task;
 
@@ -393,7 +429,7 @@ class ItemListPageRoute<T> extends PageRouteBuilder<T> {
   bool get barrierDismissible => true;
 
   @override
-  Color get barrierColor => Colors.black38;
+  Color get barrierColor => Colors.black54;
 
   ItemListPageRoute(this.task)
       : super(
