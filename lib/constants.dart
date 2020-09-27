@@ -259,5 +259,4 @@ class A {
   static const EMPTY_IMAGE = '$FOLDER/no-item.png';
   static const BUSTED = '$FOLDER/busted.png';
   static const MONEY = '$FOLDER/money.png';
-  static const SHOUT_GUN = '$FOLDER/shoutgun.png';
 }
