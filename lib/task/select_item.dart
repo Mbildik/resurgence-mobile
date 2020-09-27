@@ -201,7 +201,7 @@ class _SelectItemStates extends State<SelectItems> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         MaterialButton(
-                          child: Text('İptal'),
+                          child: Text(S.cancel),
                           onPressed: () => Navigator.of(context).pop(),
                         ),
                         RaisedButton(
@@ -209,7 +209,7 @@ class _SelectItemStates extends State<SelectItems> {
                             borderRadius: BorderRadius.circular(18.0),
                           ),
                           color: Colors.green[700],
-                          child: Text('Tamam'),
+                          child: Text(S.ok),
                           onPressed: this._isMeet()
                               ? () => Navigator.pop(
                                     context,

@@ -112,27 +112,27 @@ class S {
   static var max = 'max';
   static var noActiveInterest = 'no.active.interest';
   static var currentInterest = 'current.interest';
-  static var description = 'description';
+  static var description = 'Açıklama';
   static var to = 'to';
   static var realEstate = 'Real Estate';
-  static var buy = 'buy';
-  static var sell = 'sell';
-  static var signInPageTitle = 'Welcome back!';
-  static var signInPageDescription = 'Sign in to your account';
-  static var signUpPageTitle = 'Welcome!';
-  static var signUpPageDescription = 'Sign up with email';
-  static var family = 'Family';
-  static var families = 'Families';
+  static var buy = 'Satın Al';
+  static var sell = 'Sat';
+  static var signInPageTitle = 'Tekrar hoş geldin!';
+  static var signInPageDescription = 'Hesabınıza giriş yapın';
+  static var signUpPageTitle = 'Hoş geldin!';
+  static var signUpPageDescription = 'Email ile kayıt ol';
+  static var family = 'Aile';
+  static var families = 'Aileler';
 
-  static var ok = 'Ok';
-  static var delete = 'Delete';
-  static var cancel = 'Cancel';
+  static var ok = 'Tamam';
+  static var delete = 'Sil';
+  static var cancel = 'İptal';
 
-  static var chat = 'Chat';
-  static var messages = 'Messages';
-  static var search = 'Search';
-  static var offline = 'Offline';
-  static var online = 'Online';
+  static var chat = 'Sohbet';
+  static var messages = 'Mesajlar';
+  static var search = 'Ara';
+  static var offline = 'Çevrimdışı';
+  static var online = 'Çevrimiçi';
   static var typeSomething = 'Type something...';
 
   static var boss = 'Boss';
