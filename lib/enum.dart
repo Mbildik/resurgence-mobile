@@ -56,3 +56,42 @@ class EnumWidget extends StatelessWidget {
     );
   }
 }
+
+class EnumWrapper extends StatelessWidget {
+  final Iterable<AbstractEnum> enums;
+  final String text;
+  final Color color;
+
+  const EnumWrapper(
+    this.enums, {
+    Key key,
+    @required this.color,
+    @required this.text,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (enums == null || enums.isEmpty) return Container();
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(text),
+            SizedBox(width: 4.0),
+            Flexible(
+              child: Wrap(
+                spacing: 2.0,
+                runSpacing: 2.0,
+                children: enums
+                    .map((e) => EnumWidget(e, color: this.color))
+                    .toList(growable: false),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}

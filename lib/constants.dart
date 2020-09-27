@@ -79,8 +79,18 @@ class S {
   static var easy = 'easy';
   static var medium = 'medium';
   static var hard = 'hard';
-  static var playerItemEmpty = 'player.item.empty';
-  static var failedTaskResult = 'failed.task.result';
+  static const playerItemEmpty = 'Hiç itemin yok.';
+
+  static playerItemEmptyCategories(Set<String> categories) {
+    if (categories.isEmpty) return playerItemEmpty;
+
+    if (categories.length == 1)
+      return '${categories.first} kategorisine ait hiç itemin yok.';
+
+    return '${categories.join(', ')} kategorilerine ait hiç itemin yok.';
+  }
+
+  static const failedTaskResult = 'Beceremedin';
   static var bank = 'Bank';
   static var bankBalance = 'Banka Bakiyesi';
   static var currentBalance = 'Nakit';
@@ -102,27 +112,27 @@ class S {
   static var max = 'max';
   static var noActiveInterest = 'no.active.interest';
   static var currentInterest = 'current.interest';
-  static var description = 'description';
+  static var description = 'Açıklama';
   static var to = 'to';
   static var realEstate = 'Real Estate';
-  static var buy = 'buy';
-  static var sell = 'sell';
-  static var signInPageTitle = 'Welcome back!';
-  static var signInPageDescription = 'Sign in to your account';
-  static var signUpPageTitle = 'Welcome!';
-  static var signUpPageDescription = 'Sign up with email';
-  static var family = 'Family';
-  static var families = 'Families';
+  static var buy = 'Satın Al';
+  static var sell = 'Sat';
+  static var signInPageTitle = 'Tekrar hoş geldin!';
+  static var signInPageDescription = 'Hesabınıza giriş yapın';
+  static var signUpPageTitle = 'Hoş geldin!';
+  static var signUpPageDescription = 'Email ile kayıt ol';
+  static var family = 'Aile';
+  static var families = 'Aileler';
 
-  static var ok = 'Ok';
-  static var delete = 'Delete';
-  static var cancel = 'Cancel';
+  static var ok = 'Tamam';
+  static var delete = 'Sil';
+  static var cancel = 'İptal';
 
-  static var chat = 'Chat';
-  static var messages = 'Messages';
-  static var search = 'Search';
-  static var offline = 'Offline';
-  static var online = 'Online';
+  static var chat = 'Sohbet';
+  static var messages = 'Mesajlar';
+  static var search = 'Ara';
+  static var offline = 'Çevrimdışı';
+  static var online = 'Çevrimiçi';
   static var typeSomething = 'Type something...';
 
   static var boss = 'Boss';
@@ -214,9 +224,10 @@ class S {
   static var sentAMessageNotificationContent = 'Mesaj gönderdi';
   static var help = 'Yardım';
 
-    static var multiplayerTaskHelp = 'Ekibin durumunu kontrol etmek için yenile tuşunu kullan.'
-        '\n\nGörevi tamamladığında üyelerin sonuçlarını görebilirsin.'
-        '\n\nİstersen görevi çıkış butonuna basarak iptal edebilirsin.';
+  static var multiplayerTaskHelp =
+      'Ekibin durumunu kontrol etmek için yenile tuşunu kullan.'
+      '\n\nGörevi tamamladığında üyelerin sonuçlarını görebilirsin.'
+      '\n\nİstersen görevi çıkış butonuna basarak iptal edebilirsin.';
 
   static var soloTaskHelp = 'Suç işleyerek para, malzeme ve seviye'
       ' kazanabilirsin. Her suç belirli bir süre sonra tekrar aktif hale gelir.'
@@ -226,6 +237,11 @@ class S {
       '\nResimlere tıklayarak suça ait detayları öğrenebilirsin.';
 
   static var timeToLeftToInterestComplete = 'Faizin tamamlanmasına kalan süre';
+
+  static haveItem(quantity) {
+    if (quantity < 1) return 'Kalmadı';
+    return '$quantity tane kaldı';
+  }
 }
 
 class W {
@@ -236,7 +252,11 @@ class W {
 
 /// Assets constants
 class A {
-  static var applicationLogo = 'assets/img/flutter_logo.png';
-  static var googleLogo = 'assets/img/google.png';
-  static var bankLogo = 'assets/img/bank.png';
+  static const FOLDER = 'assets/img';
+  static const applicationLogo = '$FOLDER/flutter_logo.png';
+  static const googleLogo = '$FOLDER/google.png';
+  static const bankLogo = '$FOLDER/bank.png';
+  static const EMPTY_IMAGE = '$FOLDER/no-item.png';
+  static const BUSTED = '$FOLDER/busted.png';
+  static const MONEY = '$FOLDER/money.png';
 }

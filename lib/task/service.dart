@@ -1,6 +1,6 @@
 import 'package:resurgence/item/item.dart';
 import 'package:resurgence/network/client.dart';
-import 'package:resurgence/task/task.dart';
+import 'package:resurgence/task/model.dart';
 
 class TaskService {
   final _TaskClient _client;
@@ -11,8 +11,11 @@ class TaskService {
     return _client.allTask();
   }
 
-  Future<TaskResult> perform(String task, List<PlayerItem> selectedItems) {
-    return _client.perform(task, selectedItems);
+  Future<TaskResult> perform(
+    Task task, [
+    List<PlayerItem> selectedItems = const [],
+  ]) {
+    return _client.perform(task.key, selectedItems);
   }
 }
 

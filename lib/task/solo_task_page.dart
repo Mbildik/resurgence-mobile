@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/item/item.dart';
+import 'package:resurgence/task/model.dart';
 import 'package:resurgence/task/service.dart';
-import 'package:resurgence/task/task.dart';
 import 'package:resurgence/task/task_result.dart';
+import 'package:resurgence/task/ui.dart';
 import 'package:resurgence/ui/error_handler.dart';
 import 'package:resurgence/ui/shared.dart';
 
@@ -15,17 +16,19 @@ class SoloTaskPage extends StatefulWidget {
 
 class _SoloTaskPageState extends State<SoloTaskPage> {
   Future<List<Task>> futureTasks;
+  TaskService _service;
 
   @override
   void initState() {
     super.initState();
+    _service = context.read<TaskService>();
     futureTasks = fetchAllTasks();
   }
 
-  Future<List<Task>> fetchAllTasks() => context.read<TaskService>().allTask();
+  Future<List<Task>> fetchAllTasks() => _service.allTask();
 
-  Future<TaskResult> perform(String task, List<PlayerItem> selectedItems) =>
-      context.read<TaskService>().perform(task, selectedItems);
+  Future<TaskResult> perform(Task task, List<PlayerItem> selectedItems) =>
+      _service.perform(task, selectedItems);
 
   @override
   Widget build(BuildContext context) {
@@ -58,14 +61,14 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
             itemCount: tasks.length,
             itemBuilder: (BuildContext context, int index) {
               var task = tasks[index];
-              return TaskWidget(
+
+              return TaskListTile(
                 task,
-                onPerform: (List<PlayerItem> selectedItems) => perform(
-                  task.key,
-                  selectedItems,
-                )
-                    .then(onTaskPerformed)
-                    .catchError((e) => ErrorHandler.showError(context, e)),
+                onPerform: (selectedItems) {
+                  perform(task, selectedItems)
+                      .then(this.onTaskPerformed)
+                      .catchError((e) => ErrorHandler.showError(context, e));
+                },
               );
             },
           );
