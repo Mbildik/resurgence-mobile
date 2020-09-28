@@ -124,7 +124,7 @@ class AuthenticationPage extends StatelessWidget {
 
       return context
           .read<AuthenticationService>()
-          .oauth2Login('google', authentication.accessToken)
+          .oauth2Login('google', authentication.accessToken, account.email)
           .then((token) => context.read<AuthenticationState>().login(token))
           .then((_) {
         var chatClient = context.read<ChatClient>();

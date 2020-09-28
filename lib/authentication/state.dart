@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:resurgence/authentication/token.dart';
+import 'package:sentry/sentry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationState with ChangeNotifier {
@@ -10,8 +13,10 @@ class AuthenticationState with ChangeNotifier {
   static const _REFRESH_TOKEN_KEY = 'refresh_token';
 
   Token _token;
+  SentryClient sentryClient;
+  FirebaseAnalytics analytics;
 
-  AuthenticationState() {
+  AuthenticationState({this.sentryClient, this.analytics}) {
     _getToken()
         .then((token) => this.login(token))
         .catchError((e) => log('token fetch error $e. Do nothing!'));
@@ -21,6 +26,16 @@ class AuthenticationState with ChangeNotifier {
     if (token == null) return;
     _token = token;
     _saveToken(token);
+    try {
+      var jwt = _decodeToken(token.accessToken);
+      var id = jwt['sub'];
+      sentryClient.userContext = User(
+        id: id,
+        email: id,
+        username: jwt['player'],
+      );
+      analytics.setUserId(id);
+    } catch (_) {}
     notifyListeners();
   }
 
@@ -28,6 +43,8 @@ class AuthenticationState with ChangeNotifier {
     _token = null;
     try {
       GoogleSignIn().signOut();
+      sentryClient.userContext = null;
+      analytics.setUserId(null);
     } catch (ignored) {}
     _removeToken();
     notifyListeners();
@@ -63,6 +80,25 @@ class AuthenticationState with ChangeNotifier {
   }
 
   Token get token => _token;
+
+  static Map<String, dynamic> _decodeToken(String token) {
+    try {
+      List<String> splitToken = token.split('.'); // Split the token by '.'
+      String payloadBase64 = splitToken[1]; // Payload is always the index 1
+      // Base64 should be multiple of 4. Normalize the payload before decode it
+      String normalizedPayload = base64.normalize(payloadBase64);
+      // Decode payload, the result is a String
+      String payloadString = utf8.decode(base64.decode(normalizedPayload));
+      // Parse the String to a Map<String, dynamic>
+      Map<String, dynamic> decodedPayload = jsonDecode(payloadString);
+
+      // Return the decoded payload
+      return decodedPayload;
+    } catch (error) {
+      // If there's an error return empty map
+      return {};
+    }
+  }
 }
 
 class TokenNotFoundError extends Error {}

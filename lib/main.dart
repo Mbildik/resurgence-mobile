@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
@@ -15,21 +16,32 @@ import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
 import 'package:resurgence/real-estate/service.dart';
 import 'package:resurgence/task/service.dart';
+import 'package:sentry/sentry.dart';
 
 import 'application.dart';
 
-void main() {
+bool get isInDebugMode {
+  bool inDebugMode = false;
+  assert(inDebugMode = true);
+  return inDebugMode;
+}
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final authenticationState = AuthenticationState();
-  final client = Client(authenticationState);
+  // Monitoring
+  final analytics = FirebaseAnalytics();
+  final sentry = SentryClient(dsn: S.DSN);
+
+  final authenticationState = AuthenticationState(sentryClient: sentry);
+  final client = Client(authenticationState, sentryClient: sentry);
 
   // Authentication
   final authenticationStateProvider = ChangeNotifierProvider.value(
     value: authenticationState,
   );
   final authenticationServiceProvider = Provider(
-    create: (_) => AuthenticationService(client),
+    create: (_) => AuthenticationService(client, analytics: analytics),
   );
 
   // Player
@@ -89,6 +101,20 @@ void main() {
     create: (_) => MultiplayerService(client),
   );
 
+  FlutterError.onError = (details, {bool forceReport = false}) {
+    if (isInDebugMode) {
+      // In development mode, simply print to console.
+      FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
+    } else {
+      // In production mode, report to the application zone to report to
+      // Sentry.
+      sentry.captureException(
+        exception: details.exception,
+        stackTrace: details.stack,
+      );
+    }
+  };
+
   runApp(
     MultiProvider(
       providers: [
@@ -123,7 +149,7 @@ void main() {
         // Multiplayer Task
         multiplayerServiceProvider,
       ],
-      child: Application(),
+      child: Application(analytics: analytics),
     ),
   );
 }

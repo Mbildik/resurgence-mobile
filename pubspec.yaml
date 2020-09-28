@@ -38,8 +38,10 @@ dependencies:
   web_socket_channel: ^1.1.0
   crypto: ^2.1.4
   firebase_messaging: ^7.0.0
+  firebase_analytics: ^6.0.0
   overlay_support: ^1.0.5
   image_picker: ^0.6.7+7
+  sentry: ">=3.0.0 <4.0.0"
 
 dev_dependencies:
   flutter_test:
