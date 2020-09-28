@@ -18,7 +18,7 @@ class Client {
   Client(this._state) {
     var options = BaseOptions(
       baseUrl: S.baseUrl,
-      headers: {'version': S.version},
+      headers: {HttpHeaders.userAgentHeader: S.userAgent},
       contentType: 'application/json',
     );
     _dio = Dio(options);
