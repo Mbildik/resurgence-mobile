@@ -26,6 +26,9 @@ class S {
     }
   }();
 
+  static const DSN =
+      'https://a08e58dade624766a001060e647ff585@o411000.ingest.sentry.io/5443874';
+
   // Misc
   static var applicationTitle = 'Resurgence';
   static var applicationDescription = 'Text-Based Mafia Game';

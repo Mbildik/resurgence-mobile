@@ -1,3 +1,5 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +10,10 @@ import 'package:resurgence/notification_handler.dart';
 import 'package:resurgence/player/player_control_page.dart';
 
 class Application extends StatelessWidget {
+  final FirebaseAnalytics analytics;
+
+  const Application({Key key, this.analytics}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     var darkTheme = ThemeData.dark();
@@ -30,6 +36,9 @@ class Application extends StatelessWidget {
       child: MaterialApp(
         title: S.applicationTitle,
         theme: theme,
+        navigatorObservers: analytics != null
+            ? [FirebaseAnalyticsObserver(analytics: analytics)]
+            : const <NavigatorObserver>[],
         home: NotificationHandler(
           child: Consumer<AuthenticationState>(
             builder: (context, state, child) {

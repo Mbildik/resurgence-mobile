@@ -7,15 +7,18 @@ import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/authentication/token.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/network/error.dart';
+import 'package:sentry/sentry.dart';
 
 class Client {
   final AuthenticationState _state;
+  final SentryClient sentryClient;
+
   static final Set<String> securityPaths =
       Set.of(['login', 'security/refresh']);
 
   Dio _dio;
 
-  Client(this._state) {
+  Client(this._state, {this.sentryClient}) {
     var options = BaseOptions(
       baseUrl: S.baseUrl,
       headers: {HttpHeaders.userAgentHeader: S.userAgent},
@@ -48,6 +51,24 @@ class Client {
   Interceptor apiErrorInterceptor() {
     return InterceptorsWrapper(
       onError: (e) {
+        sentryClient?.capture(
+          event: Event(
+            loggerName: 'http_logger',
+            release: S.version,
+            exception: e,
+            level: SeverityLevel.fatal,
+            extra: {
+              'request': e.request?.data,
+              'response': e.response?.data
+            },
+            tags: {
+              'path': e.request?.path,
+              'method': e.request?.method,
+              'statusCode': '${e.response?.statusCode ?? 0}',
+            },
+          ),
+        );
+
         if (e.type == DioErrorType.RESPONSE &&
             e.response?.data != null &&
             e.response?.data != '' &&
