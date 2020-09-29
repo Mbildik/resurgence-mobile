@@ -2,13 +2,13 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:intl/locale.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/authentication/token.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/network/error.dart';
 import 'package:sentry/sentry.dart';
-import 'package:firebase_performance/firebase_performance.dart';
 
 class Client {
   final AuthenticationState _state;
@@ -34,6 +34,9 @@ class Client {
     _dio.interceptors.add(AcceptLanguageInterceptor(Locale.parse('tr-TR')));
     _dio.interceptors.add(accessTokenFilter());
     _dio.interceptors.add(refreshTokenFilter());
+    if (sentryClient != null) {
+      _dio.interceptors.add(SentryInterceptor(sentryClient));
+    }
     _dio.interceptors.add(apiErrorInterceptor());
     _dio.interceptors.add(DioFirebasePerformanceInterceptor());
   }
@@ -53,24 +56,6 @@ class Client {
   Interceptor apiErrorInterceptor() {
     return InterceptorsWrapper(
       onError: (e) {
-        sentryClient?.capture(
-          event: Event(
-            loggerName: 'http_logger',
-            release: S.version,
-            exception: e,
-            level: SeverityLevel.fatal,
-            extra: {
-              'request': e.request?.data,
-              'response': e.response?.data
-            },
-            tags: {
-              'path': e.request?.path,
-              'method': e.request?.method,
-              'statusCode': '${e.response?.statusCode ?? 0}',
-            },
-          ),
-        );
-
         if (e.type == DioErrorType.RESPONSE &&
             e.response?.data != null &&
             e.response?.data != '' &&
@@ -232,6 +217,46 @@ class AcceptLanguageInterceptor extends Interceptor {
   }
 }
 
+class SentryInterceptor extends Interceptor {
+  final SentryClient sentryClient;
+
+  SentryInterceptor(this.sentryClient);
+
+  @override
+  Future onError(DioError e) {
+    try {
+      dynamic request;
+      if (e.request?.data is FormData) {
+        request = 'FormData';
+      } else {
+        request = e.request.data;
+      }
+      sentryClient.capture(
+        event: Event(
+          loggerName: 'http_logger',
+          release: S.version,
+          exception: e,
+          level: SeverityLevel.fatal,
+          extra: {
+            'request': request,
+            'response': e.response?.data,
+          },
+          tags: {
+            'path': e.request?.path,
+            'method': e.request?.method,
+            'statusCode': '${e.response?.statusCode ?? 0}',
+          },
+        ),
+      );
+    } catch (e, stacktrace) {
+      try {
+        sentryClient.captureException(exception: e, stackTrace: stacktrace);
+      } catch (ignored) {}
+    }
+
+    return super.onError(e);
+  }
+}
 
 /// [Dio] client interceptor that hooks into request/response process
 /// and calls Firebase Metric API in between. The request key is calculated
@@ -247,7 +272,7 @@ class AcceptLanguageInterceptor extends Interceptor {
 class DioFirebasePerformanceInterceptor extends Interceptor {
   DioFirebasePerformanceInterceptor(
       {this.requestContentLengthMethod = defaultRequestContentLength,
-        this.responseContentLengthMethod = defaultResponseContentLength});
+      this.responseContentLengthMethod = defaultResponseContentLength});
 
   /// key: requestKey hash code, value: ongoing metric
   final _map = <int, HttpMetric>{};
@@ -303,6 +328,7 @@ class DioFirebasePerformanceInterceptor extends Interceptor {
 }
 
 typedef RequestContentLengthMethod = int Function(RequestOptions options);
+
 int defaultRequestContentLength(RequestOptions options) {
   try {
     if (options.data is String || options.data is Map) {
@@ -316,6 +342,7 @@ int defaultRequestContentLength(RequestOptions options) {
 }
 
 typedef ResponseContentLengthMethod = int Function(Response options);
+
 int defaultResponseContentLength(Response response) {
   if (response.data is String) {
     return (response?.headers?.toString()?.length ?? 0) + response.data.length;
