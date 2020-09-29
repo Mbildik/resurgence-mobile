@@ -50,7 +50,11 @@ class S {
   static var password = 'Password';
   static var passwordForgot = 'Forgot password?';
   static var passwordForgotInfo = 'password.forgot.info';
-  static var logout = 'logout';
+  static const changePassword = 'Şifreyi Değiştir';
+  static const logout = 'Çıkış Yap';
+  static const logoutConfirmationTitle = 'Çıkış yapmak üzeresiniz!';
+  static const logoutConfirmationContent =
+      'Uygulamadan çıkış yapmak istediğinize emin misiniz?';
   static var signUpGoogle = 'Sign up with Google';
   static var signUpEmail = 'Sign up with Email';
   static var signUp = 'Sign Up';
@@ -61,12 +65,13 @@ class S {
   static var playerCreationTitle = 'player.creation.title';
   static var race = 'race';
   static var balance = 'balance';
-  static var health = 'health';
-  static var honor = 'honor';
+  static const health = 'Sağlık';
+  static const honor = 'Onur';
+  static const usableHonor = 'Kullanılabilir Onur Puanı';
   static var experience = 'experience';
   static var reload = 'Reload';
   static var errorOccurred = 'Bir hata oluştu.';
-  static var profile = 'Profile';
+  static const profile = 'Profil';
   static var task = 'Task';
   static var tasks = 'Tasks';
   static var soloTask = 'Solo Görevler';
@@ -98,7 +103,7 @@ class S {
   static var bankBalance = 'Banka Bakiyesi';
   static var currentBalance = 'Nakit';
   static var bankTitle = 'Bank';
-  static var money = 'Money';
+  static const money = 'Para';
   static var withdraw = 'Withdraw';
   static var deposit = 'Deposit';
   static var integerRequired = 'integer.required';

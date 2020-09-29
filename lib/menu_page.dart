@@ -8,6 +8,8 @@ import 'package:resurgence/family/player.dart';
 import 'package:resurgence/family/service.dart';
 import 'package:resurgence/family/state.dart';
 import 'package:resurgence/multiplayer-task/page.dart';
+import 'package:resurgence/player/player.dart';
+import 'package:resurgence/player/service.dart';
 import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/real-estate/read_estate.dart';
 import 'package:resurgence/task/solo_task_page.dart';
@@ -35,7 +37,12 @@ class _MenuPageState extends State<MenuPage> {
           _MenuItem(
             text: S.profile,
             icon: Icons.account_box,
-            onPressed: () => push(context, widget: ProfilePage()),
+            onPressed: () {
+              context.read<PlayerService>().info().then((player) {
+                context.read<PlayerState>().updatePlayer(player);
+                push(context, widget: ProfilePage(player: player));
+              });
+            },
           ),
           _MenuItem(
             text: S.tasks,
