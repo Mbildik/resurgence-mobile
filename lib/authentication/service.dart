@@ -24,7 +24,7 @@ class AuthenticationService {
     });
   }
 
-  Future<Token> oauth2Login(String provider, String token, String email) {
+  Future<Token> oauth2Login(String provider, String token) {
     return _client.oauth2Login(provider, token).then((value) {
       analytics?.logLogin(loginMethod: provider);
       return value;
