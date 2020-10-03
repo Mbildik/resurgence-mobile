@@ -104,8 +104,9 @@ class S {
   static var currentBalance = 'Nakit';
   static var bankTitle = 'Bank';
   static const money = 'Para';
-  static var withdraw = 'Withdraw';
-  static var deposit = 'Deposit';
+  static const moneyToInterest = 'Faize yatırılacak para';
+  static const withdraw = 'Çek';
+  static const deposit = 'Yatır';
   static var integerRequired = 'integer.required';
   static var interest = 'Faiz';
   static var interestHelp =
