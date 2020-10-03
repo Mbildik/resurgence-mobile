@@ -12,6 +12,7 @@ import 'package:resurgence/family/state.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/multiplayer-task/service.dart';
 import 'package:resurgence/network/client.dart';
+import 'package:resurgence/notification/service.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
 import 'package:resurgence/real-estate/service.dart';
@@ -32,6 +33,20 @@ void main() async {
   // Monitoring
   final analytics = FirebaseAnalytics();
   final sentry = SentryClient(dsn: S.DSN);
+
+  FlutterError.onError = (details, {bool forceReport = false}) {
+    if (isInDebugMode) {
+      // In development mode, simply print to console.
+      FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
+    } else {
+      // In production mode, report to the application zone to report to
+      // Sentry.
+      sentry.captureException(
+        exception: details.exception,
+        stackTrace: details.stack,
+      );
+    }
+  };
 
   final authenticationState = AuthenticationState(sentryClient: sentry);
   final client = Client(authenticationState, sentryClient: sentry);
@@ -101,19 +116,10 @@ void main() async {
     create: (_) => MultiplayerService(client),
   );
 
-  FlutterError.onError = (details, {bool forceReport = false}) {
-    if (isInDebugMode) {
-      // In development mode, simply print to console.
-      FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
-    } else {
-      // In production mode, report to the application zone to report to
-      // Sentry.
-      sentry.captureException(
-        exception: details.exception,
-        stackTrace: details.stack,
-      );
-    }
-  };
+  // Notification Message
+  final messageServiceProvider = Provider(
+    create: (_) => MessageService(client),
+  );
 
   runApp(
     MultiProvider(
@@ -148,6 +154,9 @@ void main() async {
 
         // Multiplayer Task
         multiplayerServiceProvider,
+
+        // Notification Message
+        messageServiceProvider,
       ],
       child: Application(analytics: analytics),
     ),
