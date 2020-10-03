@@ -32,6 +32,11 @@ class AuthenticationService {
   }
 
   Future<void> pushToken(String token) => _client.pushToken(token);
+
+  Future<void> logout() {
+    // todo implement
+    return Future.value();
+  }
 }
 
 class _AuthenticationClient {
