@@ -76,12 +76,14 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
     @required this.builder,
     @required this.onError,
     this.onEmpty,
+    this.onLoading = const LoadingWidget(),
   }) : super(key: key);
 
   final Future<T> future;
   final Function onError;
   final AsyncWidgetBuilder<T> builder;
   final Widget onEmpty;
+  final Widget onLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +92,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
       builder: (context, snapshot) {
         var data = snapshot.data;
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const LoadingWidget();
+          return onLoading;
         } else if (snapshot.hasError) {
           log('loading future error', error: snapshot.error);
           return RefreshOnErrorWidget(
