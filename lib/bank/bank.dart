@@ -163,10 +163,10 @@ class _BankPageState extends State<BankPage> {
             title: Text(S.interest),
             icon: Icon(Icons.attach_money),
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             title: Text(S.transfer),
             icon: Icon(Icons.send),
-          ),
+          ),*/
         ],
       ),
       body: Builder(
