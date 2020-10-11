@@ -18,12 +18,7 @@ class FamilyService {
   }
 
   Future<Family> info() {
-    return _client.info().catchError((e) {
-      if (e is DioError && e.response?.statusCode == 404) {
-        return null;
-      }
-      throw e;
-    });
+    return _client.info();
   }
 
   Future<List<Announcement>> announcement({String family}) {
@@ -104,8 +99,10 @@ class _FamilyClient {
         .then((response) => Family.fromJson(response.data));
   }
 
-  Future<Family> info() =>
-      _client.get('family').then((response) => Family.fromJson(response.data));
+  Future<Family> info() => _client.get('family').then((response) {
+        if (response.statusCode == 204) return null;
+        return Family.fromJson(response.data);
+      });
 
   Future<List<Announcement>> announcement({String family}) {
     var url =

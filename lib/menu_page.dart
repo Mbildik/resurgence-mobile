@@ -3,15 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
-import 'package:resurgence/family/family.dart';
-import 'package:resurgence/family/player.dart';
-import 'package:resurgence/family/service.dart';
-import 'package:resurgence/family/state.dart';
 import 'package:resurgence/multiplayer-task/page.dart';
+import 'package:resurgence/notification/notification_message_ui.dart';
+import 'package:resurgence/player/player.dart';
+import 'package:resurgence/player/service.dart';
 import 'package:resurgence/profile/profile_page.dart';
-import 'package:resurgence/real-estate/read_estate.dart';
 import 'package:resurgence/task/solo_task_page.dart';
-import 'package:resurgence/ui/shared.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -35,7 +32,12 @@ class _MenuPageState extends State<MenuPage> {
           _MenuItem(
             text: S.profile,
             icon: Icons.account_box,
-            onPressed: () => push(context, widget: ProfilePage()),
+            onPressed: () {
+              context.read<PlayerService>().info().then((player) {
+                context.read<PlayerState>().updatePlayer(player);
+                push(context, widget: ProfilePage(player: player));
+              });
+            },
           ),
           _MenuItem(
             text: S.tasks,
@@ -52,7 +54,7 @@ class _MenuPageState extends State<MenuPage> {
             icon: Icons.account_balance,
             onPressed: () => push(context, route: BankPageRoute()),
           ),
-          _MenuItem(
+          /*_MenuItem(
             text: S.realEstate,
             icon: Icons.work,
             onPressed: () => push(context, route: RealEstatePageRoute()),
@@ -90,11 +92,16 @@ class _MenuPageState extends State<MenuPage> {
               icon: Icons.merge_type,
               onPressed: () => push(context, route: PlayerInvitationRoute()),
             ),
-          ),
+          ),*/
           _MenuItem(
             text: S.chat,
             icon: Icons.people,
             onPressed: () => push(context, route: ChatRoute()),
+          ),
+          _MenuItem(
+            text: S.messages,
+            icon: Icons.message,
+            onPressed: () => push(context, route: NotificationMessageRoute()),
           ),
         ],
       ),

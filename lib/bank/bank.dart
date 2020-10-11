@@ -163,10 +163,10 @@ class _BankPageState extends State<BankPage> {
             title: Text(S.interest),
             icon: Icon(Icons.attach_money),
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
             title: Text(S.transfer),
             icon: Icon(Icons.send),
-          ),
+          ),*/
         ],
       ),
       body: Builder(
@@ -260,8 +260,13 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
                   children: [
                     Expanded(
                       child: TextFormField(
-                        decoration:
-                            InputDecoration.collapsed(hintText: S.money),
+                        decoration: InputDecoration(
+                          labelText: S.money,
+                          border: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                          contentPadding: EdgeInsets.all(4.0),
+                        ),
                         keyboardType: TextInputType.number,
                         textInputAction: TextInputAction.done,
                         controller: moneyController,

@@ -233,7 +233,13 @@ class __InterestFormWidgetState extends State<_InterestFormWidget> {
             SizedBox(width: 8.0),
             Expanded(
               child: TextFormField(
-                decoration: InputDecoration.collapsed(hintText: S.money),
+                decoration: InputDecoration(
+                  labelText: S.moneyToInterest,
+                  border: InputBorder.none,
+                  focusedErrorBorder: InputBorder.none,
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  contentPadding: EdgeInsets.all(4.0),
+                ),
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.done,
                 controller: _interestMoneyController,
@@ -251,7 +257,7 @@ class __InterestFormWidgetState extends State<_InterestFormWidget> {
               ),
               padding: EdgeInsets.zero,
               color: Colors.green[700],
-              child: Text(S.interest),
+              child: Text(S.deposit),
               onPressed: () {
                 if (!_formKey.currentState.validate())
                   return null; // form is not valid
