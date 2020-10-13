@@ -10,6 +10,10 @@ class ItemService {
   Future<List<PlayerItem>> allItem({List<AbstractEnum> categories}) {
     return _client.allItem(categories: categories);
   }
+
+  Future<List<Item>> counter() => _client.counter();
+
+  Future<void> buy(Map<Item, int> items) => _client.buy(items);
 }
 
 class _ItemClient {
@@ -26,5 +30,20 @@ class _ItemClient {
         (response) => (response.data as List)
             .map((e) => PlayerItem.fromJson(e))
             .toList(growable: false));
+  }
+
+  Future<List<Item>> counter() =>
+      _client.get('npc/counter').then((response) => (response.data as List)
+          .map((e) => Item.fromJson(e))
+          .toList(growable: false));
+
+  Future<void> buy(Map<Item, int> items) {
+    var data = [];
+    items.forEach(
+      (item, quantity) => data.add(
+        {'item': item.key, 'quantity': quantity},
+      ),
+    );
+    return _client.post('npc', data: data);
   }
 }

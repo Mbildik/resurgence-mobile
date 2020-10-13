@@ -251,6 +251,13 @@ class S {
     if (quantity < 1) return 'Kalmadı';
     return '$quantity tane kaldı';
   }
+
+  static const npc = 'NPC';
+  static const npcHelp =
+      'NPC\'den oyun içerisinde bulunan bazı item\'ları alabilirsin.\n'
+      'Almak istediğin item\'lara tıkla ve satın al.\n'
+      'Sepetten istemediğin item\'ları tıklayarak teker teker veya '
+      'uzun basarak hepsini çıkabilirsin.\n';
 }
 
 class W {

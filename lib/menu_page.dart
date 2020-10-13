@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/item/npc_counter_ui.dart';
 import 'package:resurgence/multiplayer-task/page.dart';
 import 'package:resurgence/notification/notification_message_ui.dart';
 import 'package:resurgence/player/player.dart';
@@ -102,6 +103,11 @@ class _MenuPageState extends State<MenuPage> {
             text: S.messages,
             icon: Icons.message,
             onPressed: () => push(context, route: NotificationMessageRoute()),
+          ),
+          _MenuItem(
+            text: S.npc,
+            icon: Icons.category,
+            onPressed: () => push(context, route: NPCCounterRoute()),
           ),
         ],
       ),

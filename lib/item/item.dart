@@ -9,9 +9,16 @@ class Item extends AbstractEnum {
   Set<AbstractEnum> category;
   int price;
   String image;
+  Quality quality;
 
-  Item({String key, String value, this.category, this.price, this.image})
-      : super(key: key, value: value);
+  Item({
+    String key,
+    String value,
+    this.category,
+    this.price,
+    this.image,
+    this.quality,
+  }) : super(key: key, value: value);
 
   Item.fromJson(Map<String, dynamic> json) {
     var abstractEnum = AbstractEnum.fromJson(json);
@@ -24,6 +31,7 @@ class Item extends AbstractEnum {
     }
     price = json['price'];
     image = json['image'] == null ? null : S.baseUrl + json['image'];
+    quality = json['quality'] == null ? null : Quality.fromJson(json['quality']);
   }
 }
 
@@ -42,6 +50,29 @@ class PlayerItem {
         "item": item == null ? null : item.key,
         "quantity": quantity == null ? null : quantity,
       };
+}
+
+class Quality extends AbstractEnum {
+  int factor;
+
+  Quality(this.factor, key, value) : super(key: key, value: value);
+
+  Quality.fromJson(Map<String, dynamic> json) {
+    var abstractEnum = AbstractEnum.fromJson(json);
+    key = abstractEnum.key;
+    value = abstractEnum.value;
+    factor = json['factor'] == null ? null : json['factor'];
+  }
+
+  Color color() {
+    switch (key) {
+      case 'WORTHLESS': return Colors.grey;
+      case 'COMMON': return Colors.white;
+      case 'RARE': return Colors.amber;
+      case 'LEGENDARY': return Colors.purple[300];
+      default: return Colors.grey;
+    }
+  }
 }
 
 class SelectedPlayerItemState extends ChangeNotifier {

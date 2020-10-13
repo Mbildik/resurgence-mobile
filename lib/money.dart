@@ -6,6 +6,7 @@ class Money {
     return NumberFormat.simpleCurrency(
       name: '₺',
       decimalDigits: 0,
+      locale: 'tr-TR',
     ).format(number);
   }
 }
