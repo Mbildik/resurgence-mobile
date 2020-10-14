@@ -26,7 +26,7 @@ class TaskListTile extends StatelessWidget {
   const TaskListTile(
     this.task, {
     Key key,
-    this.onPerform,
+    @required this.onPerform,
   }) : super(key: key);
 
   @override

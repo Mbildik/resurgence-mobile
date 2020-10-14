@@ -3,42 +3,43 @@ import 'package:resurgence/item/item.dart';
 import 'package:resurgence/task/model.dart';
 
 class MultiplayerTask extends AbstractEnum {
-  MultiplayerTask({
-    this.positions,
-    this.leaderTask,
-    this.left,
-    key,
-    value,
-  }) : super(key: key, value: value);
+  MultiplayerTask({this.positions, key, value}) : super(key: key, value: value);
 
   final List<Position> positions;
-  final Task leaderTask;
-  final int left;
 
   factory MultiplayerTask.fromJson(Map<String, dynamic> json) {
     var abstractEnum = AbstractEnum.fromJson(json);
     return MultiplayerTask(
-        positions: json["positions"] == null
-            ? null
-            : List<Position>.from(
-                json["positions"].map((x) => Position.fromJson(x))),
-        leaderTask: json["leader_task"] == null
-            ? null
-            : Task.fromJson(json["leader_task"]),
-        left: json["left"] == null ? null : json["left"],
-        key: abstractEnum.key,
-        value: abstractEnum.value);
+      positions: json["positions"] == null
+          ? null
+          : List<Position>.from(
+              json["positions"].map((x) => Position.fromJson(x))),
+      key: abstractEnum.key,
+      value: abstractEnum.value,
+    );
   }
+
+  Task get leaderTask => positions.firstWhere((p) => p.leader).task;
 }
 
 class Position extends AbstractEnum {
-  Position({this.leader, key, value}) : super(key: key, value: value);
+  Position({
+    this.task,
+    this.quorum,
+    this.leader,
+    key,
+    value,
+  }) : super(key: key, value: value);
 
+  final Task task;
+  final int quorum;
   final bool leader;
 
   factory Position.fromJson(Map<String, dynamic> json) {
     var abstractEnum = AbstractEnum.fromJson(json);
     return Position(
+      task: json["task"] == null ? null : Task.fromJson(json["task"]),
+      quorum: json["quorum"] == null ? null : json["quorum"],
       leader: json["leader"] == null ? null : json["leader"],
       key: abstractEnum.key,
       value: abstractEnum.value,

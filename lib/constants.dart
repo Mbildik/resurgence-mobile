@@ -98,7 +98,8 @@ class S {
     return '${categories.join(', ')} kategorilerine ait hiç itemin yok.';
   }
 
-  static const failedTaskResult = 'Beceremedin';
+  static const failedTaskResult = 'Beceremedin.';
+  static String failedTaskResultMember(String member) => '$member beceremedi.';
   static var bank = 'Bank';
   static var bankBalance = 'Banka Bakiyesi';
   static var currentBalance = 'Nakit';
@@ -258,6 +259,9 @@ class S {
       'Almak istediğin item\'lara tıkla ve satın al.\n'
       'Sepetten istemediğin item\'ları tıklayarak teker teker veya '
       'uzun basarak hepsini çıkabilirsin.\n';
+
+  static const multiplayerTaskGainMember = 'şunları kazandı.';
+  static const multiplayerTaskGainSelf = 'Şunları kazandın.';
 }
 
 class W {

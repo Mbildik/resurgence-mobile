@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/money.dart';
+import 'package:resurgence/multiplayer-task/data.dart';
+import 'package:resurgence/player/player.dart';
 import 'package:resurgence/task/model.dart';
 
 class TaskResultPage extends StatelessWidget {
@@ -12,7 +14,7 @@ class TaskResultPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return result.succeed ? TaskSucceed(result) : TaskFailed();
+    return result.succeed ? TaskSucceed(result) : TaskFailed(result);
   }
 }
 
@@ -26,6 +28,35 @@ class TaskSucceed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget playerNameWidget = Container();
+    final currentPlayer = PlayerState.playerName;
+    if (result is MultiplayerTaskResult) {
+      var member = (result as MultiplayerTaskResult).player;
+      if (member != currentPlayer) {
+        playerNameWidget = Text('$member ${S.multiplayerTaskGainMember}');
+        playerNameWidget = RichText(
+          text: TextSpan(
+              text: member,
+              style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                  decoration: TextDecoration.underline),
+              children: [
+                TextSpan(
+                  text: ' ',
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                TextSpan(
+                  text: S.multiplayerTaskGainMember,
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+              ]),
+        );
+      } else {
+        playerNameWidget = Text(S.multiplayerTaskGainSelf);
+      }
+    }
+
     return Center(
       child: Container(
         width: double.infinity,
@@ -36,6 +67,7 @@ class TaskSucceed extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                playerNameWidget,
                 Image.asset(A.MONEY, width: 128, height: 128),
                 Text(
                   Money.format(result.moneyGain),
@@ -102,8 +134,23 @@ class TaskSucceed extends StatelessWidget {
 }
 
 class TaskFailed extends StatelessWidget {
+  final TaskResult result;
+
+  const TaskFailed(
+      this.result, {
+        Key key,
+      }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    bool selfBusted = true;
+    String member = '';
+    if (result is MultiplayerTaskResult) {
+      var current = PlayerState.playerName;
+      member = (result as MultiplayerTaskResult).player;
+      if (member != current) selfBusted = false;
+    }
+
     return Center(
       child: Container(
         width: double.infinity,
@@ -115,7 +162,7 @@ class TaskFailed extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(A.BUSTED, width: 128, height: 128),
-                Text(S.failedTaskResult),
+                Text(selfBusted ? S.failedTaskResult : S.failedTaskResultMember(member)),
                 SizedBox(height: 8.0),
                 RaisedButton(
                   shape: RoundedRectangleBorder(

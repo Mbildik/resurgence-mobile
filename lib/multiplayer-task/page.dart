@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:duration/duration.dart';
-import 'package:duration/locale.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
@@ -12,7 +10,9 @@ import 'package:resurgence/item/item.dart';
 import 'package:resurgence/multiplayer-task/data.dart';
 import 'package:resurgence/multiplayer-task/service.dart';
 import 'package:resurgence/player/player.dart';
+import 'package:resurgence/task/select_item.dart';
 import 'package:resurgence/task/task_result.dart';
+import 'package:resurgence/task/ui.dart';
 import 'package:resurgence/ui/error_handler.dart';
 import 'package:resurgence/ui/shared.dart';
 
@@ -80,99 +80,20 @@ class _MultiplayerTaskPageState extends State<MultiplayerTaskPage> {
                 itemBuilder: (context, index) {
                   var task = tasks[index];
 
-                  return _MPListTile(task: task);
+                  return TaskListTile(
+                    task.leaderTask,
+                    onPerform: (items) {
+                      Navigator.of(context).pushReplacement(
+                        _MPTaskPlanPageRoute(task, items),
+                      );
+                    },
+                  );
                 },
               );
             },
           ),
         );
       },
-    );
-  }
-}
-
-class _MPListTile extends StatefulWidget {
-  const _MPListTile({
-    Key key,
-    @required this.task,
-  }) : super(key: key);
-
-  final MultiplayerTask task;
-
-  @override
-  __MPListTileState createState() => __MPListTileState();
-}
-
-class __MPListTileState extends State<_MPListTile> {
-  Duration _duration;
-  bool _enabled = false;
-  Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _duration = Duration(milliseconds: widget.task.left);
-    if (_duration.inMilliseconds == 0) {
-      _enabled = true;
-    }
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_duration.inSeconds < 1) {
-        timer.cancel();
-        setState(() {
-          _enabled = true;
-          _duration = Duration.zero;
-        });
-      } else {
-        setState(() {
-          _duration = Duration(milliseconds: _duration.inMilliseconds - 1000);
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var task = widget.task;
-    return ListTile(
-      leading: Image.network('https://picsum.photos/150'),
-      title: Text(task.value),
-      subtitle: Text(
-        task.positions.map((p) => p.value).join(', '),
-      ),
-      trailing: RaisedButton(
-        child: Text(buttonText()),
-        onPressed: !_enabled
-            ? null
-            : () {
-                Navigator.push<List<PlayerItem>>(
-                  context,
-                  ItemListPageRoute(task.leaderTask),
-                ).then((selectedItems) {
-                  if (selectedItems == null) return;
-                  Navigator.of(context).pushReplacement(_MPTaskPlanPageRoute(
-                    task,
-                    selectedItems,
-                  ));
-                });
-              },
-      ),
-    );
-  }
-
-  String buttonText() {
-    if (_enabled) {
-      return S.organize;
-    }
-    return prettyDuration(
-      _duration,
-      locale: const TurkishDurationLocale(),
-      abbreviated: true,
     );
   }
 }
@@ -288,7 +209,12 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
             );
           }).toList(growable: false);
 
-          var emptyPositions = List.from(plan.task.positions);
+          var emptyPositions = List<Position>.empty(growable: true);
+          plan.task.positions.forEach((position) {
+            for (var i = 0; i < position.quorum; i++)
+              emptyPositions.add(position);
+          });
+
           plan.members
               .map((m) => m.position)
               .forEach((position) => emptyPositions.remove(position));
@@ -326,8 +252,12 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
                       var task = currentMember.task;
                       Navigator.push<List<PlayerItem>>(
                         context,
-                        ItemListPageRoute(task),
+                        SelectItemRoute(task),
                       ).then((selectedItems) {
+                        // if `selectedItems` is null,
+                        //  it means player canceled the task
+                        if (selectedItems == null) return;
+
                         _service
                             .ready(selectedItems ?? [])
                             .then((_) => _reload())
@@ -342,9 +272,9 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
                   child: RaisedButton(
                     child: Text(S.perform),
                     onPressed: () => _service.perform().then((value) {
-                      print(value);
 
-                      Navigator.pop(context);
+                      Navigator.pop(context); // pop the plan page
+
                       value.forEach((element) {
                         Navigator.push(context, TaskResultRoute(element));
                       });
