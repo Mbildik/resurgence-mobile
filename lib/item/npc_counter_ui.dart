@@ -176,7 +176,7 @@ class _NPCCounterState extends State<NPCCounter> {
           _buyCompleted = true;
           Timer.periodic(Duration(seconds: 1), (timer) {
             timer.cancel();
-            setState(() => _buyCompleted = false);
+            if (mounted) setState(() => _buyCompleted = false);
           });
         })
         .whenComplete(() => setState(() => _buying = false))
