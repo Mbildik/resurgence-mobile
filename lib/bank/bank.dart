@@ -156,11 +156,11 @@ class _BankPageState extends State<BankPage> {
         currentIndex: _transactions.index,
         items: [
           BottomNavigationBarItem(
-            title: Text(S.bankAccount),
+            label: S.bankAccount,
             icon: Icon(Icons.account_balance),
           ),
           BottomNavigationBarItem(
-            title: Text(S.interest),
+            label: S.interest,
             icon: Icon(Icons.attach_money),
           ),
           /*BottomNavigationBarItem(
