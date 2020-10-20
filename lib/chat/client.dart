@@ -1,184 +1,156 @@
-import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
-import 'package:resurgence/chat/client_messages.dart' as client;
-import 'package:resurgence/chat/server_messages.dart' as server;
-import 'package:resurgence/chat/shared_messages.dart' as shared;
-import 'package:resurgence/chat/state.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:resurgence/authentication/state.dart';
+import 'package:resurgence/chat/model.dart';
+import 'package:resurgence/constants.dart';
+import 'package:stomp_dart_client/sock_js/sock_js_utils.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
 
-typedef ServerMessageCallback = void Function(server.ServerMessage message);
-typedef SendMessage = void Function(
-  client.ClientMessage message, {
-  ServerMessageCallback callback,
-  bool removeOnEvent,
-});
+import 'state.dart';
 
-enum _ConnectionState { closed, open }
+class Client {
+  String _token;
+  String _playerName;
+  StompClient _client;
+  final Map<Subscription, Function({Map<String, String> unsubscribeHeaders})>
+      callbacks = HashMap();
 
-class ChatClient {
-  final String url;
-  final ChatState chatState;
+  final ChatState _state;
 
-  IOWebSocketChannel _channel;
-  StreamSubscription _streamSubscription;
-  Map<String, OnServerMessage> _onResponses = {};
-  _ConnectionState _connectionState = _ConnectionState.closed;
-
-  ChatClient(this.url, this.chatState) {
-    chatState.sendMessage = this.sendMessage;
-    _connect();
-  }
-
-  void createAccount(String username, String password) =>
-      sendMessage(client.Acc.basic(username, password));
-
-  void login(String username, String password) =>
-      sendMessage(client.Login.basic(username, password));
-
-  void addNickname(String nickname) {
-    sendMessage(
-      client.Set(
-        topic: "me",
-        desc: client.SetDesc(public: shared.Public(fn: nickname)),
-        tags: List.from(chatState.tags)..add('nick:$nickname'),
-      ),
-    );
-  }
-
-  void fetchMessages(
-    String topic, {
-    int limit = 24,
-  }) {
-    sendMessage(
-      client.Sub(
-        topic: topic,
-        subGet: client.Get(
-          data: client.Data(limit: limit),
-          what: 'data sub desc',
-        ),
-      ),
-    );
-  }
-
-  void sendReadNote(String topic) {
-    var currentData = chatState.currentData;
-    if (currentData.isEmpty) return;
-
-    var seq = currentData.first.seq;
-    sendMessage(client.Note(
-      topic: topic,
-      what: 'read',
-      seq: seq,
-    ));
-    chatState.updateSequence(topic, seq);
-  }
-
-  void leave(String topic) {
-    sendMessage(client.Leave(topic: topic));
-  }
-
-  void sendTextMessage(String topic, String content) {
-    sendMessage(client.Pub(topic: topic, noecho: false, content: content));
-  }
-
-  void searchUser(String nickname) {
-    sendMessage(client.Set(
-      topic: 'fnd',
-      desc: client.SetDesc(publicString: nickname == null ? '␡' : 'nick:$nickname'),
-    ), callback: (_) {
-      sendMessage(client.Get(topic: 'fnd', what: 'sub'));
-    });
-  }
-
-  void subscribeUser(String username) {
-    sendMessage(
-      client.Sub(
-        topic: username,
-        subSet: client.Set(
-          sub: client.SetSub(mode: 'JRWPS'),
-          desc: client.SetDesc(
-            defacs: shared.Defacs(auth: 'JRWPS'),
-          ),
-        ),
-        subGet: client.Get(
-          data: client.Data(limit: 24),
-          what: 'data sub desc',
-        ),
-      ),
-    );
-  }
-
-  Future logout() async {
-    await chatState.logout();
-    reconnect();
-  }
-
-  Future reconnect() async {
-    await _close();
-    _connect();
-  }
-
-  void sendMessage(
-    client.ClientMessage message, {
-    ServerMessageCallback callback,
-    bool removeOnEvent: true,
-  }) {
-    if (_connectionState != _ConnectionState.open) {
-      return; // todo reconnect with retry option
-    }
-    var json = message.json();
-    log('Sent message: $json');
-    _channel.sink.add(json);
-    if (callback != null) {
-      _onResponses[message.id] = OnServerMessage(removeOnEvent, callback);
-    }
-  }
-
-  void _connect() {
-    _connectionState = _ConnectionState.open;
-    _channel = IOWebSocketChannel.connect(url);
-    sendMessage(client.Hi());
-    _streamSubscription = _channel.stream.map((event) {
-      log('raw websocket message: $event');
-      return server.ServerMessage.parse(event);
-    }).listen((message) {
-      final String messageId = message.id;
-
-      if (messageId != null && _onResponses.containsKey(messageId)) {
-        var onResponse = _onResponses[messageId];
-        onResponse.callback(message);
-        if (onResponse.remove) _onResponses.remove(messageId);
+  Client(this._state, AuthenticationState state) {
+    state.addListener(() {
+      if (state.isLoggedIn) {
+        var playerName = state.playerName();
+        if (playerName == null) return;
+        this._token = state.token.accessToken;
+        this._playerName = playerName;
+        var client = _init();
+        client.activate();
+      } else {
+        if (_client != null) _client.deactivate();
+        // dispose();
       }
+    });
+  }
 
-      chatState.on(message);
-    }, onError: (error) {
-      log('websocket error', error: error);
-      _connectionState = _ConnectionState.closed;
-    }, onDone: () {
-      log('websocket connection closed!');
-      _connectionState = _ConnectionState.closed;
+  void subscribe(Subscription subscription) {
+    _client.send(destination: '/p2p/${subscription.name}');
+  }
+
+  void searchUser(String player) {
+    _client.send(destination: '/players/$player');
+  }
+
+  void clearSearchUserFilter() => _state.filteredUsers = Set();
+
+  void sendText(Subscription subscription, String text) {
+    _client.send(destination: '/send/${subscription.topic}', body: text);
+  }
+
+  StompClient _init() {
+    var url = SockJsUtils()
+        .generateTransportUrl('${S.baseUrl}ws')
+        .replaceAll('#', ''); // todo refactor
+    return StompClient(
+      config: StompConfig(
+        url: url,
+        stompConnectHeaders: {
+          HttpHeaders.authorizationHeader: 'Bearer $_token'
+        },
+        webSocketConnectHeaders: {
+          HttpHeaders.authorizationHeader: 'Bearer $_token'
+        },
+        onConnect: (client, frame) {
+          this._client = client;
+          _initSubscriptions();
+          _initOnlineUsers();
+          _initPlayerFilterSubscription();
+        },
+        onStompError: (frame) => log('error ${frame.body}'),
+        onDisconnect: (frame) => log('disconnected $frame'),
+        useSockJS: true,
+      ),
+    );
+  }
+
+  void _initSubscriptions() {
+    _client.subscribe(
+      destination: '/user/$_playerName/subscriptions',
+      callback: (frame) {
+        var topics = Set<Subscription>.from((jsonDecode(frame.body) as List)
+            .map((e) => Subscription.fromJson(e)));
+        log('Current subscriptions ${frame.body}');
+        var oldSubs = Set.of(_state.subscriptions);
+        _state.subscribe(topics);
+        oldSubs.removeAll(_state.subscriptions);
+        _subscribe(oldSubs);
+      },
+    );
+    this._client.send(destination: '/subscriptions');
+  }
+
+  void _subscribe(Set<Subscription> old) {
+    callbacks.keys.where((e) => old.contains(e)).forEach((e) {
+      try {
+        // unsubscribe all old subs.
+        log('Unsubscribing topic ${e.topic}');
+        callbacks[e](unsubscribeHeaders: {});
+        _state.clear(e);
+      } catch (e) {
+        log('An error occurred while unsubscribing', error: e);
+      }
     });
 
-    if (!chatState.isLogin()) {
-      chatState
-          .getToken()
-          .then((token) => this.sendMessage(client.Login.token(token)))
-          .catchError((e) => log('Websocket token not found. do nothing!'));
-    }
+    // clear callbacks
+    callbacks.removeWhere((key, value) => old.contains(key));
+
+    _state.subscriptions.forEach((sub) {
+      if (callbacks.containsKey(sub)) return;
+
+      log('Subscribing topic ${sub.topic}.');
+      // todo callback fonksiyonu çalışması için saçma bir çözüm
+      //  Future içine alarak sorundan kurtuluyoruz.
+      //  aynı thread de olunca ya callback ataması yaparken sorun oluyor
+      //  yada başka bir şey var anlamadım.
+      Future.delayed(Duration.zero).then((_) {
+        callbacks[sub] = _client.subscribe(
+          destination: '/user/$_playerName/${sub.topic}',
+          callback: (frame) {
+            log('Message ${frame.body}');
+            _state.onMessage(sub, Message.fromJson(jsonDecode(frame.body)));
+          },
+        );
+      });
+    });
   }
 
-  Future _close() async {
-    await _streamSubscription?.cancel();
-    await _channel?.sink?.close(1000, 'Normal closure');
-    chatState.cleanToken();
-    _onResponses = {};
+  void _initOnlineUsers() {
+    Future.delayed(Duration.zero).then((_) {
+      _client.subscribe(
+        destination: '/user/$_playerName/online-players',
+        callback: (frame) {
+          _state.onlineUsers = Set<String>.from(jsonDecode(frame.body));
+          log('online players ${_state.onlineUsers}');
+        },
+      );
+    });
   }
-}
 
-class OnServerMessage {
-  final bool remove;
-  final ServerMessageCallback callback;
+  void _initPlayerFilterSubscription() {
+    _client.subscribe(
+      destination: '/user/$_playerName/players',
+      callback: (frame) {
+        _state.filteredUsers = Set<Subscription>.from(
+            (jsonDecode(frame.body) as List)
+                .map((e) => Subscription.fromJson(e)));
+        log('filtered players ${frame.body}');
+      },
+    );
+  }
 
-  OnServerMessage(this.remove, this.callback);
+// dispose() => _state.clear();
 }

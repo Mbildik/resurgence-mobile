@@ -4,8 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/bank/service.dart';
-import 'package:resurgence/chat/client.dart';
-import 'package:resurgence/chat/state.dart';
+import 'package:resurgence/chat/chat.dart' as chat;
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/family/service.dart';
 import 'package:resurgence/family/state.dart';
@@ -94,20 +93,12 @@ void main() async {
   );
 
   // Chat
-  final ChatState chatState = ChatState();
+  final chat.ChatState _chatState = chat.ChatState();
   final chatStateProvider = ChangeNotifierProvider.value(
-    value: chatState,
+    value: _chatState,
   );
-  final chatClientProvider = Provider(
-    create: (_) {
-      var chatClient = ChatClient(S.wsUrl, chatState);
-      authenticationState.addListener(() {
-        if (!authenticationState.isLoggedIn) {
-          chatClient.logout();
-        }
-      });
-      return chatClient;
-    },
+  final chatClientProvider = Provider<chat.Client>(
+    create: (_) => chat.Client(_chatState, authenticationState),
     lazy: false,
   );
 

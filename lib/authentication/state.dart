@@ -19,7 +19,7 @@ class AuthenticationState with ChangeNotifier {
   AuthenticationState({this.sentryClient, this.analytics}) {
     _getToken()
         .then((token) => this.login(token))
-        .catchError((e) => log('token fetch error $e. Do nothing!'));
+        .catchError((e) => log('token read error $e. Do nothing!'));
   }
 
   void login(Token token) {
@@ -80,6 +80,9 @@ class AuthenticationState with ChangeNotifier {
   }
 
   Token get token => _token;
+
+  String playerName() =>
+      isLoggedIn ? _decodeToken(this._token.accessToken)['player'] : null;
 
   static Map<String, dynamic> _decodeToken(String token) {
     try {

@@ -1,247 +1,64 @@
 import 'dart:collection';
-import 'dart:developer';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:overlay_support/overlay_support.dart';
-import 'package:resurgence/chat/chat.dart';
-import 'package:resurgence/chat/client.dart';
-import 'package:resurgence/chat/client_messages.dart' as client;
-import 'package:resurgence/chat/server_messages.dart';
-import 'package:resurgence/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
+
+import 'model.dart';
 
 class ChatState extends ChangeNotifier {
-  static const _WEBSOCKET_TOKEN_KEY = 'websocket_token';
+  Set<Subscription> _subscriptions = Set();
+  Set<String> _onlineUsers = Set();
+  Set<Subscription> _filteredUsers = Set();
+  Map<Subscription, SplayTreeSet<Message>> _subsMessages = HashMap();
 
-  SendMessage _sendMessage;
-  String _token;
-
-  String username;
-  Set<String> tags = HashSet();
-  Set<Sub> subs = HashSet();
-  Set<String> onlineUsers = HashSet();
-  SplayTreeSet<Data> currentData = SplayTreeSet(
-    (data1, data2) => data2.seq.compareTo(data1.seq),
-  );
-  Map<String, String> usernameNickMap = HashMap();
-
-  Set<Sub> fndSub = HashSet();
-
-//  Desc desc;
-
-  ChatState() {
-    getToken().then((value) => _token = value).catchError((e) {
-      log('Token not found initializing chat state.', error: e);
+  void subscribe(Set<Subscription> subscriptions) {
+    var oldSubs = Set<Subscription>.from(_subscriptions);
+    _subscriptions = subscriptions;
+    _subscriptions.forEach((s) {
+      s.lastMessage = oldSubs
+          .firstWhere(
+            (os) => os == s,
+            orElse: () => null,
+          )
+          ?.lastMessage;
     });
-  }
-
-  void on(ServerMessage message) {
-//    log('On server message. $message');
-
-    switch (message.runtimeType) {
-      case Data:
-        return _onData(message);
-      case Ctrl:
-        return _onCtrl(message);
-      case Meta:
-        return _onMeta(message);
-      case Pres:
-        return _onPres(message);
-      default:
-        log('Missing message handler for ${message.runtimeType} $message');
-    }
-  }
-
-  Future<String> getToken() {
-    if (_token != null) return Future.value(_token);
-    return _getToken();
-  }
-
-  bool isLogin() {
-    return _token != null;
-  }
-
-  // reset all values
-  Future<void> logout() async {
-    await _removeToken();
-    _token = null;
-    username = null;
-    tags.clear();
-    subs.clear();
-    onlineUsers.clear();
-    currentData.clear();
-    fndSub.clear();
-    usernameNickMap.clear();
-  }
-
-  void cleanToken() {
-    _token = null;
-    username = null;
-  }
-
-  void updateSequence(String topic, int read) {
-    subs.where((s) => s.topic == topic).forEach((s) => s.read = read);
     notifyListeners();
   }
 
-  set sendMessage(SendMessage value) {
-    _sendMessage = value;
-  }
-
-  void _onCtrl(Ctrl message) {
-    String messageId = message.id;
-    String clientMessageType =
-        messageId.contains('__') ? messageId.split('__').first : null;
-
-    if (clientMessageType == null) {
-      return _handleUnknownMessage(message);
+  void onMessage(Subscription subscription, Message message) {
+    if (!_subsMessages.containsKey(subscription)) {
+      _subsMessages[subscription] = SplayTreeSet(
+        (data1, data2) => data2.sequence.compareTo(data1.sequence),
+      );
     }
+    _subsMessages[subscription].add(message);
+    _subscriptions
+        .firstWhere((e) => e == subscription, orElse: () => null)
+        ?.lastMessage = _subsMessages[subscription].first;
 
-    switch (clientMessageType) {
-      case 'Login':
-        return _onLogin(message);
-      case 'Leave':
-        return _onLeave(message);
-      case 'Get':
-        return _onGet(message);
-    }
-  }
-
-  void _onLogin(Ctrl message) {
-    if (message.code != 200)
-      throw Exception('Websocket login failed. $message');
-
-    _token = message.params['token'];
-    username = message.params['user'];
-    log('login succeed. Token: $_token');
-    _sendMessage(client.Sub(
-      topic: 'me',
-      subGet: client.Get(what: 'sub desc tags'),
-    ));
-    _sendMessage(client.Sub(topic: 'fnd'));
-    _saveToken(_token);
-  }
-
-  void _onGet(Ctrl message) {
-    if (message.topic == 'fnd' && message.code == 204) {
-      fndSub.clear();
-    }
-  }
-
-  void _onMeta(Meta message) {
-    bool notify = false;
-
-    if (message.topic == 'me') {
-      if (message.tags != null) {
-        tags.addAll(message.tags);
-        notify = true;
-      }
-      if (message.sub != null) {
-        subs.addAll(message.sub);
-        subs.where((s) => s.online).forEach((s) => onlineUsers.add(s.topic));
-        notify = true;
-      }
-      // if (message.desc != null) {
-      //   desc = message.desc;
-      //   notify = true;
-      // }
-    } else if (message.topic == 'fnd') {
-      if (message.sub != null) {
-        message.sub.forEach((s) => s.topic = s.user);
-        fndSub.addAll(message.sub);
-        notify = true;
-      }
-    } else if (message.topic.startsWith('grp')) {
-      if (message.sub != null) {
-        usernameNickMap.addAll(Map.fromEntries(
-            message.sub.map((e) => MapEntry(e.user, e.public.fn))));
-        notify = true;
-      }
-    }
-    if (notify) notifyListeners();
-  }
-
-  void _onPres(Pres message) {
-    bool notify = false;
-    if (message.topic == 'me') {
-      if (message.what == 'on') {
-        onlineUsers.add(message.src);
-        notify = true;
-      } else if (message.what == 'off') {
-        onlineUsers.remove(message.src);
-        notify = true;
-      } else if (message.what == 'msg') {
-        subs
-            .where((s) => s.topic == message.src)
-            .forEach((s) => s.seq = message.seq);
-        notify = true;
-
-        showOverlayNotification((context) {
-          String sender = subs
-                  .firstWhere(
-                    (e) => e.topic == message.src,
-                    orElse: () => null,
-                  )
-                  ?.public
-                  ?.fn ??
-              '';
-          return GestureDetector(
-            onVerticalDragUpdate: (details) {
-              if (details.delta.dy > -1.4) return;
-              // on swipe up
-              OverlaySupportEntry.of(context).dismiss();
-            },
-            onTap: () => Navigator.push(context, ChatRoute()),
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              child: SafeArea(
-                child: ListTile(
-                  title: Text(sender),
-                  subtitle: Text(S.sentAMessageNotificationContent),
-                ),
-              ),
-            ),
-          );
-        }, duration: Duration(seconds: 2));
-      } else if (message.what == 'acs') {
-        _sendMessage(
-          client.Get(
-            topic: 'me',
-            what: 'sub',
-            sub: client.GetSub(topic: message.src),
-          ),
-        );
-      }
-    }
-    if (notify) notifyListeners();
-  }
-
-  void _onData(Data message) {
-    currentData.add(message);
     notifyListeners();
   }
 
-  void _onLeave(Ctrl message) {
-    currentData.clear();
+  set onlineUsers(Set<String> value) {
+    _onlineUsers = value;
+    notifyListeners();
   }
 
-  void _handleUnknownMessage(Ctrl message) {
-    log('Handling unknown message $message');
+  /// use it wisely
+  void clear(Subscription subscription) {
+    _subsMessages.remove(subscription);
   }
 
-  Future<String> _getToken() {
-    return SharedPreferences.getInstance().then((sp) {
-      var token = sp.getString(_WEBSOCKET_TOKEN_KEY);
-      if (token == null)
-        throw Exception('Websocket token not found in SharedPreferences');
-      return token;
-    });
+  Set<Subscription> get filteredUsers => _filteredUsers;
+
+  set filteredUsers(Set<Subscription> value) {
+    _filteredUsers = value;
+    notifyListeners();
   }
 
-  Future<void> _saveToken(String token) => SharedPreferences.getInstance()
-      .then((sp) => sp.setString(_WEBSOCKET_TOKEN_KEY, token));
+  Set<Message> messages(Subscription subscription) =>
+      _subsMessages[subscription] ?? Set();
 
-  Future<void> _removeToken() => SharedPreferences.getInstance()
-      .then((sp) => sp.remove(_WEBSOCKET_TOKEN_KEY));
+  Set<Subscription> get subscriptions => _subscriptions;
+
+  Set<String> get onlineUsers => _onlineUsers;
 }

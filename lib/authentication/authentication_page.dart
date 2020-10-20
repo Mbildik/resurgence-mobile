@@ -3,7 +3,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
-import 'package:resurgence/chat/client.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/ui/error_handler.dart';
 
@@ -126,11 +125,8 @@ class AuthenticationPage extends StatelessWidget {
           .read<AuthenticationService>()
           .oauth2Login('google', authentication.accessToken)
           .then((token) => context.read<AuthenticationState>().login(token))
-          .then((_) {
-        var chatClient = context.read<ChatClient>();
-        chatClient.createAccount(account.email, account.id);
-        chatClient.login(account.email, account.id);
-      }).catchError((e) => ErrorHandler.showError(context, e));
+          .then((_) {})
+          .catchError((e) => ErrorHandler.showError(context, e));
     } catch (e) {
       ErrorHandler.showError(context, e);
       try {
@@ -416,8 +412,6 @@ class _LoginPageRoute<T> extends MaterialPageRoute<T> {
                         .login(email, password)
                         .then((token) =>
                             context.read<AuthenticationState>().login(token))
-                        .then((_) =>
-                            context.read<ChatClient>().login(email, password))
                         .then((_) => Navigator.pop(context))
                         .catchError((e) => ErrorHandler.showError(context, e));
                   },
@@ -462,11 +456,6 @@ class _SingUpPageRoute<T> extends MaterialPageRoute<T> {
                             authenticationService.login(email, password))
                         .then((token) =>
                             context.read<AuthenticationState>().login(token))
-                        .then((_) {
-                          var chatClient = context.read<ChatClient>();
-                          chatClient.createAccount(email, password);
-                          chatClient.login(email, password);
-                        })
                         .then((_) => Navigator.pop(context))
                         .catchError((e) => ErrorHandler.showError(context, e));
                   },

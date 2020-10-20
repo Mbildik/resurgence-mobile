@@ -99,6 +99,7 @@ class S {
   }
 
   static const failedTaskResult = 'Beceremedin.';
+
   static String failedTaskResultMember(String member) => '$member beceremedi.';
   static var bank = 'Bank';
   static var bankBalance = 'Banka Bakiyesi';
@@ -164,7 +165,7 @@ class S {
   static var promoteToChief = 'Chief';
   static var accept = 'Accept';
   static var revoke = 'Revoke';
-  static var noData = 'There is nothing here!';
+  static const noData = 'Burada henüz görebileceğin bir şey yok!';
   static var noInvitations = 'There is no invitations!';
   static var assign = 'Assign';
   static var titleHintText = 'Enter your announcement title';
@@ -262,6 +263,13 @@ class S {
 
   static const multiplayerTaskGainMember = 'şunları kazandı.';
   static const multiplayerTaskGainSelf = 'Şunları kazandın.';
+
+  static String groupName(String name) {
+    if ('general' == name) {
+      return 'Genel Sohbet';
+    }
+    return name;
+  }
 }
 
 class W {
