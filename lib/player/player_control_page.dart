@@ -54,7 +54,11 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
           return _loadingWidget();
         } else if (snapshot.hasError) {
           if (snapshot.error is PlayerNotCreatedError) {
-            return _playerCreateWidget(context);
+            return PlayerCreationPage(
+              onDone: () => setState(() {
+                futurePlayer = fetchPlayer();
+              }),
+            );
           }
           return _onErrorWidget(context);
         }
@@ -75,32 +79,6 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
             logoutButton(context),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _playerCreateWidget(BuildContext context) {
-    return Scaffold(
-      appBar: W.defaultAppBar,
-      body: Row(
-        children: [
-          Button(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => PlayerCreationPage(),
-                ),
-              ).then(
-                (value) => setState(() {
-                  futurePlayer = fetchPlayer();
-                }),
-              );
-            },
-            child: Text('create a player'),
-          ),
-          logoutButton(context),
-        ],
       ),
     );
   }

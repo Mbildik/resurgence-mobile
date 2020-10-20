@@ -43,8 +43,8 @@ class S {
 
   // Label
   static var email = 'Email';
-  static var nickname = 'nickname';
-  static var create = 'Create';
+  static const nickname = 'İsmin';
+  static const create = 'Oluştur';
   static var sendEmail = 'send.email';
   static var submit = 'Submit';
   static var password = 'Password';
@@ -62,7 +62,8 @@ class S {
   static var doNotHaveAnAccount = 'Don\'t have an account';
   static var alreadyHaveAnAccount = 'Already have an account';
   static var signUpInfo = 'sign_up.info';
-  static var playerCreationTitle = 'player.creation.title';
+  static const playerCreationTitle = 'Mafya dünyasının zorlu günleri seni bekliyor';
+  static const playerCreationDescription = 'Irkını ve ismini seçerek bu karanlık dünyaya sende katıl';
   static var race = 'race';
   static var balance = 'balance';
   static const health = 'Sağlık';
@@ -270,6 +271,9 @@ class S {
     }
     return name;
   }
+
+  static const cosaNostra = 'Cosa Nostra';
+  static const yakuza = 'Yakuza';
 }
 
 class W {

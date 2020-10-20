@@ -9,6 +9,10 @@ import 'package:resurgence/ui/button.dart';
 import 'package:resurgence/ui/error_handler.dart';
 
 class PlayerCreationPage extends StatefulWidget {
+  final Function onDone;
+
+  const PlayerCreationPage({Key key, this.onDone}) : super(key: key);
+
   @override
   _PlayerCreationPageState createState() => _PlayerCreationPageState();
 }
@@ -17,45 +21,102 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
   final _formKey = GlobalKey<FormState>();
   final nicknameController = TextEditingController();
 
-  AbstractEnum race;
-  Future<List<AbstractEnum>> futureRaces;
+  AbstractEnum _race;
+  List<AbstractEnum> _races = [
+    AbstractEnum(key: 'COSA_NOSTRA', value: S.cosaNostra),
+    AbstractEnum(key: 'YAKUZA', value: S.yakuza),
+  ];
 
   @override
   void initState() {
     super.initState();
-    futureRaces = fetchRaces();
+    _race = _races.first;
   }
-
-  Future<List<AbstractEnum>> fetchRaces() =>
-      context.read<PlayerService>().races();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: W.defaultAppBar,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Form(
-              key: _formKey,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Column(
                 children: <Widget>[
-                  margin(48),
-                  Text(
-                    S.playerCreationTitle,
-                    style: Theme.of(context).primaryTextTheme.headline6,
+                  FittedBox(
+                    child: Text(
+                      S.playerCreationTitle,
+                      style: Theme.of(context).primaryTextTheme.headline6,
+                    ),
                   ),
-                  margin(48),
-                  raceDropdown(),
-                  margin(16),
-                  nicknameFormField(),
-                  margin(16),
+                  SizedBox(height: 4.0),
+                  FittedBox(
+                    child: Text(
+                      S.playerCreationDescription,
+                      style: Theme.of(context).primaryTextTheme.headline6,
+                    ),
+                  ),
+                  SizedBox(height: 24.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: this
+                        ._races
+                        .map(
+                          (e) => GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                this._race = e;
+                              });
+                            },
+                            child: RaceWidget(
+                              e,
+                              selected: this._race == e,
+                            ),
+                          ),
+                        )
+                        .toList(growable: false),
+                  ),
+                  SizedBox(height: 24.0),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: S.nickname,
+                    ),
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    controller: nicknameController,
+                    onFieldSubmitted: (value) =>
+                        FocusScope.of(context).nextFocus(),
+                    validator: (value) {
+                      if (value.isEmpty) return S.validationRequired;
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 24.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      createPlayerButton(),
-                      logoutButton(),
+                      Button(
+                        onPressed: () {
+                          if (!_formKey.currentState.validate())
+                            return; // form is not valid
+
+                          var nickname = nicknameController.text;
+                          context
+                              .read<PlayerService>()
+                              .create(nickname, _race)
+                              .then((player) => widget.onDone())
+                              .catchError(
+                                  (e) => ErrorHandler.showError(context, e));
+                        },
+                        child: Text(S.create),
+                      ),
+                      Button(
+                        onPressed: () =>
+                            context.read<AuthenticationState>().logout(),
+                        child: Text(S.logout),
+                      ),
                     ],
                   ),
                 ],
@@ -66,97 +127,37 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
       ),
     );
   }
+}
 
-  Widget nicknameFormField() {
-    return TextFormField(
-      decoration: InputDecoration(labelText: S.nickname),
-      keyboardType: TextInputType.text,
-      textInputAction: TextInputAction.done,
-      controller: nicknameController,
-      onFieldSubmitted: (value) => FocusScope.of(context).nextFocus(),
-      validator: (value) {
-        if (value.isEmpty) return S.validationRequired;
-        return null;
-      },
+class RaceWidget extends StatelessWidget {
+  final AbstractEnum race;
+  final bool selected;
+
+  const RaceWidget(
+    this.race, {
+    Key key,
+    this.selected = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: selected ? Colors.grey[800] : null,
+        border: Border.all(
+          color: Colors.grey,
+        ),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Text(
+            race.value,
+            style: Theme.of(context).textTheme.headline6,
+          ),
+        ),
+      ),
     );
-  }
-
-  Widget raceDropdown() {
-    return FutureBuilder<List<AbstractEnum>>(
-      future: futureRaces,
-      builder: (context, snapshot) {
-        // todo investigate ConnectionState.active
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return onDropdownValueFetchError();
-        }
-        var races = snapshot.data;
-
-        return DropdownButtonFormField<AbstractEnum>(
-          value: race,
-          hint: Text(S.race),
-          validator: (value) {
-            if (value == null) return S.validationRequired;
-            return null;
-          },
-          onChanged: (AbstractEnum newValue) {
-            setState(() {
-              race = newValue;
-            });
-          },
-          items: races.map<DropdownMenuItem<AbstractEnum>>((race) {
-            return DropdownMenuItem<AbstractEnum>(
-              value: race,
-              child: Text(race.value),
-            );
-          }).toList(growable: false),
-        );
-      },
-    );
-  }
-
-  Widget onDropdownValueFetchError() {
-    return Column(
-      children: [
-        Text(S.errorOccurred),
-        Button(
-          onPressed: () => setState(() {
-            futureRaces = fetchRaces();
-          }),
-          child: Text(S.reload),
-        )
-      ],
-    );
-  }
-
-  Widget createPlayerButton() {
-    return Button(
-      onPressed: () {
-        if (!_formKey.currentState.validate()) return; // form is not valid
-
-        var nickname = nicknameController.text;
-        context
-            .read<PlayerService>()
-            .create(nickname, race)
-            .then((player) => Navigator.pop(context))
-            .catchError((e) => ErrorHandler.showError(context, e));
-      },
-      child: Text(S.create),
-    );
-  }
-
-  Widget logoutButton() {
-    return Button(
-      onPressed: () {
-        context.read<AuthenticationState>().logout();
-        Navigator.pop(context);
-      },
-      child: Text(S.logout),
-    );
-  }
-
-  Widget margin(double vertical) {
-    return Container(margin: EdgeInsets.symmetric(vertical: vertical));
   }
 }
