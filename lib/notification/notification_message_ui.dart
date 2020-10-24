@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/notification/model.dart';
@@ -60,9 +61,26 @@ class _NotificationMessagePageState extends State<NotificationMessagePage> {
                         .delete(message.id)
                         .catchError((e) => ErrorHandler.showError(context, e));
                   },
-                  child: ListTile(
-                    title: Text(message.title),
-                    subtitle: Text(message.content),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(message.title),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(message.content),
+                            SizedBox(height: 16.0),
+                            Text(
+                              DateFormat(S.dateFormat).format(
+                                message.time.toLocal(),
+                              ),
+                            ),
+                          ],
+                        ),
+                        isThreeLine: true,
+                      ),
+                      Divider(height: 0),
+                    ],
                   ),
                 );
               },
