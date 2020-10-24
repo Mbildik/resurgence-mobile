@@ -139,7 +139,7 @@ class _ChatDetail extends StatelessWidget {
             title: Text(sub.name),
             subtitle: Consumer<ChatState>(
               builder: (context, state, child) =>
-                  state.onlineUsers.contains(sub.topic)
+                  state.onlineUsers.contains(sub.name)
                       ? child
                       : Text(S.offline),
               child: Text(S.online),
