@@ -32,7 +32,6 @@ class Client {
         client.activate();
       } else {
         if (_client != null) _client.deactivate();
-        // dispose();
       }
     });
   }
@@ -135,6 +134,4 @@ class Client {
       },
     );
   }
-
-// dispose() => _state.clear();
 }
