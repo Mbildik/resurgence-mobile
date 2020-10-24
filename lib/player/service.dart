@@ -1,3 +1,9 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart' as mime;
+import 'package:path/path.dart' as path;
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
@@ -7,9 +13,7 @@ class PlayerService {
 
   PlayerService(Client client) : _client = _PlayerClient(client);
 
-  Future<Player> info() {
-    return _client.info();
-  }
+  Future<Player> info() => _client.info();
 
   Future<Player> create(String nickname, AbstractEnum race) {
     return _client.create(nickname, race).then((player) async {
@@ -18,9 +22,8 @@ class PlayerService {
     });
   }
 
-  Future<List<AbstractEnum>> races() {
-    return _client.races();
-  }
+  Future<Player> editImage(File file) =>
+      _client.editImage(file).then((_) => this.info());
 }
 
 class _PlayerClient {
@@ -30,11 +33,8 @@ class _PlayerClient {
 
   Future<void> refreshToken() => _client.refreshToken();
 
-  Future<Player> info() {
-    return _client
-        .get('player')
-        .then((response) => Player.fromJson(response.data));
-  }
+  Future<Player> info() =>
+      _client.get('player').then((response) => Player.fromJson(response.data));
 
   Future<Player> create(String nickname, AbstractEnum race) {
     return _client.post(
@@ -43,11 +43,17 @@ class _PlayerClient {
     ).then((response) => Player.fromJson(response.data));
   }
 
-  Future<List<AbstractEnum>> races() {
-    return _client.get('player/races').then((response) {
-      return (response.data as List)
-          .map((e) => AbstractEnum.fromJson(e))
-          .toList(growable: false);
+  Future<void> editImage(File file) async {
+    var filename = path.basename(file.path);
+    var mimeType = mime.lookupMimeType(file.path);
+
+    FormData formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(
+        file.path,
+        filename: filename,
+        contentType: MediaType.parse(mimeType),
+      ),
     });
+    return _client.post('player/image', data: formData);
   }
 }

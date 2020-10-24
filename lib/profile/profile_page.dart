@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/player/player.dart';
+import 'package:resurgence/player/service.dart';
 import 'package:resurgence/ui/shared.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -29,15 +33,7 @@ class ProfilePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // image
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(18.0),
-                  child: Image.network(
-                    'https://picsum.photos/128',
-                    height: 128,
-                    width: 128,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                ProfileImage(),
                 SizedBox(width: 16.0),
                 // info
                 Expanded(
@@ -181,6 +177,46 @@ class InfoContentText extends StatelessWidget {
     return Text(
       text,
       style: Theme.of(context).textTheme.headline6,
+    );
+  }
+}
+
+class ProfileImage extends StatelessWidget {
+  final _picker = ImagePicker();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        var pickedFile = await _picker.getImage(source: ImageSource.gallery);
+        if (pickedFile == null || pickedFile.path == null) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Resim seçmediğin için herhangi bir güncelleme yapılmadı.'),
+            ),
+          );
+          return;
+        }
+        var file = File(pickedFile.path);
+        context
+            .read<PlayerService>()
+            .editImage(file)
+            .then(context.read<PlayerState>().updatePlayer);
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18.0),
+        child: Consumer<PlayerState>(
+          builder: (context, state, child) {
+            return Image.network(
+              state.player.image ?? S.baseUrl + 'static/player/default_image.png',
+              height: 128,
+              width: 128,
+              fit: BoxFit.cover,
+            );
+          },
+        ),
+      ),
     );
   }
 }

@@ -11,17 +11,20 @@ class Player {
   int usableHonor;
   AbstractEnum title;
   int experience;
+  String image;
 
-  Player(
-      {this.nickname,
-      this.race,
-      this.balance,
-      this.family,
-      this.health,
-      this.honor,
-      this.usableHonor,
-      this.title,
-      this.experience});
+  Player({
+    this.nickname,
+    this.race,
+    this.balance,
+    this.family,
+    this.health,
+    this.honor,
+    this.usableHonor,
+    this.title,
+    this.experience,
+    this.image,
+  });
 
   Player.fromJson(Map<String, dynamic> json) {
     nickname = json['nickname'];
@@ -33,6 +36,7 @@ class Player {
     usableHonor = json['usable_honor'];
     title = json['title'] != null ? AbstractEnum.fromJson(json['title']) : null;
     experience = json['experience'];
+    image = json['image'];
   }
 }
 
