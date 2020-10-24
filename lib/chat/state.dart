@@ -48,6 +48,12 @@ class ChatState extends ChangeNotifier {
     _subsMessages.remove(subscription);
   }
 
+  void clearSubscriptions() {
+    _subscriptions.clear();
+    _subsMessages.clear();
+    notifyListeners();
+  }
+
   Set<Subscription> get filteredUsers => _filteredUsers;
 
   set filteredUsers(Set<Subscription> value) {

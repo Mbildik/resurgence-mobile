@@ -66,11 +66,16 @@ class Client {
         },
         onConnect: (client, frame) {
           this._client = client;
+          log('on connect');
           _initSubscriptions();
           _initOnlineUsers();
           _initPlayerFilterSubscription();
         },
-        onStompError: (frame) => log('error ${frame.body}'),
+        onStompError: (frame) {
+          log('error ${frame.body}');
+          _client.deactivate();
+          this._init();
+        },
         onDisconnect: (frame) => log('disconnected $frame'),
         useSockJS: true,
       ),
@@ -78,53 +83,32 @@ class Client {
   }
 
   void _initSubscriptions() {
+    _state.clearSubscriptions();
     _client.subscribe(
       destination: '/user/$_playerName/subscriptions',
       callback: (frame) {
         var topics = Set<Subscription>.from((jsonDecode(frame.body) as List)
             .map((e) => Subscription.fromJson(e)));
         log('Current subscriptions ${frame.body}');
-        var oldSubs = Set.of(_state.subscriptions);
         _state.subscribe(topics);
-        oldSubs.removeAll(_state.subscriptions);
-        _subscribe(oldSubs);
+        _subscribe(_state.subscriptions);
       },
     );
     this._client.send(destination: '/subscriptions');
   }
 
-  void _subscribe(Set<Subscription> old) {
-    callbacks.keys.where((e) => old.contains(e)).forEach((e) {
-      try {
-        // unsubscribe all old subs.
-        log('Unsubscribing topic ${e.topic}');
-        callbacks[e](unsubscribeHeaders: {});
-        _state.clear(e);
-      } catch (e) {
-        log('An error occurred while unsubscribing', error: e);
-      }
-    });
+  void _subscribe(Set<Subscription> subscriptions) {
+    callbacks.clear();
 
-    // clear callbacks
-    callbacks.removeWhere((key, value) => old.contains(key));
-
-    _state.subscriptions.forEach((sub) {
-      if (callbacks.containsKey(sub)) return;
-
+    subscriptions.forEach((sub) {
       log('Subscribing topic ${sub.topic}.');
-      // todo callback fonksiyonu çalışması için saçma bir çözüm
-      //  Future içine alarak sorundan kurtuluyoruz.
-      //  aynı thread de olunca ya callback ataması yaparken sorun oluyor
-      //  yada başka bir şey var anlamadım.
-      Future.delayed(Duration.zero).then((_) {
-        callbacks[sub] = _client.subscribe(
-          destination: '/user/$_playerName/${sub.topic}',
-          callback: (frame) {
-            log('Message ${frame.body}');
-            _state.onMessage(sub, Message.fromJson(jsonDecode(frame.body)));
-          },
-        );
-      });
+      callbacks[sub] = _client.subscribe(
+        destination: '/user/$_playerName/${sub.topic}',
+        callback: (frame) {
+          log('Message ${frame.body}');
+          _state.onMessage(sub, Message.fromJson(jsonDecode(frame.body)));
+        },
+      );
     });
   }
 
