@@ -68,7 +68,7 @@ void main() async {
 
   // Task
   final taskServiceProvider = Provider(
-    create: (_) => TaskService(client),
+    create: (_) => TaskService(client, analytics: analytics),
   );
 
   final itemServiceProvider = Provider(
