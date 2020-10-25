@@ -46,7 +46,7 @@ class _MenuPageState extends State<MenuPage> {
             onPressed: () => push(context, widget: SoloTaskPage()),
           ),
           _MenuItem(
-            text: 'Multiplayer Tasks',
+            text: S.multiplayerTasks,
             icon: Icons.extension,
             onPressed: () => push(context, route: MultiplayerTaskPageRoute()),
           ),

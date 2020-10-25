@@ -405,7 +405,7 @@ class _LoginPageRoute<T> extends MaterialPageRoute<T> {
                   actionText: S.signIn,
                   secondActionText: S.signUp,
                   secondActionTextDescription: S.doNotHaveAnAccount,
-                  forgotPassword: true,
+                  forgotPassword: false,
                   onAction: (context, email, password) {
                     return context
                         .read<AuthenticationService>()

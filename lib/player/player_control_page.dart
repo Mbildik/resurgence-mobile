@@ -9,6 +9,7 @@ import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/player_creation_page.dart';
 import 'package:resurgence/player/service.dart';
 import 'package:resurgence/ui/button.dart';
+import 'package:resurgence/ui/shared.dart';
 
 class PlayerControlPage extends StatefulWidget {
   @override
@@ -51,7 +52,7 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
       future: futurePlayer,
       builder: (BuildContext context, AsyncSnapshot<Player> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _loadingWidget();
+          return Scaffold(body: const LoadingWidget());
         } else if (snapshot.hasError) {
           if (snapshot.error is PlayerNotCreatedError) {
             return PlayerCreationPage(
@@ -60,50 +61,27 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
               }),
             );
           }
-          return _onErrorWidget(context);
+          return Scaffold(
+            appBar: W.defaultAppBar,
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                RefreshOnErrorWidget(
+                  onPressed: () => setState(() {
+                    futurePlayer = fetchPlayer();
+                  }),
+                ),
+                Button(
+                  child: Text(S.logout),
+                  onPressed: () => context.read<AuthenticationState>().logout(),
+                ),
+              ],
+            ),
+          );
         }
 
         return FamilyController(child: MenuPage());
       },
-    );
-  }
-
-  Widget _onErrorWidget(BuildContext context) {
-    return Scaffold(
-      appBar: W.defaultAppBar,
-      body: Center(
-        child: Column(
-          children: [
-            Text('An error occurred while fetching player info'),
-            refreshButton(context),
-            logoutButton(context),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _loadingWidget() {
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-
-  Widget logoutButton(BuildContext context) {
-    return Button(
-      child: Text(S.logout),
-      onPressed: () => context.read<AuthenticationState>().logout(),
-    );
-  }
-
-  Widget refreshButton(BuildContext context) {
-    return Button(
-      child: Text(S.reload),
-      onPressed: () => setState(() {
-        futurePlayer = fetchPlayer();
-      }),
     );
   }
 }

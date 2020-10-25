@@ -237,9 +237,11 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
               builder: (context, snapshot) {
                 if (loading ||
                     snapshot.connectionState == ConnectionState.waiting) {
-                  return loadingWidget();
+                  return const LoadingWidget();
                 } else if (snapshot.hasError) {
-                  return errorWidget();
+                  return RefreshOnErrorWidget(
+                    onPressed: this._refreshAccount,
+                  );
                 }
 
                 var bankAccount = snapshot.data;
@@ -344,9 +346,11 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
                 builder: (context, snapshot) {
                   if (loading ||
                       snapshot.connectionState == ConnectionState.waiting) {
-                    return loadingWidget();
+                    return const LoadingWidget();
                   } else if (snapshot.hasError) {
-                    return errorWidget();
+                    return RefreshOnErrorWidget(
+                      onPressed: this._refreshAccount,
+                    );
                   }
 
                   var bankTransactions = snapshot.data;
@@ -380,26 +384,6 @@ class _BankAccountWidgetState extends State<BankAccountWidget> {
         DateFormat(S.dateFormat).format(
           DateTime.parse(bankTransaction.time).toLocal(),
         ),
-      ),
-    );
-  }
-
-  Widget loadingWidget() {
-    return Center(
-      child: CircularProgressIndicator(),
-    );
-  }
-
-  Widget errorWidget() {
-    return Center(
-      child: Column(
-        children: <Widget>[
-          Button(
-            child: Text(S.reload),
-            onPressed: () => this._refreshAccount(),
-          ),
-          Text(S.errorOccurred),
-        ],
       ),
     );
   }
