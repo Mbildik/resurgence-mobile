@@ -6,7 +6,7 @@ enum _Env { local, dev }
 /// Application String Constants
 class S {
   // Environment
-  static const _env = _Env.local;
+  static const _env = _Env.dev;
 
   // Urls
   static var baseUrl = () {
