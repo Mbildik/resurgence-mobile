@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:203290350160:android:c4de194db847354628f755",
+        "mobilesdk_app_id": "1:203290350160:android:bf3acbc376fb1de328f755",
         "android_client_info": {
-          "package_name": "com.hezaryar.resurgence"
+          "package_name": "tr.com.tosk.resurgence"
         }
       },
       "oauth_client": [
         {
-          "client_id": "203290350160-gc0kddp58jog7has723bccp2ntsq93a5.apps.googleusercontent.com",
+          "client_id": "203290350160-6ah2j1hq5nppep1dce5p7hl4q65ci8p6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.hezaryar.resurgence",
+            "package_name": "tr.com.tosk.resurgence",
             "certificate_hash": "63045480a86e99c2dfa5e10396f7494aaa76cd80"
           }
         },

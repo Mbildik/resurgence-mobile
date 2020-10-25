@@ -18,10 +18,7 @@ class TaskService {
     List<PlayerItem> selectedItems = const [],
   ]) {
     return _client.perform(task.key, selectedItems).then((value) {
-      analytics?.logEvent(name: 'perform_task', parameters: {
-        'task': task.key,
-        'items': selectedItems
-      });
+      analytics?.logEvent(name: 'perform_task', parameters: {'task': task.key});
       return value;
     });
   }

@@ -6,8 +6,12 @@ import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/player/player.dart';
 
-Image getImage(String player) =>
-    Image.network(S.baseUrl + 'player/image/$player');
+Image getImage(Subscription sub) {
+  if (sub.isGroup()) {
+    return Image.network(S.baseUrl + 'static/chat/${sub.topic}.png');
+  }
+  return Image.network(S.baseUrl + 'player/image/${sub.name}');
+}
 
 class ChatPage extends StatefulWidget {
   @override
@@ -90,7 +94,7 @@ class _ChatPageState extends State<ChatPage> {
 
                     var online = state.onlineUsers.contains(subName);
                     var read = true;
-                    var image = getImage(subName);
+                    var image = getImage(currentSub);
 
                     return _ChatListItem(
                       image: image,
@@ -135,7 +139,7 @@ class _ChatDetail extends StatelessWidget {
         appBar: AppBar(
           title: ListTile(
             leading: CircleAvatar(
-              backgroundImage: getImage(sub.name).image,
+              backgroundImage: getImage(sub).image,
             ),
             title: Text(sub.name),
             subtitle: Consumer<ChatState>(
