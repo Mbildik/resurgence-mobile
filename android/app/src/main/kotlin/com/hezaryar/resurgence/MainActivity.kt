@@ -1,4 +1,4 @@
-package com.hezaryar.resurgence
+package tr.com.tosk.resurgence
 
 import io.flutter.embedding.android.FlutterActivity
 
