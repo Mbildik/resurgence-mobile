@@ -64,7 +64,7 @@ class S {
   static const race = 'race';
   static const balance = 'balance';
   static const health = 'Sağlık';
-  static const honor = 'Onur';
+  static const honor = 'Onur Puanı';
   static const usableHonor = 'Kullanılabilir Onur Puanı';
   static const experience = 'experience';
   static const reload = 'Yeniden yükle';
@@ -110,13 +110,14 @@ class S {
   static const integerRequired = 'integer.required';
   static const interest = 'Faiz';
   static const interestHelp =
-      'Faize yatırmak istediğin tutara göre tablodaki faiz karşılığını bir günün sonunda alırsın.';
+      '$helpBullet Tablodaki faiz karşılığını yarın aynı saatte alırsın.';
   static const transfer = 'Transfer';
   static const transferHelp =
       'Para transferi etmek istediğin oyuncunun adını ve transfer edeceğin miktarı gir. Eğer istersen açıklama girebilirsin.';
   static const bankAccount = 'Banka Hesabı';
   static const bankAccountHelp =
-      'Saldırı alırsanız cebinizdeki para saldırgana geçer. Paranı korumak için bankaya yatırmalısın.';
+      '$helpBullet Saldırı alırsanız cebinizdeki para saldırgana geçer.'
+      '$helpSeparator Paranı korumak için bankaya yatırmalısın.';
   static const min = 'min';
   static const max = 'max';
   static const noActiveInterest = 'no.active.interest';
@@ -138,7 +139,7 @@ class S {
   static const cancel = 'İptal';
 
   static const chat = 'Sohbet';
-  static const messages = 'Mesajlar';
+  static const messages = 'Bildirimler';
   static const search = 'Ara';
   static const offline = 'Çevrimdışı';
   static const online = 'Çevrimiçi';
@@ -233,17 +234,20 @@ class S {
   static const sentAMessageNotificationContent = 'Mesaj gönderdi';
   static const help = 'Yardım';
 
-  static const multiplayerTaskHelp =
-      'Ekibin durumunu kontrol etmek için yenile tuşunu kullan.'
-      '\n\nGörevi tamamladığında üyelerin sonuçlarını görebilirsin.'
-      '\n\nİstersen görevi çıkış butonuna basarak iptal edebilirsin.';
+  static const helpBullet = '‣ ';
+  static const helpSeparator = '\n\n$helpBullet';
 
-  static const soloTaskHelp = 'Suç işleyerek para, malzeme ve seviye'
+  static const multiplayerTaskHelp =
+      '$helpBullet Ekibin durumunu kontrol etmek için yenile tuşunu kullan.'
+      '$helpSeparator Görevi tamamladığında üyelerin sonuçlarını görebilirsin.'
+      '$helpSeparator İstersen görevi çıkış butonuna basarak iptal edebilirsin.';
+
+  static const soloTaskHelp = '$helpBullet Suç işleyerek para, malzeme ve seviye'
       ' kazanabilirsin. Her suç belirli bir süre sonra tekrar aktif hale gelir.'
-      '\nBazı suçları işlemek için bir takım malzemelere ihtiyaç duyabilirsin.'
+      '$helpSeparator Bazı suçları işlemek için bir takım malzemelere ihtiyaç duyabilirsin.'
       ' Gerekli kategorideki malzemenin tamamını seçmek için + butonuna basılı'
       ' tut.'
-      '\nResimlere tıklayarak suça ait detayları öğrenebilirsin.';
+      '$helpSeparator Resimlere tıklayarak suça ait detayları öğrenebilirsin.';
 
   static const timeToLeftToInterestComplete =
       'Faizin tamamlanmasına kalan süre';
@@ -255,10 +259,10 @@ class S {
 
   static const npc = 'NPC';
   static const npcHelp =
-      'NPC\'den oyun içerisinde bulunan bazı item\'ları alabilirsin.\n'
-      'Almak istediğin item\'lara tıkla ve satın al.\n'
-      'Sepetten istemediğin item\'ları tıklayarak teker teker veya '
-      'uzun basarak hepsini çıkabilirsin.\n';
+      '$helpBullet NPC\'den oyun içerisinde bulunan bazı item\'ları alabilirsin.'
+      '$helpSeparator Almak istediğin item\'lara tıkla ve satın al.'
+      '$helpSeparator Sepetten istemediğin item\'ları tıklayarak teker teker veya '
+      'uzun basarak hepsini çıkabilirsin.';
 
   static const multiplayerTasks = 'Çok oyunculu görevler';
   static const multiplayerTaskGainMember = 'şunları kazandı.';
@@ -273,6 +277,8 @@ class S {
 
   static const cosaNostra = 'Cosa Nostra';
   static const yakuza = 'Yakuza';
+
+  static const onlineUserCount = 'Online oyuncu sayısı';
 }
 
 class W {

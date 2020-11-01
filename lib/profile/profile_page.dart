@@ -3,13 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:resurgence/authentication/service.dart';
-import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
-import 'package:resurgence/ui/shared.dart';
 
 class ProfilePage extends StatelessWidget {
   final Player player;
@@ -21,109 +18,80 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(S.profile),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // image
-                ProfileImage(),
-                SizedBox(width: 16.0),
-                // info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        player.nickname,
-                        style: Theme.of(context).textTheme.headline6,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      InfoTitleText(player.title.value),
-                      InfoTitleText(player.race.value),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Card(
-              margin: EdgeInsets.only(top: 16.0),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // image
+              ProfileImage(),
+              SizedBox(width: 16.0),
+              // info
+              Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    InfoRow(
-                      children: [
-                        InfoTitleText(S.money),
-                        InfoContentText(Money.format(player.balance)),
-                      ],
+                    Text(
+                      player.nickname,
+                      style: Theme.of(context).textTheme.headline6,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    if (player.family != null) Divider(),
-                    if (player.family != null)
-                      InfoRow(
-                        children: [
-                          InfoTitleText(S.family),
-                          InfoContentText(player.family),
-                        ],
-                      ),
-                    Divider(),
-                    InfoRow(
-                      children: [
-                        InfoTitleText(S.health),
-                        InfoContentText(player.health.toString()),
-                      ],
-                    ),
-                    Divider(),
-                    InfoRow(
-                      children: [
-                        InfoTitleText(S.honor),
-                        InfoContentText(player.honor.toString()),
-                      ],
-                    ),
-                    Divider(),
-                    InfoRow(
-                      children: [
-                        InfoTitleText(S.usableHonor),
-                        InfoContentText(player.usableHonor.toString()),
-                      ],
-                    ),
+                    InfoTitleText(player.title.value),
+                    InfoTitleText(player.race.value),
                   ],
                 ),
               ),
+            ],
+          ),
+          Card(
+            margin: EdgeInsets.only(top: 16.0),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  InfoRow(
+                    children: [
+                      InfoTitleText(S.money),
+                      InfoContentText(Money.format(player.balance)),
+                    ],
+                  ),
+                  if (player.family != null) Divider(),
+                  if (player.family != null)
+                    InfoRow(
+                      children: [
+                        InfoTitleText(S.family),
+                        InfoContentText(player.family),
+                      ],
+                    ),
+                  Divider(),
+                  InfoRow(
+                    children: [
+                      InfoTitleText(S.health),
+                      InfoContentText(player.health.toString()),
+                    ],
+                  ),
+                  Divider(),
+                  InfoRow(
+                    children: [
+                      InfoTitleText(S.honor),
+                      InfoContentText(player.honor.toString()),
+                    ],
+                  ),
+                  Divider(),
+                  InfoRow(
+                    children: [
+                      InfoTitleText(S.usableHonor),
+                      InfoContentText(player.usableHonor.toString()),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            Expanded(child: Container()),
-            Row(
-              children: [
-                RaisedButton(
-                  child: Text(S.logout),
-                  color: Colors.red[700],
-                  onPressed: () {
-                    showConfirmationDialog(
-                      context,
-                      S.logoutConfirmationTitle,
-                      S.logoutConfirmationContent,
-                      S.logout,
-                      S.cancel,
-                      () {
-                        context.read<AuthenticationState>().logout();
-                        context.read<AuthenticationService>().logout();
-                        Navigator.pop(context);
-                        return Future.value();
-                      },
-                    );
-                  },
-                ),
-              ],
-            )
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -209,7 +177,8 @@ class ProfileImage extends StatelessWidget {
         child: Consumer<PlayerState>(
           builder: (context, state, child) {
             return Image.network(
-              state.player.image ?? S.baseUrl + 'static/player/default_image.png',
+              state.player.image ??
+                  S.baseUrl + 'static/player/default_image.png',
               height: 128,
               width: 128,
               fit: BoxFit.cover,

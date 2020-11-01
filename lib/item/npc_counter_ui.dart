@@ -7,6 +7,8 @@ import 'package:resurgence/constants.dart';
 import 'package:resurgence/item/item.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/money.dart';
+import 'package:resurgence/player/player.dart';
+import 'package:resurgence/player/service.dart';
 import 'package:resurgence/ui/error_handler.dart';
 import 'package:resurgence/ui/shared.dart';
 
@@ -27,12 +29,16 @@ class _NPCCounterState extends State<NPCCounter> {
   Future<List<Item>> _itemsFuture;
   ItemService _service;
   Timer _timer;
+  PlayerService _playerService;
+  PlayerState _playerState;
 
   @override
   void initState() {
     super.initState();
     _service = context.read<ItemService>();
     _itemsFuture = _service.counter();
+    _playerService = context.read<PlayerService>();
+    _playerState = context.read<PlayerState>();
     _timer = Timer.periodic(Duration(seconds: 5), (timer) {
       setState(() {
         _disableLoading = true;
@@ -169,18 +175,17 @@ class _NPCCounterState extends State<NPCCounter> {
 
   void buy() {
     setState(() => _buying = true);
-    _service
-        .buy(_basket)
-        .then((_) {
-          _basket.clear();
-          _buyCompleted = true;
-          Timer.periodic(Duration(seconds: 1), (timer) {
-            timer.cancel();
-            if (mounted) setState(() => _buyCompleted = false);
-          });
-        })
-        .whenComplete(() => setState(() => _buying = false))
-        .catchError((e) => ErrorHandler.showError(context, e));
+    _service.buy(_basket).then((_) {
+      _basket.clear();
+      _buyCompleted = true;
+      Timer.periodic(Duration(seconds: 1), (timer) {
+        timer.cancel();
+        if (mounted) setState(() => _buyCompleted = false);
+      });
+    }).whenComplete(() {
+      setState(() => _buying = false);
+      _playerService.info().then((player) => _playerState.updatePlayer(player));
+    }).catchError((e) => ErrorHandler.showError(context, e));
   }
 
   Future<List<Item>> _refresh() {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:resurgence/authentication/service.dart';
+import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/bank/bank.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
@@ -7,9 +9,9 @@ import 'package:resurgence/item/npc_counter_ui.dart';
 import 'package:resurgence/multiplayer-task/page.dart';
 import 'package:resurgence/notification/notification_message_ui.dart';
 import 'package:resurgence/player/player.dart';
-import 'package:resurgence/player/service.dart';
 import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/task/solo_task_page.dart';
+import 'package:resurgence/ui/shared.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -21,95 +23,79 @@ class _MenuPageState extends State<MenuPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: W.defaultAppBar,
-      body: GridView.count(
-        primary: false,
-        padding: EdgeInsets.all(8.0),
-        childAspectRatio: 4.0,
-        crossAxisSpacing: 8.0,
-        mainAxisSpacing: 8.0,
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        children: <Widget>[
-          _MenuItem(
-            text: S.profile,
-            icon: Icons.account_box,
-            onPressed: () {
-              context.read<PlayerService>().info().then((player) {
-                context.read<PlayerState>().updatePlayer(player);
-                push(context, widget: ProfilePage(player: player));
-              });
-            },
-          ),
-          _MenuItem(
-            text: S.tasks,
-            icon: Icons.format_list_numbered,
-            onPressed: () => push(context, widget: SoloTaskPage()),
-          ),
-          _MenuItem(
-            text: S.multiplayerTasks,
-            icon: Icons.extension,
-            onPressed: () => push(context, route: MultiplayerTaskPageRoute()),
-          ),
-          _MenuItem(
-            text: S.bank,
-            icon: Icons.account_balance,
-            onPressed: () => push(context, route: BankPageRoute()),
-          ),
-          /*_MenuItem(
-            text: S.realEstate,
-            icon: Icons.work,
-            onPressed: () => push(context, route: RealEstatePageRoute()),
-          ),
-          _MenuItem(
-            text: S.families,
-            icon: Icons.people,
-            onPressed: () => push(context, route: FamiliesPageRoute()),
-          ),
-          Consumer<FamilyState>(
-            builder: (context, state, child) {
-              if (state.haveFamily) {
-                return _MenuItem(
-                  text: S.myFamily,
-                  icon: Icons.my_location,
-                  onPressed: () {
-                    context.read<FamilyService>().info().then((value) {
-                      state.family = value;
-                      if (value != null) {
-                        push(context, route: FamilyDetailRoute(state.family));
-                      } else {
-                        showInformationDialog(context, S.noFamilyAnymore)
-                            .then((_) {
-                          push(context, route: PlayerInvitationRoute());
-                        });
-                      }
-                    });
-                  },
-                );
-              }
-              return child;
-            },
-            child: _MenuItem(
-              text: S.applicationsInvitations,
-              icon: Icons.merge_type,
-              onPressed: () => push(context, route: PlayerInvitationRoute()),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Consumer<PlayerState>(
+              builder: (context, value, child) {
+                if (value.player == null) return CircularProgressIndicator();
+                return ProfilePage(player: value.player);
+              },
             ),
-          ),*/
-          _MenuItem(
-            text: S.chat,
-            icon: Icons.people,
-            onPressed: () => push(context, route: ChatRoute()),
-          ),
-          _MenuItem(
-            text: S.messages,
-            icon: Icons.message,
-            onPressed: () => push(context, route: NotificationMessageRoute()),
-          ),
-          _MenuItem(
-            text: S.npc,
-            icon: Icons.category,
-            onPressed: () => push(context, route: NPCCounterRoute()),
-          ),
-        ],
+            GridView.count(
+              primary: false,
+              padding: EdgeInsets.all(8.0),
+              childAspectRatio: 4.0,
+              crossAxisSpacing: 8.0,
+              mainAxisSpacing: 8.0,
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              children: [
+                _MenuItem(
+                  text: S.tasks,
+                  icon: Icons.format_list_numbered,
+                  onPressed: () => push(context, widget: SoloTaskPage()),
+                ),
+                _MenuItem(
+                  text: S.multiplayerTasks,
+                  icon: Icons.extension,
+                  onPressed: () =>
+                      push(context, route: MultiplayerTaskPageRoute()),
+                ),
+                _MenuItem(
+                  text: S.bank,
+                  icon: Icons.account_balance,
+                  onPressed: () => push(context, route: BankPageRoute()),
+                ),
+                _MenuItem(
+                  text: S.chat,
+                  icon: Icons.people,
+                  onPressed: () => push(context, route: ChatRoute()),
+                ),
+                _MenuItem(
+                  text: S.messages,
+                  icon: Icons.message,
+                  onPressed: () =>
+                      push(context, route: NotificationMessageRoute()),
+                ),
+                _MenuItem(
+                  text: S.npc,
+                  icon: Icons.category,
+                  onPressed: () => push(context, route: NPCCounterRoute()),
+                ),
+                RaisedButton(
+                  child: Text(S.logout),
+                  color: Colors.red[700],
+                  onPressed: () {
+                    showConfirmationDialog(
+                      context,
+                      S.logoutConfirmationTitle,
+                      S.logoutConfirmationContent,
+                      S.logout,
+                      S.cancel,
+                      () {
+                        context.read<AuthenticationState>().logout();
+                        context.read<AuthenticationService>().logout();
+                        return Future.value();
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+            _OnlinePlayerInfo(),
+          ],
+        ),
       ),
     );
   }
@@ -148,6 +134,31 @@ class _MenuItem extends StatelessWidget {
           Expanded(flex: 2, child: Text(text)),
         ],
       ),
+    );
+  }
+}
+
+class _OnlinePlayerInfo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ChatState>(
+      builder: (context, value, child) {
+        if (value.onlineUsers == null) return Container();
+        return RichText(
+          text: TextSpan(
+            text: S.onlineUserCount,
+            style: Theme.of(context).textTheme.bodyText1.copyWith(),
+            children: [
+              TextSpan(text: ': '),
+              TextSpan(
+                text: value.onlineUsers.length.toString(),
+                style: Theme.of(context).textTheme.bodyText1.copyWith(
+                    fontWeight: FontWeight.bold, color: Colors.green[700]),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }

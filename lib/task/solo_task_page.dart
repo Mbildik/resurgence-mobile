@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/item/item.dart';
+import 'package:resurgence/player/player.dart';
+import 'package:resurgence/player/service.dart';
 import 'package:resurgence/task/model.dart';
 import 'package:resurgence/task/service.dart';
 import 'package:resurgence/task/task_result.dart';
@@ -17,11 +19,15 @@ class SoloTaskPage extends StatefulWidget {
 class _SoloTaskPageState extends State<SoloTaskPage> {
   Future<List<Task>> futureTasks;
   TaskService _service;
+  PlayerService _playerService;
+  PlayerState _playerState;
 
   @override
   void initState() {
     super.initState();
     _service = context.read<TaskService>();
+    _playerService = context.read<PlayerService>();
+    _playerState = context.read<PlayerState>();
     futureTasks = fetchAllTasks();
   }
 
@@ -67,7 +73,10 @@ class _SoloTaskPageState extends State<SoloTaskPage> {
                 onPerform: (selectedItems) {
                   perform(task, selectedItems)
                       .then(this.onTaskPerformed)
-                      .catchError((e) => ErrorHandler.showError(context, e));
+                      .catchError((e) => ErrorHandler.showError(context, e))
+                      .whenComplete(() => _playerService
+                          .info()
+                          .then((player) => _playerState.updatePlayer(player)));
                 },
               );
             },

@@ -112,15 +112,11 @@ class Client {
   }
 
   void _initOnlineUsers() {
-    Future.delayed(Duration.zero).then((_) {
-      _client.subscribe(
-        destination: '/user/$_playerName/online-players',
-        callback: (frame) {
-          _state.onlineUsers = Set<String>.from(jsonDecode(frame.body));
-          log('online players ${_state.onlineUsers}');
-        },
-      );
-    });
+    _client.subscribe(
+      destination: '/user/$_playerName/online-players',
+      callback: (frame) =>
+          _state.onlineUsers = Set<String>.from(jsonDecode(frame.body)),
+    );
   }
 
   void _initPlayerFilterSubscription() {

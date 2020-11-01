@@ -43,11 +43,6 @@ class ChatState extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// use it wisely
-  void clear(Subscription subscription) {
-    _subsMessages.remove(subscription);
-  }
-
   void clearSubscriptions() {
     _subscriptions.clear();
     _subsMessages.clear();
