@@ -22,79 +22,95 @@ class _MenuPageState extends State<MenuPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: W.defaultAppBar,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Consumer<PlayerState>(
-              builder: (context, value, child) {
-                if (value.player == null) return CircularProgressIndicator();
-                return ProfilePage(player: value.player);
-              },
-            ),
-            GridView.count(
-              primary: false,
-              padding: EdgeInsets.all(8.0),
-              childAspectRatio: 4.0,
-              crossAxisSpacing: 8.0,
-              mainAxisSpacing: 8.0,
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              children: [
-                _MenuItem(
-                  text: S.tasks,
-                  icon: Icons.format_list_numbered,
-                  onPressed: () => push(context, widget: SoloTaskPage()),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
                 ),
-                _MenuItem(
-                  text: S.multiplayerTasks,
-                  icon: Icons.extension,
-                  onPressed: () =>
-                      push(context, route: MultiplayerTaskPageRoute()),
-                ),
-                _MenuItem(
-                  text: S.bank,
-                  icon: Icons.account_balance,
-                  onPressed: () => push(context, route: BankPageRoute()),
-                ),
-                _MenuItem(
-                  text: S.chat,
-                  icon: Icons.people,
-                  onPressed: () => push(context, route: ChatRoute()),
-                ),
-                _MenuItem(
-                  text: S.messages,
-                  icon: Icons.message,
-                  onPressed: () =>
-                      push(context, route: NotificationMessageRoute()),
-                ),
-                _MenuItem(
-                  text: S.npc,
-                  icon: Icons.category,
-                  onPressed: () => push(context, route: NPCCounterRoute()),
-                ),
-                RaisedButton(
-                  child: Text(S.logout),
-                  color: Colors.red[700],
-                  onPressed: () {
-                    showConfirmationDialog(
-                      context,
-                      S.logoutConfirmationTitle,
-                      S.logoutConfirmationContent,
-                      S.logout,
-                      S.cancel,
-                      () {
-                        context.read<AuthenticationState>().logout();
-                        context.read<AuthenticationService>().logout();
-                        return Future.value();
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Consumer<PlayerState>(
+                      builder: (context, value, child) {
+                        if (value.player == null)
+                          return CircularProgressIndicator();
+                        return ProfilePage(player: value.player);
                       },
-                    );
-                  },
+                    ),
+                    GridView.count(
+                      primary: false,
+                      padding: EdgeInsets.all(8.0),
+                      childAspectRatio: 4.0,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      children: [
+                        _MenuItem(
+                          text: S.tasks,
+                          icon: Icons.format_list_numbered,
+                          onPressed: () => push(context, widget: SoloTaskPage()),
+                        ),
+                        _MenuItem(
+                          text: S.multiplayerTasks,
+                          icon: Icons.extension,
+                          onPressed: () =>
+                              push(context, route: MultiplayerTaskPageRoute()),
+                        ),
+                        _MenuItem(
+                          text: S.bank,
+                          icon: Icons.account_balance,
+                          onPressed: () => push(context, route: BankPageRoute()),
+                        ),
+                        _MenuItem(
+                          text: S.chat,
+                          icon: Icons.people,
+                          onPressed: () => push(context, route: ChatRoute()),
+                        ),
+                        _MenuItem(
+                          text: S.messages,
+                          icon: Icons.message,
+                          onPressed: () =>
+                              push(context, route: NotificationMessageRoute()),
+                        ),
+                        _MenuItem(
+                          text: S.npc,
+                          icon: Icons.category,
+                          onPressed: () =>
+                              push(context, route: NPCCounterRoute()),
+                        ),
+                        RaisedButton(
+                          child: Text(S.logout),
+                          color: Colors.red[700],
+                          onPressed: () {
+                            showConfirmationDialog(
+                              context,
+                              S.logoutConfirmationTitle,
+                              S.logoutConfirmationContent,
+                              S.logout,
+                              S.cancel,
+                              () {
+                                context.read<AuthenticationState>().logout();
+                                context.read<AuthenticationService>().logout();
+                                return Future.value();
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    Container(
+                      child: _OnlinePlayerInfo(),
+                      margin: const EdgeInsets.only(bottom: 8.0),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            _OnlinePlayerInfo(),
-          ],
+              ),
+            );
+          },
         ),
       ),
     );

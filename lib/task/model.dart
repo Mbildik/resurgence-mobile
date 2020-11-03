@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/item/item.dart';
@@ -67,6 +68,16 @@ class Task extends AbstractEnum {
     smuggling = json['smuggling'];
     multiPlayer = json['multi_player'];
     image = json['image'] == null ? null : S.baseUrl + json['image'];
+  }
+
+  Color color() {
+    var difficulty = this.difficulty.key;
+    if ('EASY' == difficulty) {
+      return Colors.indigoAccent[100];
+    } else if ('MEDIUM' == difficulty) {
+      return Colors.amber;
+    }
+    return Colors.red[700];
   }
 }
 

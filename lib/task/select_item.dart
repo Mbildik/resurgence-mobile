@@ -367,7 +367,13 @@ class SelectableItem extends StatelessWidget {
     var categoriesText = item.category.map((c) => c.value).join(', ');
     return Column(
       children: [
-        Text(item.value),
+        Text(
+          item.value,
+          style: Theme.of(context)
+              .textTheme
+              .bodyText1
+              .copyWith(color: item.quality.color()),
+        ),
         Text(
           categoriesText,
           style: Theme.of(context).textTheme.subtitle2,

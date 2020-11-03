@@ -244,6 +244,7 @@ class S {
 
   static const soloTaskHelp = '$helpBullet Suç işleyerek para, malzeme ve seviye'
       ' kazanabilirsin. Her suç belirli bir süre sonra tekrar aktif hale gelir.'
+      '$helpSeparator Maksimum kazanacağın parayı ekranda görebilirsin.'
       '$helpSeparator Bazı suçları işlemek için bir takım malzemelere ihtiyaç duyabilirsin.'
       ' Gerekli kategorideki malzemenin tamamını seçmek için + butonuna basılı'
       ' tut.'
@@ -264,7 +265,7 @@ class S {
       '$helpSeparator Sepetten istemediğin item\'ları tıklayarak teker teker veya '
       'uzun basarak hepsini çıkabilirsin.';
 
-  static const multiplayerTasks = 'Çok oyunculu görevler';
+  static const multiplayerTasks = 'Organize görevler';
   static const multiplayerTaskGainMember = 'şunları kazandı.';
   static const multiplayerTaskGainSelf = 'Şunları kazandın.';
 

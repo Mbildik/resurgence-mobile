@@ -27,7 +27,9 @@ class _NotificationMessagePageState extends State<NotificationMessagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: W.defaultAppBar,
+      appBar: AppBar(
+        title: Text(S.messages),
+      ),
       body: LoadingFutureBuilder<List<Message>>(
         future: _messagesFuture,
         onError: _onError,

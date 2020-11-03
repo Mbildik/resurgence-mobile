@@ -61,15 +61,28 @@ class TaskListTile extends StatelessWidget {
                     children: [
                       Text(
                         task.value,
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.bodyText1.copyWith(
+                          color: task.color()
+                        ),
                       ),
                       Expanded(
-                        child: Text(Money.format(task.moneyGain),
-                            textAlign: TextAlign.right,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1
-                                .copyWith(fontSize: 16.0)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Icon(
+                              Icons.trending_up,
+                            ),
+                            SizedBox(width: 4.0),
+                            Text(
+                              Money.format(task.moneyGain),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  .copyWith(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(width: 8.0),
                     ],
@@ -261,7 +274,7 @@ class TaskDetail extends StatelessWidget {
                               style: Theme.of(context)
                                   .primaryTextTheme
                                   .bodyText1
-                                  .copyWith(color: difficultyColor()),
+                                  .copyWith(color: task.color()),
                             ),
                           ],
                         ),
@@ -323,16 +336,6 @@ class TaskDetail extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Color difficultyColor() {
-    var difficulty = task.difficulty.key;
-    if ('EASY' == difficulty) {
-      return Colors.green;
-    } else if ('MEDIUM' == difficulty) {
-      return Colors.amber;
-    }
-    return Colors.red;
   }
 }
 
