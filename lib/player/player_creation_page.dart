@@ -5,7 +5,6 @@ import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/player/service.dart';
-import 'package:resurgence/ui/button.dart';
 import 'package:resurgence/ui/error_handler.dart';
 
 class PlayerCreationPage extends StatefulWidget {
@@ -36,90 +35,97 @@ class _PlayerCreationPageState extends State<PlayerCreationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: W.defaultAppBar,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                children: <Widget>[
-                  FittedBox(
-                    child: Text(
-                      S.playerCreationTitle,
-                      style: Theme.of(context).primaryTextTheme.headline6,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  children: <Widget>[
+                    FittedBox(
+                      child: Text(
+                        S.playerCreationTitle,
+                        style: Theme.of(context).primaryTextTheme.headline6,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 4.0),
-                  FittedBox(
-                    child: Text(
-                      S.playerCreationDescription,
-                      style: Theme.of(context).primaryTextTheme.headline6,
+                    SizedBox(height: 16.0),
+                    FittedBox(
+                      child: Text(
+                        S.playerCreationDescription,
+                        style: Theme.of(context).primaryTextTheme.headline6,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 24.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: this
-                        ._races
-                        .map(
-                          (e) => GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                this._race = e;
-                              });
-                            },
-                            child: RaceWidget(
-                              e,
-                              selected: this._race == e,
+                    SizedBox(height: 24.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: this
+                          ._races
+                          .map(
+                            (e) => GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  this._race = e;
+                                });
+                              },
+                              child: RaceWidget(
+                                e,
+                                selected: this._race == e,
+                              ),
                             ),
-                          ),
-                        )
-                        .toList(growable: false),
-                  ),
-                  SizedBox(height: 24.0),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: S.nickname,
+                          )
+                          .toList(growable: false),
                     ),
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.done,
-                    controller: nicknameController,
-                    onFieldSubmitted: (value) =>
-                        FocusScope.of(context).nextFocus(),
-                    validator: (value) {
-                      if (value.isEmpty) return S.validationRequired;
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 24.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Button(
-                        onPressed: () {
-                          if (!_formKey.currentState.validate())
-                            return; // form is not valid
-
-                          var nickname = nicknameController.text;
-                          context
-                              .read<PlayerService>()
-                              .create(nickname, _race)
-                              .then((player) => widget.onDone())
-                              .catchError(
-                                  (e) => ErrorHandler.showError(context, e));
+                    SizedBox(height: 24.0),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: S.nickname,
+                        ),
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.done,
+                        controller: nicknameController,
+                        onFieldSubmitted: (value) =>
+                            FocusScope.of(context).nextFocus(),
+                        validator: (value) {
+                          if (value.isEmpty) return S.validationRequired;
+                          return null;
                         },
-                        child: Text(S.create),
                       ),
-                      Button(
-                        onPressed: () =>
-                            context.read<AuthenticationState>().logout(),
-                        child: Text(S.logout),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                    SizedBox(height: 24.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        RaisedButton(
+                          onPressed: () {
+                            if (!_formKey.currentState.validate())
+                              return; // form is not valid
+
+                            var nickname = nicknameController.text;
+                            context
+                                .read<PlayerService>()
+                                .create(nickname, _race)
+                                .then((player) => widget.onDone())
+                                .catchError(
+                                    (e) => ErrorHandler.showError(context, e));
+                          },
+                          child: Text(S.create),
+                          color: Colors.green[700],
+                        ),
+                        RaisedButton(
+                          onPressed: () =>
+                              context.read<AuthenticationState>().logout(),
+                          child: Text(S.logout),
+                          color: Colors.red[700],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -152,12 +158,38 @@ class RaceWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: Text(
-            race.value,
-            style: Theme.of(context).textTheme.headline6,
+          child: Column(
+            children: [
+              RaceImage(race),
+              Text(
+                race.value,
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              Text(
+                S.raceDescription(race),
+                style: Theme.of(context).textTheme.subtitle2,
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+}
+
+class RaceImage extends StatelessWidget {
+  final AbstractEnum race;
+
+  const RaceImage(
+    this.race, {
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (race.key == 'COSA_NOSTRA')
+      return Image.asset(A.cosaNostra2x, height: 128, width: 128);
+
+    return Image.asset(A.yakuza2x, height: 128, width: 128);
   }
 }

@@ -177,11 +177,9 @@ class ProfileImage extends StatelessWidget {
         child: Consumer<PlayerState>(
           builder: (context, state, child) {
             return Image.network(
-              state.player.image ??
-                  S.baseUrl + 'static/player/default_image.png',
+              S.baseUrl + 'player/image/${state.player.nickname}',
               height: 128,
               width: 128,
-              fit: BoxFit.cover,
             );
           },
         ),

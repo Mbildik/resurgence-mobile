@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:resurgence/enum.dart';
 import 'package:resurgence/money.dart';
 
 enum _Env { local, dev }
@@ -41,7 +42,7 @@ class S {
 
   // Label
   static const email = 'Email';
-  static const nickname = 'İsmin';
+  static const nickname = 'Lakabın';
   static const create = 'Oluştur';
   static const sendEmail = 'send.email';
   static const submit = 'Submit';
@@ -60,7 +61,9 @@ class S {
   static const playerCreationTitle =
       'Mafya dünyasının zorlu günleri seni bekliyor';
   static const playerCreationDescription =
-      'Irkını ve ismini seçerek bu karanlık dünyaya sende katıl';
+      'Hesabını oluşturdun.\n'
+      'Şimdi sıra ırkını ve lakabını seçerek \n'
+      'bu karanlık dünyaya girme vakti!';
   static const race = 'race';
   static const balance = 'balance';
   static const health = 'Sağlık';
@@ -143,7 +146,7 @@ class S {
   static const search = 'Ara';
   static const offline = 'Çevrimdışı';
   static const online = 'Çevrimiçi';
-  static const typeSomething = 'Type something...';
+  static const typeSomething = 'Bir şeyler yaz...';
 
   static const boss = 'Boss';
   static const consultant = 'Consultant';
@@ -280,6 +283,14 @@ class S {
   static const yakuza = 'Yakuza';
 
   static const onlineUserCount = 'Online oyuncu sayısı';
+
+  static raceDescription(AbstractEnum race) {
+    if (race.key == 'COSA_NOSTRA') {
+      return 'İtalyan Irkı';
+    }
+
+    return 'Japon Irkı';
+  }
 }
 
 class W {
@@ -296,4 +307,8 @@ class A {
   static const EMPTY_IMAGE = '$FOLDER/no-item.png';
   static const BUSTED = '$FOLDER/busted.png';
   static const MONEY = '$FOLDER/money.png';
+  static const cosaNostra = '$FOLDER/cosa_nostra-128.png';
+  static const cosaNostra2x = '$FOLDER/cosa_nostra-256.png';
+  static const yakuza = '$FOLDER/yakuza-128.png';
+  static const yakuza2x = '$FOLDER/yakuza-256.png';
 }

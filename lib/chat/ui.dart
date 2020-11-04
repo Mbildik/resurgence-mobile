@@ -138,17 +138,17 @@ class _ChatDetail extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: ListTile(
-            leading: CircleAvatar(
-              backgroundImage: getImage(sub).image,
-            ),
+            leading: Image(image: getImage(sub).image, width: 48),
             title: Text(sub.name),
-            subtitle: Consumer<ChatState>(
-              builder: (context, state, child) =>
-                  state.onlineUsers.contains(sub.name)
-                      ? child
-                      : Text(S.offline),
-              child: Text(S.online),
-            ),
+            subtitle: sub.isGroup()
+                ? Container()
+                : Consumer<ChatState>(
+                    builder: (context, state, child) =>
+                        state.onlineUsers.contains(sub.name)
+                            ? child
+                            : Text(S.offline),
+                    child: Text(S.online),
+                  ),
           ),
         ),
         body: Column(
@@ -326,7 +326,7 @@ class _ChatListItem extends StatelessWidget {
       leading: Stack(
         alignment: Alignment.bottomRight,
         children: [
-          CircleAvatar(backgroundImage: image.image),
+          Image(image: image.image, width: 48),
           showOnline
               ? Container(
                   height: 10,
