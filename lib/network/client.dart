@@ -30,7 +30,6 @@ class Client {
   }
 
   loadInterceptors() {
-    _dio.interceptors.add(logInterceptor());
     _dio.interceptors.add(AcceptLanguageInterceptor(Locale.parse('tr-TR')));
     _dio.interceptors.add(accessTokenFilter());
     _dio.interceptors.add(refreshTokenFilter());
