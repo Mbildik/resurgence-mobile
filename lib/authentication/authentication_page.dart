@@ -22,10 +22,9 @@ class AuthenticationPage extends StatelessWidget {
                 children: [
                   Image.asset(
                     A.applicationLogo,
-                    width: 100.0,
-                    height: 100.0,
+                    width: 256.0,
+                    height: 256.0,
                   ),
-                  Container(margin: EdgeInsets.symmetric(vertical: 8.0)),
                   Text(
                     S.applicationTitle,
                     textAlign: TextAlign.center,

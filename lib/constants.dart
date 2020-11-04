@@ -291,7 +291,7 @@ class W {
 /// Assets constants
 class A {
   static const FOLDER = 'assets/img';
-  static const applicationLogo = '$FOLDER/flutter_logo.png';
+  static const applicationLogo = '$FOLDER/welcome_logo.png';
   static const googleLogo = '$FOLDER/google.png';
   static const EMPTY_IMAGE = '$FOLDER/no-item.png';
   static const BUSTED = '$FOLDER/busted.png';
