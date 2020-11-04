@@ -34,6 +34,7 @@ class Application extends StatelessWidget {
 
     return OverlaySupport(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: S.applicationTitle,
         theme: theme,
         navigatorObservers: analytics != null
