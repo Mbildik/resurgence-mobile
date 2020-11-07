@@ -76,9 +76,8 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: Consumer<ChatState>(
               builder: (context, state, child) {
-                var subscriptions = HashSet<Subscription>.from(
-                  state.subscriptions,
-                );
+                Set<Subscription> subscriptions = orderSubs(state);
+
                 var fndSubscriptions = state.filteredUsers;
                 subscriptions.addAll(fndSubscriptions);
 
@@ -123,6 +122,23 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
     );
+  }
+
+  Set<Subscription> orderSubs(ChatState state) {
+    if (filter.isNotEmpty) {
+      return HashSet<Subscription>.from(
+        state.subscriptions,
+      );
+    } else {
+      return SplayTreeSet(
+        (data1, data2) {
+          if (data1.lastMessage == null || data2.lastMessage == null) {
+            return 0;
+          }
+          return data2.lastMessage.time.compareTo(data1.lastMessage.time);
+        },
+      )..addAll(state.subscriptions);
+    }
   }
 }
 
