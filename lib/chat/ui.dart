@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
@@ -160,7 +161,7 @@ class _ChatDetail extends StatelessWidget {
 
                   return ListView.builder(
                     reverse: true,
-                    padding: EdgeInsets.only(top: 8.0),
+                    padding: const EdgeInsets.only(top: 8.0),
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       var message = messages.elementAt(index);
@@ -170,6 +171,7 @@ class _ChatDetail extends StatelessWidget {
                         owner: message.from == PlayerState.playerName,
                         text: message.content,
                         sender: sub.isGroup() ? message.from : null,
+                        time: message.time,
                       );
                     },
                   );
@@ -198,46 +200,55 @@ class _MessageBubble extends StatelessWidget {
     @required this.text,
     @required this.owner,
     this.sender,
+    this.time,
   });
 
   final double screenWidth;
   final String text;
   final bool owner;
   final String sender;
+  final DateTime time;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment:
-          owner ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          margin:
-              owner ? EdgeInsets.only(right: 8.0) : EdgeInsets.only(left: 8.0),
-          constraints: BoxConstraints(maxWidth: screenWidth * 0.8),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(8.0),
-                bottomRight: owner ? Radius.circular(0) : Radius.circular(8.0),
-                topLeft: owner ? Radius.circular(8.0) : Radius.circular(0),
-                topRight: Radius.circular(8.0),
-              ),
+    final margin = EdgeInsets.only(
+      bottom: 8.0,
+      right: owner ? 8.0 : 0.0,
+      left: owner ? 0.0 : 8.0,
+    );
+    final color = owner ? Colors.blue[700] : Colors.white24;
+    final alignment = owner ? WrapAlignment.end : WrapAlignment.start;
+
+    return Wrap(
+      alignment: alignment,
+      children: [
+        Card(
+          margin: margin,
+          color: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(8.0),
+              topRight: Radius.circular(8.0),
+              topLeft: owner ? Radius.circular(8.0) : Radius.circular(0),
+              bottomRight: owner ? Radius.circular(0) : Radius.circular(8.0),
             ),
-            color: owner ? Colors.blue : Colors.white24,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: screenWidth * 0.8),
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: messageBody(context),
             ),
           ),
         ),
-        SizedBox(height: 8.0),
       ],
     );
   }
 
   Widget messageBody(BuildContext context) {
-    if (owner || sender == null) return SelectableText(text);
+    if (owner || sender == null) {
+      return MessageContentWidget(text: text, time: time);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,7 +261,41 @@ class _MessageBubble extends StatelessWidget {
               .bodyText1
               .copyWith(color: Colors.amber),
         ),
-        SelectableText(text),
+        MessageContentWidget(text: text, time: time),
+      ],
+    );
+  }
+}
+
+class MessageContentWidget extends StatelessWidget {
+  const MessageContentWidget({
+    Key key,
+    @required this.text,
+    @required this.time,
+  }) : super(key: key);
+
+  final String text;
+  final DateTime time;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 32.0),
+          child: SelectableText(
+            text,
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+        ),
+        Text(
+          DateFormat('HH:mm').format(time.toLocal()),
+          style: Theme.of(context)
+              .textTheme
+              .subtitle2
+              .copyWith(fontSize: 12.0, color: Colors.white54),
+        ),
       ],
     );
   }

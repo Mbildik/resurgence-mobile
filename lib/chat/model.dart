@@ -4,14 +4,16 @@ class Message {
   final String from;
   final String content;
   final int sequence;
+  final DateTime time;
 
-  Message(this.from, this.content, this.sequence);
+  Message(this.from, this.content, this.sequence, this.time);
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       json['from'],
       json['content'],
       json['sequence'],
+      DateTime.parse(json['time']),
     );
   }
 
