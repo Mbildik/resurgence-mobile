@@ -32,13 +32,15 @@ class Subscription {
   final String topic;
   final String _name;
   Message lastMessage;
+  bool unread;
 
-  Subscription(this.topic, this._name, {this.lastMessage});
+  Subscription(this.topic, this._name, this.unread, {this.lastMessage});
 
   factory Subscription.fromJson(Map<String, dynamic> json) {
     return Subscription(
       json['topic'],
       json['name'],
+      json['unread'],
       lastMessage: json['last_message'] == null
           ? null
           : Message.fromJson(json['last_message']),

@@ -76,6 +76,10 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: Consumer<ChatState>(
               builder: (context, state, child) {
+                if (state.connectionState != ChatConnectionState.connected) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
                 Set<Subscription> subscriptions = orderSubs(state);
 
                 var fndSubscriptions = state.filteredUsers;
@@ -93,7 +97,7 @@ class _ChatPageState extends State<ChatPage> {
                     }
 
                     var online = state.onlineUsers.contains(subName);
-                    var read = true;
+                    var read = !currentSub.unread;
                     var image = getImage(currentSub);
 
                     return _ChatListItem(
@@ -203,7 +207,9 @@ class _ChatDetail extends StatelessWidget {
         ),
       ),
       onWillPop: () async {
-        // todo send read note
+        try {
+          context.read<Client>().read(sub.topic);
+        } catch (e) {}
         return true;
       },
     );
@@ -343,9 +349,21 @@ class __MessageInputState extends State<_MessageInput> {
           contentPadding: EdgeInsets.all(16.0),
           hintText: S.typeSomething,
           border: InputBorder.none,
-          suffixIcon: IconButton(
-            icon: Icon(Icons.send),
-            onPressed: send,
+          suffixIcon: Consumer<ChatState>(
+            builder: (context, value, child) {
+              if (value.connectionState != ChatConnectionState.connected) {
+                return Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              return child;
+            },
+            child: IconButton(
+              icon: Icon(Icons.send),
+              onPressed: send,
+            ),
           ),
         ),
       ),

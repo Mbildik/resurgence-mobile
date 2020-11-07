@@ -52,7 +52,8 @@ class _MenuPageState extends State<MenuPage> {
                         _MenuItem(
                           text: S.tasks,
                           icon: Icons.format_list_numbered,
-                          onPressed: () => push(context, widget: SoloTaskPage()),
+                          onPressed: () =>
+                              push(context, widget: SoloTaskPage()),
                         ),
                         _MenuItem(
                           text: S.multiplayerTasks,
@@ -63,10 +64,37 @@ class _MenuPageState extends State<MenuPage> {
                         _MenuItem(
                           text: S.bank,
                           icon: Icons.account_balance,
-                          onPressed: () => push(context, route: BankPageRoute()),
+                          onPressed: () =>
+                              push(context, route: BankPageRoute()),
                         ),
                         _MenuItem(
-                          text: S.chat,
+                          child: Selector<ChatState, int>(
+                            selector: (_, s) => s.unreadMessageCount(),
+                            shouldRebuild: (a, b) => a != b,
+                            builder: (context, unread, child) {
+                              if (unread <= 0) return child;
+
+                              return Stack(
+                                children: [
+                                  child,
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      width: 8,
+                                      height: 8,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                            child: Text(S.chat),
+                          ),
                           icon: Icons.people,
                           onPressed: () => push(context, route: ChatRoute()),
                         ),
@@ -132,11 +160,13 @@ class _MenuItem extends StatelessWidget {
   const _MenuItem({
     Key key,
     this.text,
+    this.child,
     this.icon,
     this.onPressed,
   }) : super(key: key);
 
   final String text;
+  final Widget child;
   final IconData icon;
   final VoidCallback onPressed;
 
@@ -147,7 +177,7 @@ class _MenuItem extends StatelessWidget {
       child: Row(
         children: [
           Expanded(flex: 1, child: Icon(icon)),
-          Expanded(flex: 2, child: Text(text)),
+          Expanded(flex: 2, child: child == null ? Text(text) : child),
         ],
       ),
     );

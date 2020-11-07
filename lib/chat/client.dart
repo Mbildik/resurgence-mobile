@@ -66,9 +66,11 @@ class Client {
         onConnect: (client, frame) {
           this._client = client;
           log('on connect');
+          _state.connectionState = ChatConnectionState.connected;
           _initSubscriptions();
           _initOnlineUsers();
           _initPlayerFilterSubscription();
+          _subscribeUnread();
         },
         onStompError: (frame) {
           log('error ${frame.body}');
@@ -76,6 +78,9 @@ class Client {
           this._init();
         },
         onDisconnect: (frame) => log('disconnected $frame'),
+        onWebSocketDone: () =>
+            _state.connectionState = ChatConnectionState.disconnected,
+        onWebSocketError: (e) => log('onWebSocketError $e'),
         useSockJS: true,
       ),
     );
@@ -98,14 +103,23 @@ class Client {
 
   void _subscribe(Set<Subscription> subscriptions) {
     callbacks.clear();
+    var firstReceiveTime; // todo improve this ugly code
 
     subscriptions.forEach((sub) {
       log('Subscribing topic ${sub.topic}.');
       callbacks[sub] = _client.subscribe(
         destination: '/user/$_playerName/${sub.topic}',
         callback: (frame) {
+          if (firstReceiveTime == null) {
+            firstReceiveTime = DateTime.now().millisecondsSinceEpoch;
+          }
           log('Message ${frame.body}');
-          _state.onMessage(sub, Message.fromJson(jsonDecode(frame.body)));
+          _state.onMessage(
+            sub,
+            Message.fromJson(jsonDecode(frame.body)),
+            notify: firstReceiveTime != null &&
+                DateTime.now().millisecondsSinceEpoch - firstReceiveTime > 5000,
+          );
         },
       );
     });
@@ -130,4 +144,16 @@ class Client {
       },
     );
   }
+
+  void _subscribeUnread() {
+    _client.subscribe(
+      destination: '/user/$_playerName/unread',
+      callback: (frame) {
+        var body = jsonDecode(frame.body);
+        return _state.updateUnread(body['topic'], body['unread']);
+      },
+    );
+  }
+
+  void read(String topic) => _client.send(destination: '/read/$topic');
 }
