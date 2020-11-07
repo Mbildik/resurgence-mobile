@@ -15,6 +15,7 @@ class ChatState extends ChangeNotifier {
   Set<Subscription> _filteredUsers = Set();
   Map<Subscription, SplayTreeSet<Message>> _subsMessages = HashMap();
   ChatConnectionState _connectionState = ChatConnectionState.disconnected;
+  bool chatPageOpen = false;
 
   void subscribe(Set<Subscription> subscriptions) {
     var oldSubs = Set<Subscription>.from(_subscriptions);
@@ -47,7 +48,7 @@ class ChatState extends ChangeNotifier {
 
     notifyListeners();
 
-    if (notify) {
+    if (notify && !chatPageOpen) {
       showOverlayNotification((context) {
         String title =
             subscription.isGroup() ? subscription.name : message.from;

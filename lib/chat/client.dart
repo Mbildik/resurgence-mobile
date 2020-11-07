@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/chat/model.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/player/player.dart';
 import 'package:stomp_dart_client/sock_js/sock_js_utils.dart';
 import 'package:stomp_dart_client/stomp.dart';
 import 'package:stomp_dart_client/stomp_config.dart';
@@ -114,10 +115,11 @@ class Client {
             firstReceiveTime = DateTime.now().millisecondsSinceEpoch;
           }
           log('Message ${frame.body}');
+          var message = Message.fromJson(jsonDecode(frame.body));
           _state.onMessage(
             sub,
-            Message.fromJson(jsonDecode(frame.body)),
-            notify: firstReceiveTime != null &&
+            message,
+            notify: message.from != PlayerState.playerName && firstReceiveTime != null &&
                 DateTime.now().millisecondsSinceEpoch - firstReceiveTime > 5000,
           );
         },

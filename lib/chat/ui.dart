@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -24,10 +25,13 @@ class _ChatPageState extends State<ChatPage> {
 
   String filter = '';
   Client _client;
+  ChatState _chatState;
 
   @override
   void initState() {
     super.initState();
+    _chatState = context.read<ChatState>();
+    _chatState.chatPageOpen = true;
     _client = context.read<Client>();
     _filterController.addListener(() {
       var value = _filterController.text.trim();
@@ -44,6 +48,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    _chatState?.chatPageOpen = false;
     _filterController.dispose();
     super.dispose();
   }
