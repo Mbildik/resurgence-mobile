@@ -289,6 +289,7 @@ class MessageContentWidget extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyText1,
           ),
         ),
+        const SizedBox(height: 1.0),
         Text(
           DateFormat('HH:mm').format(time.toLocal()),
           style: Theme.of(context)
