@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
@@ -32,19 +31,12 @@ class InterestRatesWidget extends StatefulWidget {
 class _InterestRatesWidgetState extends State<InterestRatesWidget> {
   Future<List<InterestRate>> _future;
   BankService _service;
-  ScrollController _scrollController = new ScrollController();
 
   @override
   void initState() {
     super.initState();
     _service = context.read<BankService>();
     _future = _service.interestRates();
-  }
-
-  @override
-  void dispose() {
-    _scrollController?.dispose();
-    super.dispose();
   }
 
   void _refresh() {
@@ -67,19 +59,12 @@ class _InterestRatesWidgetState extends State<InterestRatesWidget> {
             var selectedInterestRate = interestRates.firstWhere((e) {
               return e.min <= value && e.max >= value;
             }, orElse: () => null);
-            if (selectedInterestRate != null) {
-              var index = interestRates.indexOf(selectedInterestRate);
-              _scrollController.animateTo(
-                _findOffset(interestRates.length, index),
-                duration: Duration(milliseconds: 500),
-                curve: Curves.easeOut,
-              );
-            }
 
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: _scrollController,
-              child: Row(
+            return Expanded(
+              child: GridView.count(
+                childAspectRatio: 2,
+                crossAxisCount: 2,
+                shrinkWrap: true,
                 children: interestRates
                     .map((e) => _InterestRateCard(
                           e,
@@ -92,21 +77,6 @@ class _InterestRatesWidgetState extends State<InterestRatesWidget> {
         );
       },
     );
-  }
-
-  double _findOffset(int total, int index) {
-    var viewport = _scrollController.position.viewportDimension;
-    var maxExtent = _scrollController.position.maxScrollExtent;
-    var fullWidth = maxExtent + viewport;
-    var singleWith = fullWidth / total;
-    var offset = (viewport - singleWith) / 2;
-
-    return max(
-        min(
-          (index * singleWith) - offset,
-          _scrollController.position.maxScrollExtent,
-        ),
-        0);
   }
 }
 
