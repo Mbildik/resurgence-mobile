@@ -18,14 +18,6 @@ class S {
         return 'https://hezaryar.com/';
     }
   }();
-  static var wsUrl = () {
-    switch (_env) {
-      case _Env.local:
-        return 'ws://192.168.1.101:6060/v0/channels?apikey=AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K';
-      case _Env.dev:
-        return 'wss://hezaryar.com:2053/v0/channels?apikey=AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K';
-    }
-  }();
 
   static const DSN =
       'https://a08e58dade624766a001060e647ff585@o411000.ingest.sentry.io/5443874';
