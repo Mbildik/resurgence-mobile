@@ -8,6 +8,7 @@ import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/notification_handler.dart';
 import 'package:resurgence/player/player_control_page.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class Application extends StatelessWidget {
   final FirebaseAnalytics analytics;
@@ -38,7 +39,10 @@ class Application extends StatelessWidget {
         title: S.applicationTitle,
         theme: theme,
         navigatorObservers: analytics != null
-            ? [FirebaseAnalyticsObserver(analytics: analytics)]
+            ? [
+                FirebaseAnalyticsObserver(analytics: analytics),
+                SentryNavigatorObserver(),
+              ]
             : const <NavigatorObserver>[],
         home: NotificationHandler(
           child: Consumer<AuthenticationState>(

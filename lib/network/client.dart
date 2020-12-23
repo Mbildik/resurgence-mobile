@@ -9,17 +9,17 @@ import 'package:resurgence/authentication/token.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/network/error.dart';
 import 'package:sentry/sentry.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class Client {
   final AuthenticationState _state;
-  final SentryClient sentryClient;
 
   static final Set<String> securityPaths =
       Set.of(['login', 'security/refresh']);
 
   Dio _dio;
 
-  Client(this._state, {this.sentryClient}) {
+  Client(this._state) {
     var options = BaseOptions(
       baseUrl: S.baseUrl,
       headers: {HttpHeaders.userAgentHeader: S.userAgent},
@@ -33,9 +33,7 @@ class Client {
     _dio.interceptors.add(AcceptLanguageInterceptor(Locale.parse('tr-TR')));
     _dio.interceptors.add(accessTokenFilter());
     _dio.interceptors.add(refreshTokenFilter());
-    if (sentryClient != null) {
-      _dio.interceptors.add(SentryInterceptor(sentryClient));
-    }
+    _dio.interceptors.add(SentryInterceptor());
     _dio.interceptors.add(apiErrorInterceptor());
     _dio.interceptors.add(DioFirebasePerformanceInterceptor());
   }
@@ -217,10 +215,6 @@ class AcceptLanguageInterceptor extends Interceptor {
 }
 
 class SentryInterceptor extends Interceptor {
-  final SentryClient sentryClient;
-
-  SentryInterceptor(this.sentryClient);
-
   @override
   Future onError(DioError e) {
     try {
@@ -230,12 +224,12 @@ class SentryInterceptor extends Interceptor {
       } else {
         request = e.request.data;
       }
-      sentryClient.capture(
-        event: Event(
-          loggerName: 'http_logger',
+      Sentry.captureEvent(
+        SentryEvent(
+          logger: 'http_logger',
           release: S.version,
-          exception: e,
-          level: SeverityLevel.fatal,
+          throwable: e,
+          level: SentryLevel.fatal,
           extra: {
             'request': request,
             'response': e.response?.data,
@@ -249,7 +243,7 @@ class SentryInterceptor extends Interceptor {
       );
     } catch (e, stacktrace) {
       try {
-        sentryClient.captureException(exception: e, stackTrace: stacktrace);
+        Sentry.captureException(e, stackTrace: stacktrace);
       } catch (ignored) {}
     }
 
