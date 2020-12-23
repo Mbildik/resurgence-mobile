@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:resurgence/authentication/token.dart';
 import 'package:sentry/sentry.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationState with ChangeNotifier {
@@ -13,10 +14,9 @@ class AuthenticationState with ChangeNotifier {
   static const _REFRESH_TOKEN_KEY = 'refresh_token';
 
   Token _token;
-  SentryClient sentryClient;
   FirebaseAnalytics analytics;
 
-  AuthenticationState({this.sentryClient, this.analytics}) {
+  AuthenticationState({this.analytics}) {
     _getToken()
         .then((token) => this.login(token))
         .catchError((e) => log('token read error $e. Do nothing!'));
@@ -29,11 +29,13 @@ class AuthenticationState with ChangeNotifier {
     try {
       var jwt = _decodeToken(token.accessToken);
       var id = jwt['sub'];
-      sentryClient.userContext = User(
-        id: id,
-        email: id,
-        username: jwt['player'],
-      );
+      Sentry.configureScope((scope) {
+        scope.user = User(
+          id: id,
+          email: id,
+          username: jwt['player'],
+        );
+      });
       analytics.setUserId(id);
     } catch (_) {}
     notifyListeners();
@@ -43,7 +45,7 @@ class AuthenticationState with ChangeNotifier {
     _token = null;
     try {
       GoogleSignIn().signOut();
-      sentryClient.userContext = null;
+      Sentry.configureScope((scope) => scope.user = null);
       analytics.setUserId(null);
     } catch (ignored) {}
     _removeToken();

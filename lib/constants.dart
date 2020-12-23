@@ -19,6 +19,8 @@ class S {
     }
   }();
 
+  static bool isInDebugMode = _env == _Env.local;
+
   static const DSN =
       'https://a08e58dade624766a001060e647ff585@o411000.ingest.sentry.io/5443874';
 

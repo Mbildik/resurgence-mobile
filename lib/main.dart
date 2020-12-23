@@ -16,39 +16,18 @@ import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
 import 'package:resurgence/real-estate/service.dart';
 import 'package:resurgence/task/service.dart';
-import 'package:sentry/sentry.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'application.dart';
-
-bool get isInDebugMode {
-  bool inDebugMode = false;
-  assert(inDebugMode = true);
-  return inDebugMode;
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Monitoring
   final analytics = FirebaseAnalytics();
-  final sentry = SentryClient(dsn: S.DSN);
 
-  FlutterError.onError = (details, {bool forceReport = false}) {
-    if (isInDebugMode) {
-      // In development mode, simply print to console.
-      FlutterError.dumpErrorToConsole(details, forceReport: forceReport);
-    } else {
-      // In production mode, report to the application zone to report to
-      // Sentry.
-      sentry.captureException(
-        exception: details.exception,
-        stackTrace: details.stack,
-      );
-    }
-  };
-
-  final authenticationState = AuthenticationState(sentryClient: sentry);
-  final client = Client(authenticationState, sentryClient: sentry);
+  final authenticationState = AuthenticationState();
+  final client = Client(authenticationState);
 
   // Authentication
   final authenticationStateProvider = ChangeNotifierProvider.value(
@@ -112,44 +91,54 @@ void main() async {
     create: (_) => MessageService(client),
   );
 
-  runApp(
-    MultiProvider(
-      providers: [
-        // Authentication
-        authenticationStateProvider,
-        authenticationServiceProvider,
+  var mainApp = MultiProvider(
+    providers: [
+      // Authentication
+      authenticationStateProvider,
+      authenticationServiceProvider,
 
-        // Player
-        playerServiceProvider,
-        playerStateProvider,
+      // Player
+      playerServiceProvider,
+      playerStateProvider,
 
-        // Task
-        taskServiceProvider,
+      // Task
+      taskServiceProvider,
 
-        // Item
-        itemServiceProvider,
+      // Item
+      itemServiceProvider,
 
-        // Bank
-        bankServiceProvider,
+      // Bank
+      bankServiceProvider,
 
-        // Real Estate
-        realEstateServiceProvider,
+      // Real Estate
+      realEstateServiceProvider,
 
-        // Family
-        familyServiceProvider,
-        familyStateProvider,
+      // Family
+      familyServiceProvider,
+      familyStateProvider,
 
-        // Chat
-        chatClientProvider,
-        chatStateProvider,
+      // Chat
+      chatClientProvider,
+      chatStateProvider,
 
-        // Multiplayer Task
-        multiplayerServiceProvider,
+      // Multiplayer Task
+      multiplayerServiceProvider,
 
-        // Notification Message
-        messageServiceProvider,
-      ],
-      child: Application(analytics: analytics),
-    ),
+      // Notification Message
+      messageServiceProvider,
+    ],
+    child: Application(analytics: analytics),
   );
+
+  if (S.isInDebugMode) {
+    runApp(mainApp);
+  } else {
+    await SentryFlutter.init(
+      (options) {
+        options.dsn = S.DSN;
+      },
+      // Init your App.
+      appRunner: () => runApp(mainApp),
+    );
+  }
 }
