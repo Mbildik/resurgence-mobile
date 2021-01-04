@@ -13,28 +13,49 @@ import 'package:stomp_dart_client/stomp_config.dart';
 
 import 'state.dart';
 
+const String _LOG_TAG = 'CHAT_CLIENT: ';
+
 class Client {
   String _token;
   String _playerName;
   StompClient _client;
+  bool _isOpen = false;
   final Map<Subscription, Function({Map<String, String> unsubscribeHeaders})>
       callbacks = HashMap();
-
   final ChatState _state;
 
   Client(this._state, AuthenticationState state) {
+    log('$_LOG_TAG constructor called');
+    if (state.isLoggedIn) this._initialize(state);
+
     state.addListener(() {
-      if (state.isLoggedIn) {
-        var playerName = state.playerName();
-        if (playerName == null) return;
-        this._token = state.token.accessToken;
-        this._playerName = playerName;
-        var client = _init();
-        client.activate();
-      } else {
-        if (_client != null) _client.deactivate();
-      }
+      if (state.isLoggedIn)
+        this._initialize(state);
+      else
+        this._destroy();
     });
+  }
+
+  void _initialize(AuthenticationState state) {
+    if (this._isOpen) {
+      this._destroy();
+    }
+    this._isOpen = true;
+    log('$_LOG_TAG User has logged in');
+    var playerName = state.playerName();
+    log('$_LOG_TAG Player name is $playerName');
+    if (playerName == null) return;
+    this._token = state.token.accessToken;
+    this._playerName = playerName;
+    var client = _init();
+    client.activate();
+    log('$_LOG_TAG client activated');
+  }
+
+  void _destroy() {
+    this._isOpen = false;
+    log('$_LOG_TAG User has logged out, client deactivated');
+    _client?.deactivate();
   }
 
   void subscribe(Subscription subscription) {
@@ -78,10 +99,14 @@ class Client {
           _client.deactivate();
           this._init();
         },
-        onDisconnect: (frame) => log('disconnected $frame'),
+        onDisconnect: (frame) {
+          log('$_LOG_TAG disconnected $frame');
+        },
         onWebSocketDone: () =>
             _state.connectionState = ChatConnectionState.disconnected,
-        onWebSocketError: (e) => log('onWebSocketError $e'),
+        onWebSocketError: (e) {
+          log('$_LOG_TAG onWebSocketError $e');
+        },
         useSockJS: true,
       ),
     );
@@ -119,7 +144,8 @@ class Client {
           _state.onMessage(
             sub,
             message,
-            notify: message.from != PlayerState.playerName && firstReceiveTime != null &&
+            notify: message.from != PlayerState.playerName &&
+                firstReceiveTime != null &&
                 DateTime.now().millisecondsSinceEpoch - firstReceiveTime > 5000,
           );
         },

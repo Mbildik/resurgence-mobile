@@ -26,7 +26,7 @@ void main() async {
   // Monitoring
   final analytics = FirebaseAnalytics();
 
-  final authenticationState = AuthenticationState();
+  final authenticationState = AuthenticationState(analytics: analytics);
   final client = Client(authenticationState);
 
   // Authentication
