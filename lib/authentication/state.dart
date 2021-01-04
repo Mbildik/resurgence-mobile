@@ -9,20 +9,25 @@ import 'package:sentry/sentry.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+const String _LOG_TAG = 'AUTHENTICATION_STATE: ';
+
 class AuthenticationState with ChangeNotifier {
   static const _ACCESS_TOKEN_KEY = 'access_token';
   static const _REFRESH_TOKEN_KEY = 'refresh_token';
 
   Token _token;
-  FirebaseAnalytics analytics;
+  FirebaseAnalytics _analytics;
 
-  AuthenticationState({this.analytics}) {
+  AuthenticationState({FirebaseAnalytics analytics}) {
+    log('$_LOG_TAG Constructor called.');
     _getToken()
         .then((token) => this.login(token))
-        .catchError((e) => log('token read error $e. Do nothing!'));
+        .catchError((e) => log('$_LOG_TAG token read error $e. Do nothing!'));
+    this._analytics = analytics;
   }
 
   void login(Token token) {
+    log('$_LOG_TAG login attempt with token $token.\nOld token was $_token');
     if (token == null) return;
     _token = token;
     _saveToken(token);
@@ -36,8 +41,11 @@ class AuthenticationState with ChangeNotifier {
           username: jwt['player'],
         );
       });
-      analytics.setUserId(id);
-    } catch (_) {}
+      _analytics?.setUserId(id);
+    } catch (e) {
+      Sentry.captureException(e, hint: 'User initialize process');
+      log('$_LOG_TAG Sentry or Analytics was failed.', error: e);
+    }
     notifyListeners();
   }
 
@@ -46,7 +54,7 @@ class AuthenticationState with ChangeNotifier {
     try {
       GoogleSignIn().signOut();
       Sentry.configureScope((scope) => scope.user = null);
-      analytics.setUserId(null);
+      _analytics.setUserId(null);
     } catch (ignored) {}
     _removeToken();
     notifyListeners();
