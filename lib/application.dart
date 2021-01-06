@@ -7,6 +7,7 @@ import 'package:resurgence/authentication/authentication_page.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/notification_handler.dart';
+import 'package:resurgence/player/online_players.dart';
 import 'package:resurgence/player/player_control_page.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -54,6 +55,9 @@ class Application extends StatelessWidget {
             },
           ),
         ),
+        routes: {
+          Routes.ONLINE_USERS: (context) => OnlinePlayers(),
+        },
       ),
     );
   }

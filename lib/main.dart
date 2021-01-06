@@ -25,6 +25,7 @@ void main() async {
 
   // Monitoring
   final analytics = FirebaseAnalytics();
+  analytics.setAnalyticsCollectionEnabled(!S.isInDebugMode);
 
   final authenticationState = AuthenticationState(analytics: analytics);
   final client = Client(authenticationState);
