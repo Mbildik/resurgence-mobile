@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:resurgence/chat/model.dart';
+import 'package:resurgence/chat/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/player/player.dart';
@@ -41,6 +43,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                     InfoTitleText(player.title.value),
                     InfoTitleText(player.race.value),
+                    _PlayerOnlineInfo(player: player),
                   ],
                 ),
               ),
@@ -55,7 +58,9 @@ class ProfilePage extends StatelessWidget {
                   InfoRow(
                     children: [
                       InfoTitleText(S.money),
-                      InfoContentText(Money.format(player.balance)),
+                      player.balance != null
+                          ? InfoContentText(Money.format(player.balance))
+                          : InfoContentText(player.wealth.value),
                     ],
                   ),
                   if (player.family != null) Divider(),
@@ -66,13 +71,14 @@ class ProfilePage extends StatelessWidget {
                         InfoContentText(player.family),
                       ],
                     ),
-                  Divider(),
-                  InfoRow(
-                    children: [
-                      InfoTitleText(S.health),
-                      InfoContentText(player.health.toString()),
-                    ],
-                  ),
+                  if (player.health != null) Divider(),
+                  if (player.health != null)
+                    InfoRow(
+                      children: [
+                        InfoTitleText(S.health),
+                        InfoContentText(player.health.toString()),
+                      ],
+                    ),
                   Divider(),
                   InfoRow(
                     children: [
@@ -80,19 +86,55 @@ class ProfilePage extends StatelessWidget {
                       InfoContentText(player.honor.toString()),
                     ],
                   ),
-                  Divider(),
-                  InfoRow(
-                    children: [
-                      InfoTitleText(S.usableHonor),
-                      InfoContentText(player.usableHonor.toString()),
-                    ],
-                  ),
+                  if (player.usableHonor != null) Divider(),
+                  if (player.usableHonor != null)
+                    InfoRow(
+                      children: [
+                        InfoTitleText(S.usableHonor),
+                        InfoContentText(player.usableHonor.toString()),
+                      ],
+                    ),
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _PlayerOnlineInfo extends StatelessWidget {
+  const _PlayerOnlineInfo({
+    Key key,
+    @required this.player,
+  }) : super(key: key);
+
+  final Player player;
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<ChatState, List<Presence>>(
+      selector: (_, state) => state.presences,
+      builder: (_, presences, __) {
+        var presence = presences.singleWhere((p) => p.name == player.nickname,
+            orElse: () => null);
+
+        return Row(
+          children: [
+            Container(
+              width: 16.0,
+              height: 16.0,
+              decoration: BoxDecoration(
+                color: presence.online ? Colors.green[700] : Colors.red[700],
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            SizedBox(width: 4.0),
+            InfoTitleText(presence.online ? 'Çevrimiçi' : 'Çevrimdışı'),
+          ],
+        );
+      },
     );
   }
 }

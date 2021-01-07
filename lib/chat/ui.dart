@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -84,7 +85,7 @@ class _ChatPageState extends State<ChatPage> {
                   return Center(child: CircularProgressIndicator());
                 }
 
-                Set<Subscription> subscriptions = orderSubs(state);
+                var subscriptions = orderSubs(state);
 
                 var fndSubscriptions = state.filteredUsers;
                 subscriptions.addAll(fndSubscriptions);
@@ -118,7 +119,7 @@ class _ChatPageState extends State<ChatPage> {
                         }
                         return Navigator.push(
                           context,
-                          _MessageRoute(currentSub),
+                          MessageRoute(currentSub),
                         );
                       },
                     );
@@ -133,19 +134,22 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Set<Subscription> orderSubs(ChatState state) {
+    var subscriptions = List.of(state.subscriptions)
+      ..removeWhere((s) => !s.isGroup() && s.lastMessage == null);
+
     if (filter.isNotEmpty) {
-      return HashSet<Subscription>.from(
-        state.subscriptions,
-      );
+      return HashSet<Subscription>.from(subscriptions);
     } else {
-      return SplayTreeSet(
+      return SplayTreeSet<Subscription>(
         (data1, data2) {
-          if (data1.lastMessage == null || data2.lastMessage == null) {
-            return 0;
+          if (data1.lastMessage == null) {
+            return 1;
+          } else if (data2.lastMessage == null) {
+            return -1;
           }
           return data2.lastMessage.time.compareTo(data1.lastMessage.time);
         },
-      )..addAll(state.subscriptions);
+      )..addAll(subscriptions);
     }
   }
 }
@@ -445,9 +449,9 @@ class ChatRoute<T> extends MaterialPageRoute<T> {
   ChatRoute() : super(builder: (BuildContext context) => ChatPage());
 }
 
-class _MessageRoute<T> extends MaterialPageRoute<T> {
+class MessageRoute<T> extends MaterialPageRoute<T> {
   final Subscription sub;
 
-  _MessageRoute(this.sub)
+  MessageRoute(this.sub)
       : super(builder: (BuildContext context) => _ChatDetail(sub: sub));
 }

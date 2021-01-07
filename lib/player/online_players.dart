@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/player/profile.dart';
 
 class OnlinePlayers extends StatelessWidget {
   @override
@@ -66,6 +67,12 @@ class _ListItem extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      trailing: Icon(Icons.chevron_right),
+      onTap: () => Navigator.pushNamed(
+        context,
+        Routes.USER_PROFILE,
+        arguments: PlayerProfileRouteArguments(userStat.name),
       ),
     );
   }

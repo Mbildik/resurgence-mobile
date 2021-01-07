@@ -13,7 +13,7 @@ class PlayerService {
 
   PlayerService(Client client) : _client = _PlayerClient(client);
 
-  Future<Player> info() => _client.info();
+  Future<Player> info({String player}) => _client.info(player: player);
 
   Future<Player> create(String nickname, AbstractEnum race) {
     return _client.create(nickname, race).then((player) async {
@@ -33,8 +33,12 @@ class _PlayerClient {
 
   Future<void> refreshToken() => _client.refreshToken();
 
-  Future<Player> info() =>
-      _client.get('player').then((response) => Player.fromJson(response.data));
+  Future<Player> info({String player}) {
+    var path = 'player';
+    if (player != null) path += '/$player';
+
+    return _client.get(path).then((response) => Player.fromJson(response.data));
+  }
 
   Future<Player> create(String nickname, AbstractEnum race) {
     return _client.post(

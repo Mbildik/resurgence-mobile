@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer';
@@ -190,4 +191,70 @@ class Client {
   }
 
   void read(String topic) => _client.send(destination: '/read/$topic');
+
+  Future<Subscription> searchAndSubscribe(String playerName) {
+    var defer = Completer<Subscription>();
+
+    var playerSubs = this
+        ._state
+        .subscriptions
+        .firstWhere((s) => s.name == playerName, orElse: () => null);
+
+    log('Player subs searching current subscriptions and result is: $playerSubs');
+
+    if (playerSubs != null) {
+      defer.complete(playerSubs);
+      return defer.future;
+    }
+
+    log('Player not found in currents subscriptions.');
+
+    this.searchUser(playerName);
+
+    Timer.periodic(Duration(milliseconds: 100), (filterTimer) {
+      log('Search period ticking - ${filterTimer.tick}');
+      var filterSubscription = this
+          ._state
+          .filteredUsers
+          .firstWhere((s) => s.name == playerName, orElse: () => null);
+
+      if (filterSubscription == null) {
+        log('Filtering user not works. Tick is ${filterTimer.tick}');
+        // if we can't find in 5 seconds, just give up.
+        if (filterTimer.tick > 50) {
+          this.clearSearchUserFilter();
+          filterTimer.cancel();
+          defer.completeError('Player not found');
+        }
+      } else {
+        log('Filter subs found $filterSubscription');
+
+        this.clearSearchUserFilter();
+        filterTimer.cancel();
+
+        this.subscribe(filterSubscription);
+
+        Timer.periodic(Duration(milliseconds: 100), (subscriptionTimer) {
+          var subscription = this
+              ._state
+              .subscriptions
+              .firstWhere((s) => s.name == playerName, orElse: () => null);
+
+          if (subscription == null) {
+            log('Subscription did not occur.');
+            // if we can't subscribe in 5 seconds, just give up.
+            if (subscriptionTimer.tick > 50) {
+              subscriptionTimer.cancel();
+              defer.completeError('Subscription not found');
+            }
+          } else {
+            subscriptionTimer.cancel();
+            defer.complete(subscription);
+          }
+        });
+      }
+    });
+
+    return defer.future;
+  }
 }

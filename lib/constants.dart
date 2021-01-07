@@ -136,6 +136,7 @@ class S {
 
   static const chat = 'Sohbet';
   static const messages = 'Bildirimler';
+  static const sendMessage = 'Mesaj Gönder';
   static const search = 'Ara';
   static const offline = 'Çevrimdışı';
   static const online = 'Çevrimiçi';
@@ -311,4 +312,6 @@ class A {
 
 class Routes {
   static const ONLINE_USERS = 'online_users';
+  static const USER_PROFILE = 'user_profile';
+  static const MULTIPLAYER_TASKS = 'multiplayer_tasks';
 }

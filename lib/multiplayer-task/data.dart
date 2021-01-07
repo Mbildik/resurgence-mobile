@@ -1,3 +1,4 @@
+import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/item/item.dart';
 import 'package:resurgence/task/model.dart';
@@ -132,6 +133,22 @@ class MultiplayerTaskResult extends TaskResult {
       player: json['player'] == null ? null : json['player'],
       result:
           json['result'] == null ? null : TaskResult.fromJson(json['result']),
+    );
+  }
+}
+
+class MultiplayerTaskPlayerInfo {
+  final AbstractEnum task;
+  final String image;
+  final bool perform;
+
+  MultiplayerTaskPlayerInfo(this.task, this.image, this.perform);
+
+  factory MultiplayerTaskPlayerInfo.fromJson(Map<String, dynamic> json) {
+    return MultiplayerTaskPlayerInfo(
+      json['task'] == null ? null : AbstractEnum.fromJson(json['task']),
+      json['image'] == null ? null : S.baseUrl + json['image'],
+      json['perform'] == null ? false : json['perform'],
     );
   }
 }
