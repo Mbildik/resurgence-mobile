@@ -3,12 +3,14 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/item/item.dart';
 import 'package:resurgence/multiplayer-task/data.dart';
 import 'package:resurgence/multiplayer-task/service.dart';
+import 'package:resurgence/multiplayer-task/state.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/task/select_item.dart';
 import 'package:resurgence/task/task_result.dart';
@@ -115,8 +117,8 @@ class _MPTaskPlanPage extends StatefulWidget {
 }
 
 class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
-  final TextEditingController _memberController = TextEditingController();
 
+  TextEditingController _memberController;
   Future<Plan> _future;
   MultiplayerService _service;
 
@@ -130,6 +132,14 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
             Navigator.pop(context);
             ErrorHandler.showError(context, e);
           });
+    if (MultiplayerClipboardState.isPlayerNameCopied) {
+      Clipboard.getData('text/plain').then((value) {
+        _memberController = TextEditingController(text: value.text);
+      });
+      MultiplayerClipboardState.isPlayerNameCopied = false;
+    } else {
+      _memberController = TextEditingController();
+    }
   }
 
   void _reload() {
@@ -272,7 +282,6 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
                   child: RaisedButton(
                     child: Text(S.perform),
                     onPressed: () => _service.perform().then((value) {
-
                       Navigator.pop(context); // pop the plan page
 
                       value.forEach((element) {

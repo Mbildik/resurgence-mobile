@@ -6,9 +6,11 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/authentication_page.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/multiplayer-task/page.dart';
 import 'package:resurgence/notification_handler.dart';
 import 'package:resurgence/player/online_players.dart';
 import 'package:resurgence/player/player_control_page.dart';
+import 'package:resurgence/player/profile.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class Application extends StatelessWidget {
@@ -57,6 +59,20 @@ class Application extends StatelessWidget {
         ),
         routes: {
           Routes.ONLINE_USERS: (context) => OnlinePlayers(),
+          Routes.MULTIPLAYER_TASKS: (context) => MultiplayerTaskPage(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == Routes.USER_PROFILE) {
+            final PlayerProfileRouteArguments args = settings.arguments;
+            return MaterialPageRoute(
+              builder: (context) => PlayerProfile(args?.player),
+            );
+          }
+
+          // we can implement more here
+
+          assert(false, 'Need to implement ${settings.name}');
+          return null;
         },
       ),
     );

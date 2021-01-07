@@ -25,6 +25,9 @@ class MultiplayerService {
 
   Future<void> ready(List<PlayerItem> selectedItems) =>
       _client.ready(selectedItems);
+
+  Future<List<MultiplayerTaskPlayerInfo>> playerInfo(String player) =>
+      _client.playerInfo(player);
 }
 
 class _MultiplayerClient {
@@ -67,4 +70,10 @@ class _MultiplayerClient {
         'selected_items':
             selectedItems.map((e) => e.toJson()).toList(growable: false),
       });
+
+  Future<List<MultiplayerTaskPlayerInfo>> playerInfo(String player) => _client
+      .get('multiplayer-task/player/$player')
+      .then((response) => (response.data as List)
+          .map((e) => MultiplayerTaskPlayerInfo.fromJson(e))
+          .toList(growable: false));
 }

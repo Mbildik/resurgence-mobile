@@ -12,6 +12,7 @@ class Player {
   AbstractEnum title;
   int experience;
   String image;
+  AbstractEnum wealth;
 
   Player({
     this.nickname,
@@ -31,12 +32,14 @@ class Player {
     race = json['race'] != null ? AbstractEnum.fromJson(json['race']) : null;
     balance = json['balance'];
     family = json['family'];
-    health = json['health'];
+    health = json['health'] == null ? null : json['health'];
     honor = json['honor'];
-    usableHonor = json['usable_honor'];
+    usableHonor = json['usable_honor'] == null ? null : json['usable_honor'];
     title = json['title'] != null ? AbstractEnum.fromJson(json['title']) : null;
     experience = json['experience'];
     image = json['image'];
+    wealth =
+        json['wealth'] != null ? AbstractEnum.fromJson(json['wealth']) : null;
   }
 }
 
