@@ -190,19 +190,22 @@ class _OnlinePlayerInfo extends StatelessWidget {
     return Consumer<ChatState>(
       builder: (context, value, child) {
         if (value.onlineUsers == null) return Container();
-        return RichText(
-          text: TextSpan(
-            text: S.onlineUserCount,
-            style: Theme.of(context).textTheme.bodyText1.copyWith(),
-            children: [
-              TextSpan(text: ': '),
-              TextSpan(
-                text: value.onlineUsers.length.toString(),
-                style: Theme.of(context).textTheme.bodyText1.copyWith(
-                    fontWeight: FontWeight.bold, color: Colors.green[700]),
-              )
-            ],
+        return OutlineButton(
+          child: RichText(
+            text: TextSpan(
+              text: S.onlineUserCount,
+              style: Theme.of(context).textTheme.bodyText1.copyWith(),
+              children: [
+                TextSpan(text: ': '),
+                TextSpan(
+                  text: value.onlineUsers.length.toString(),
+                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      fontWeight: FontWeight.bold, color: Colors.green[700]),
+                )
+              ],
+            ),
           ),
+          onPressed: () => Navigator.pushNamed(context, Routes.ONLINE_USERS),
         );
       },
     );

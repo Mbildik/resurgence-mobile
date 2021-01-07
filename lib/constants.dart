@@ -54,8 +54,7 @@ class S {
   static const alreadyHaveAnAccount = 'Hesabın var mı?';
   static const playerCreationTitle =
       'Mafya dünyasının zorlu günleri seni bekliyor';
-  static const playerCreationDescription =
-      'Hesabını oluşturdun.\n'
+  static const playerCreationDescription = 'Hesabını oluşturdun.\n'
       'Şimdi sıra ırkını ve lakabını seçerek \n'
       'bu karanlık dünyaya girme vakti!';
   static const race = 'race';
@@ -239,7 +238,8 @@ class S {
       '$helpSeparator Görevi tamamladığında üyelerin sonuçlarını görebilirsin.'
       '$helpSeparator İstersen görevi çıkış butonuna basarak iptal edebilirsin.';
 
-  static const soloTaskHelp = '$helpBullet Suç işleyerek para, malzeme ve seviye'
+  static const soloTaskHelp =
+      '$helpBullet Suç işleyerek para, malzeme ve seviye'
       ' kazanabilirsin. Her suç belirli bir süre sonra tekrar aktif hale gelir.'
       '$helpSeparator Maksimum kazanacağın parayı ekranda görebilirsin.'
       '$helpSeparator Bazı suçları işlemek için bir takım malzemelere ihtiyaç duyabilirsin.'
@@ -285,6 +285,8 @@ class S {
 
     return 'Japon Irkı';
   }
+
+  static playerImage(String player) => baseUrl + 'player/image/$player';
 }
 
 class W {
@@ -305,4 +307,8 @@ class A {
   static const cosaNostra2x = '$FOLDER/cosa_nostra-256.png';
   static const yakuza = '$FOLDER/yakuza-128.png';
   static const yakuza2x = '$FOLDER/yakuza-256.png';
+}
+
+class Routes {
+  static const ONLINE_USERS = 'online_users';
 }

@@ -59,7 +59,6 @@ class Subscription {
 
   bool isGroup() => topic.startsWith('grp');
 
-
   String get name {
     if (this.isGroup()) {
       return S.groupName(this._name);
@@ -71,4 +70,26 @@ class Subscription {
   String toString() => topic;
 }
 
-class Topic {}
+class Presence {
+  final String name;
+  final bool online;
+  final DateTime _time;
+
+  Presence(this.name, this.online, this._time);
+
+  factory Presence.fromJson(Map<String, dynamic> json) {
+    var time = DateTime.parse(json['time']);
+
+    var localDuration = DateTime.now().difference(time);
+    var diff = localDuration.inMilliseconds - json['duration_millis'];
+
+    time = time.add(Duration(milliseconds: diff));
+
+    return Presence(json['name'], json['online'], time);
+  }
+
+  @override
+  String toString() => 'UserStat{name: $name, online: $online, time: $_time}';
+
+  Duration get duration => DateTime.now().difference(_time);
+}

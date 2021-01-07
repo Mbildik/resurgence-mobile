@@ -16,6 +16,7 @@ class ChatState extends ChangeNotifier {
   Map<Subscription, SplayTreeSet<Message>> _subsMessages = HashMap();
   ChatConnectionState _connectionState = ChatConnectionState.disconnected;
   bool chatPageOpen = false;
+  List<Presence> _presences = List();
 
   void subscribe(Set<Subscription> subscriptions) {
     var oldSubs = Set<Subscription>.from(_subscriptions);
@@ -144,6 +145,19 @@ class ChatState extends ChangeNotifier {
       return e.unread ? ++v : v;
     });
     return fold;
+  }
+
+  List<Presence> get presences {
+    _presences.sort((x, y) {
+      var online = (x.online == y.online) ? 0 : (x.online ? -1 : 1);
+      return online == 0 ? x.duration.compareTo(y.duration) : online;
+    });
+    return _presences;
+  }
+
+  set presences(List<Presence> value) {
+    _presences = value;
+    notifyListeners();
   }
 }
 

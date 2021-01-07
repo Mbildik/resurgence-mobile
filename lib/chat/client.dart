@@ -159,6 +159,12 @@ class Client {
       callback: (frame) =>
           _state.onlineUsers = Set<String>.from(jsonDecode(frame.body)),
     );
+    _client.subscribe(
+      destination: '/user/$_playerName/user-presence',
+      callback: (frame) => _state.presences = (jsonDecode(frame.body) as List)
+          .map((e) => Presence.fromJson(e))
+          .toList(growable: false),
+    );
   }
 
   void _initPlayerFilterSubscription() {
