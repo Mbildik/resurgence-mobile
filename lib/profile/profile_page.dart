@@ -120,6 +120,8 @@ class _PlayerOnlineInfo extends StatelessWidget {
         var presence = presences.singleWhere((p) => p.name == player.nickname,
             orElse: () => null);
 
+        if (presence == null) return Container();
+
         return Row(
           children: [
             Container(
