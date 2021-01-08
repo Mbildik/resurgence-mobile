@@ -33,9 +33,11 @@ class Client {
     _dio.interceptors.add(AcceptLanguageInterceptor(Locale.parse('tr-TR')));
     _dio.interceptors.add(accessTokenFilter());
     _dio.interceptors.add(refreshTokenFilter());
-    _dio.interceptors.add(SentryInterceptor());
     _dio.interceptors.add(apiErrorInterceptor());
-    _dio.interceptors.add(DioFirebasePerformanceInterceptor());
+    if (!S.isInDebugMode) {
+      _dio.interceptors.add(DioFirebasePerformanceInterceptor());
+      _dio.interceptors.add(SentryInterceptor());
+    }
   }
 
   Interceptor logInterceptor() {
