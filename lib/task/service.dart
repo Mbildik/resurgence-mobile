@@ -2,6 +2,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:resurgence/item/item.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/task/model.dart';
+import 'package:resurgence/task/select_item.dart';
 
 class TaskService {
   final _TaskClient _client;
@@ -9,9 +10,7 @@ class TaskService {
 
   TaskService(Client client, {this.analytics}) : _client = _TaskClient(client);
 
-  Future<List<Task>> allTask() {
-    return _client.allTask();
-  }
+  Future<List<Task>> allTask() => _client.allTask();
 
   Future<TaskResult> perform(
     Task task, [
@@ -22,6 +21,12 @@ class TaskService {
       return value;
     });
   }
+
+  Future<SuccessRatio> successRatio(
+    Task task, {
+    List<SelectedItem> selectedItems = const [],
+  }) =>
+      _client.successRatio(task.key, selectedItems);
 }
 
 class _TaskClient {
@@ -42,5 +47,17 @@ class _TaskClient {
     return _client.post('task/$task', data: {
       'selected_items': selectedItemData
     }).then((response) => TaskResult.fromJson(response.data));
+  }
+
+  Future<SuccessRatio> successRatio(
+    String task,
+    List<SelectedItem> selectedItems,
+  ) {
+    var selectedItemData = selectedItems
+        .map((e) => {'item': e.item.key, 'quantity': e.quantity})
+        .toList(growable: false);
+    return _client.post('task/success-ratio/$task', data: {
+      'selected_items': selectedItemData
+    }).then((response) => SuccessRatio.fromJson(response.data));
   }
 }

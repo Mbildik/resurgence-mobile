@@ -7,6 +7,7 @@ import 'package:resurgence/enum.dart';
 import 'package:resurgence/item/item.dart';
 import 'package:resurgence/item/service.dart';
 import 'package:resurgence/task/model.dart';
+import 'package:resurgence/task/service.dart';
 import 'package:resurgence/ui/shared.dart';
 
 class SelectedItem {
@@ -204,12 +205,8 @@ class _SelectItemStates extends State<SelectItems> {
                           child: Text(S.cancel),
                           onPressed: () => Navigator.of(context).pop(),
                         ),
-                        RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
-                          color: Colors.green[700],
-                          child: Text(S.ok),
+                        _PerformButton(
+                          task: widget.task,
                           onPressed: this._isMeet()
                               ? () => Navigator.pop(
                                     context,
@@ -219,6 +216,9 @@ class _SelectItemStates extends State<SelectItems> {
                                     }).toList(growable: false),
                                   )
                               : null,
+                          selectedItems: _selectedItems.entries
+                              .map((e) => SelectedItem(e.key, e.value))
+                              .toList(growable: false),
                         ),
                       ],
                     ),
@@ -441,5 +441,97 @@ class SelectItemRoute<T> extends PageRouteBuilder<T> {
   Widget buildTransitions(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation, Widget child) {
     return FadeTransition(opacity: animation, child: child);
+  }
+}
+
+class _PerformButton extends StatefulWidget {
+  const _PerformButton({
+    Key key,
+    @required this.task,
+    @required this.onPressed,
+    this.selectedItems = const [],
+  }) : super(key: key);
+
+  final Task task;
+  final VoidCallback onPressed;
+  final List<SelectedItem> selectedItems;
+
+  @override
+  __PerformButtonState createState() => __PerformButtonState();
+}
+
+class __PerformButtonState extends State<_PerformButton> {
+  Future<SuccessRatio> _successRatio;
+  TaskService _taskService;
+
+  @override
+  void initState() {
+    super.initState();
+    this._taskService = context.read<TaskService>();
+    this._successRatio = this._taskService.successRatio(
+          widget.task,
+          selectedItems: widget.selectedItems,
+        );
+  }
+
+  @override
+  void didUpdateWidget(_PerformButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    var oldSum =
+        oldWidget.selectedItems.map((e) => e.quantity).fold(0, (x, y) => x + y);
+    var newSum =
+        widget.selectedItems.map((e) => e.quantity).fold(0, (x, y) => x + y);
+
+    bool isChanged = oldSum != newSum;
+
+    if (isChanged) {
+      setState(() {
+        this._successRatio = this._taskService.successRatio(
+              widget.task,
+              selectedItems: widget.selectedItems,
+            );
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<SuccessRatio>(
+      future: this._successRatio,
+      builder: (context, snapshot) {
+        if (!snapshot.hasError &&
+            snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          var successRatio = snapshot.data;
+          return RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18.0),
+            ),
+            color: _buttonColor(successRatio.ratio),
+            child: Text('%${successRatio.ratio}', textAlign: TextAlign.right),
+            onPressed: widget.onPressed,
+          );
+        }
+
+        return RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.0),
+          ),
+          color: Colors.green[700],
+          child: Text(S.ok),
+          onPressed: widget.onPressed,
+        );
+      },
+    );
+  }
+
+  Color _buttonColor(int ratio) {
+    if (ratio >= 50) {
+      return Colors.green[700];
+    } else if (ratio >= 25) {
+      return Colors.amber[800];
+    }
+    return Colors.red[700];
   }
 }

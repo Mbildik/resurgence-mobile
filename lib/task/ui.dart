@@ -4,6 +4,7 @@ import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/duration.dart';
 import 'package:resurgence/enum.dart';
@@ -11,6 +12,7 @@ import 'package:resurgence/item/item.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/task/model.dart';
 import 'package:resurgence/task/select_item.dart';
+import 'package:resurgence/task/service.dart';
 
 typedef OnPerform = void Function(List<PlayerItem> selectedItems);
 
@@ -61,9 +63,10 @@ class TaskListTile extends StatelessWidget {
                     children: [
                       Text(
                         task.value,
-                        style: Theme.of(context).textTheme.bodyText1.copyWith(
-                          color: task.color()
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1
+                            .copyWith(color: task.color()),
                       ),
                       Expanded(
                         child: Row(
@@ -178,6 +181,9 @@ class _TaskPerformButtonState extends State<TaskPerformButton> {
   bool _finished = false;
   Timer _timer;
 
+  Future<SuccessRatio> _successRatio;
+  TaskService _taskService;
+
   @override
   void initState() {
     super.initState();
@@ -198,6 +204,8 @@ class _TaskPerformButtonState extends State<TaskPerformButton> {
         );
       });
     }
+    this._taskService = context.read<TaskService>();
+    this._successRatio = this._taskService.successRatio(widget.task);
   }
 
   @override
@@ -209,13 +217,32 @@ class _TaskPerformButtonState extends State<TaskPerformButton> {
   @override
   Widget build(BuildContext context) {
     if (_finished) {
-      return RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.0),
-        ),
-        color: Colors.green[700],
-        child: Text(S.perform, textAlign: TextAlign.right),
-        onPressed: widget.onPressed,
+      return FutureBuilder<SuccessRatio>(
+        future: this._successRatio,
+        builder: (context, snapshot) {
+          if (!snapshot.hasError &&
+              snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            var successRatio = snapshot.data;
+            return RaisedButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+              color: _buttonColor(successRatio.ratio),
+              child: Text('%${successRatio.ratio}', textAlign: TextAlign.right),
+              onPressed: widget.onPressed,
+            );
+          }
+
+          return RaisedButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18.0),
+            ),
+            color: Colors.green[700],
+            child: Text(S.perform, textAlign: TextAlign.right),
+            onPressed: widget.onPressed,
+          );
+        },
       );
     }
     return FlatButton(
@@ -228,6 +255,15 @@ class _TaskPerformButtonState extends State<TaskPerformButton> {
       ),
       onPressed: null,
     );
+  }
+
+  Color _buttonColor(int ratio) {
+    if (ratio >= 50) {
+      return Colors.green[700];
+    } else if (ratio >= 25) {
+      return Colors.amber[800];
+    }
+    return Colors.red[700];
   }
 }
 

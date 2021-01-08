@@ -134,3 +134,13 @@ class TaskResult {
     }
   }
 }
+
+class SuccessRatio {
+  final int ratio;
+
+  SuccessRatio(this.ratio);
+
+  factory SuccessRatio.fromJson(Map<String, dynamic> json) {
+    return SuccessRatio(json['ratio']);
+  }
+}
