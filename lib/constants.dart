@@ -314,4 +314,5 @@ class Routes {
   static const ONLINE_USERS = 'online_users';
   static const USER_PROFILE = 'user_profile';
   static const MULTIPLAYER_TASKS = 'multiplayer_tasks';
+  static const SKILLS = 'skills';
 }

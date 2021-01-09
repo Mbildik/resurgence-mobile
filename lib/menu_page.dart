@@ -62,6 +62,14 @@ class _MenuPageState extends State<MenuPage> {
                               push(context, route: MultiplayerTaskPageRoute()),
                         ),
                         _MenuItem(
+                          text: 'Beceriler',
+                          icon: Icons.account_tree_outlined,
+                          onPressed: () => Navigator.pushNamed(
+                            context,
+                            Routes.SKILLS,
+                          ),
+                        ),
+                        _MenuItem(
                           text: S.bank,
                           icon: Icons.account_balance,
                           onPressed: () =>

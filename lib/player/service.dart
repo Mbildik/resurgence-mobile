@@ -7,6 +7,7 @@ import 'package:path/path.dart' as path;
 import 'package:resurgence/enum.dart';
 import 'package:resurgence/network/client.dart';
 import 'package:resurgence/player/player.dart';
+import 'package:resurgence/player/skills.dart';
 
 class PlayerService {
   final _PlayerClient _client;
@@ -24,6 +25,8 @@ class PlayerService {
 
   Future<Player> editImage(File file) =>
       _client.editImage(file).then((_) => this.info());
+
+  Future<List<Skill>> skills() => _client.skills();
 }
 
 class _PlayerClient {
@@ -60,4 +63,9 @@ class _PlayerClient {
     });
     return _client.post('player/image', data: formData);
   }
+
+  Future<List<Skill>> skills() =>
+      _client.get('skill').then((response) => (response.data as List)
+          .map((e) => Skill.fromJson(e))
+          .toList(growable: false));
 }
