@@ -50,7 +50,7 @@ class TaskListTile extends StatelessWidget {
                   padding: const EdgeInsets.only(left: expandedPaddingSize),
                   height: 48.0,
                   decoration: BoxDecoration(
-                    color: const Color(0xff292929),
+                    color: Theme.of(context).cardColor,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(8.0),
                       topRight: Radius.circular(8.0),
@@ -94,7 +94,7 @@ class TaskListTile extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.only(left: expandedPaddingSize),
                   decoration: BoxDecoration(
-                    color: const Color(0xff212121),
+                    color: Theme.of(context).cardColor,
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(8.0),
                       bottomRight: Radius.circular(8.0),
@@ -224,21 +224,18 @@ class _TaskPerformButtonState extends State<TaskPerformButton> {
               snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData) {
             var successRatio = snapshot.data;
-            return RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
+            return OutlineButton(
+              highlightColor: _buttonColor(successRatio.ratio),
+              splashColor: _buttonColor(successRatio.ratio),
+              child: Text(
+                '${S.perform} | %${successRatio.ratio}',
+                textAlign: TextAlign.right,
               ),
-              color: _buttonColor(successRatio.ratio),
-              child: Text('%${successRatio.ratio}', textAlign: TextAlign.right),
               onPressed: widget.onPressed,
             );
           }
 
-          return RaisedButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18.0),
-            ),
-            color: Colors.green[700],
+          return OutlineButton(
             child: Text(S.perform, textAlign: TextAlign.right),
             onPressed: widget.onPressed,
           );

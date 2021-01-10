@@ -117,10 +117,7 @@ class TaskSucceed extends StatelessWidget {
                     ),
                   ),
                 SizedBox(height: 8.0),
-                RaisedButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                  ),
+                OutlineButton(
                   child: Text(S.ok),
                   onPressed: () => Navigator.pop(context),
                 )
@@ -137,9 +134,9 @@ class TaskFailed extends StatelessWidget {
   final TaskResult result;
 
   const TaskFailed(
-      this.result, {
-        Key key,
-      }) : super(key: key);
+    this.result, {
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +159,9 @@ class TaskFailed extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(A.BUSTED, width: 128, height: 128),
-                Text(selfBusted ? S.failedTaskResult : S.failedTaskResultMember(member)),
+                Text(selfBusted
+                    ? S.failedTaskResult
+                    : S.failedTaskResultMember(member)),
                 SizedBox(height: 8.0),
                 RaisedButton(
                   shape: RoundedRectangleBorder(
