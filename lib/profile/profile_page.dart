@@ -134,7 +134,7 @@ class _PlayerOnlineInfo extends StatelessWidget {
                 });
               },
               icon: Icon(Icons.messenger_outline),
-              label: Text('Mesaj Gönder'),
+              label: Text(S.sendMessage),
             )
           ],
         );
