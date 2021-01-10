@@ -504,21 +504,15 @@ class __PerformButtonState extends State<_PerformButton> {
             snapshot.connectionState == ConnectionState.done &&
             snapshot.hasData) {
           var successRatio = snapshot.data;
-          return RaisedButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18.0),
-            ),
-            color: _buttonColor(successRatio.ratio),
+          return OutlineButton(
+            highlightColor: _buttonColor(successRatio.ratio),
+            splashColor: _buttonColor(successRatio.ratio),
             child: Text('%${successRatio.ratio}', textAlign: TextAlign.right),
             onPressed: widget.onPressed,
           );
         }
 
-        return RaisedButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18.0),
-          ),
-          color: Colors.green[700],
+        return OutlineButton(
           child: Text(S.ok),
           onPressed: widget.onPressed,
         );

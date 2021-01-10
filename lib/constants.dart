@@ -68,7 +68,7 @@ class S {
   static const profile = 'Profil';
   static const task = 'Task';
   static const tasks = 'Görevler';
-  static const soloTask = 'Solo Görevler';
+  static const soloTask = 'Solo';
   static const info = 'Information';
   static const perform = 'Yap';
   static const duration = 'duration';
@@ -263,7 +263,7 @@ class S {
       '$helpSeparator Sepetten istemediğin item\'ları tıklayarak teker teker veya '
       'uzun basarak hepsini çıkabilirsin.';
 
-  static const multiplayerTasks = 'Organize görevler';
+  static const multiplayerTasks = 'Organize';
   static const multiplayerTaskGainMember = 'şunları kazandı.';
   static const multiplayerTaskGainSelf = 'Şunları kazandın.';
 
