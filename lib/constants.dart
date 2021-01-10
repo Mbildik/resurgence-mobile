@@ -60,7 +60,7 @@ class S {
   static const race = 'race';
   static const balance = 'balance';
   static const health = 'Sağlık';
-  static const honor = 'Onur Puanı';
+  static const honor = 'Onur';
   static const usableHonor = 'Kullanılabilir Onur Puanı';
   static const experience = 'experience';
   static const reload = 'Yeniden yükle';
@@ -256,7 +256,7 @@ class S {
     return '$quantity tane kaldı';
   }
 
-  static const npc = 'NPC';
+  static const npc = 'Market';
   static const npcHelp =
       '$helpBullet NPC\'den oyun içerisinde bulunan bazı item\'ları alabilirsin.'
       '$helpSeparator Almak istediğin item\'lara tıkla ve satın al.'
