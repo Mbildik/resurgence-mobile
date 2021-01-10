@@ -288,6 +288,9 @@ class S {
   }
 
   static playerImage(String player) => baseUrl + 'player/image/$player';
+
+  static const skills = 'Beceriler';
+  static const news = 'Gelişmeler';
 }
 
 class W {

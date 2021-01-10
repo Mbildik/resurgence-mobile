@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
-import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/multiplayer-task/data.dart';
 import 'package:resurgence/multiplayer-task/service.dart';
@@ -14,7 +12,6 @@ import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
 import 'package:resurgence/profile/profile_page.dart';
 import 'package:resurgence/ui/shared.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 class PlayerProfile extends StatefulWidget {
   final String player;
@@ -54,30 +51,6 @@ class _PlayerProfileState extends State<PlayerProfile> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Oyuncu Profili'),
-        actions: [
-          if (!isCurrentPlayer)
-            Tooltip(
-              message: S.sendMessage,
-              child: IconButton(
-                icon: Icon(Icons.messenger_outline),
-                onPressed: () {
-                  var chatClient = context.read<Client>();
-
-                  chatClient.searchAndSubscribe(widget.player).then((subs) {
-                    Navigator.push(context, MessageRoute(subs));
-                  }).catchError((e) {
-                    Sentry.captureException(e,
-                        hint:
-                            'An error occur while searc and subscribe a topic');
-                    dev.log(
-                      'An error occur while searc and subscribe a topic',
-                      error: e,
-                    );
-                  });
-                },
-              ),
-            )
-        ],
       ),
       body: Center(
         child: LoadingFutureBuilder<Player>(
