@@ -163,10 +163,7 @@ class TaskFailed extends StatelessWidget {
                     ? S.failedTaskResult
                     : S.failedTaskResultMember(member)),
                 SizedBox(height: 8.0),
-                RaisedButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18.0),
-                  ),
+                OutlineButton(
                   child: Text(S.ok),
                   onPressed: () => Navigator.pop(context),
                 )

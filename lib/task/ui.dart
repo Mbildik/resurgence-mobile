@@ -352,10 +352,7 @@ class TaskDetail extends StatelessWidget {
                           color: Colors.blueGrey[700],
                         ),
                         SizedBox(height: 16.0),
-                        RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
+                        OutlineButton(
                           child: Text(S.ok),
                           onPressed: () => Navigator.pop(context),
                         ),
@@ -366,48 +363,6 @@ class TaskDetail extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class EmptyPlayerItem extends StatelessWidget {
-  final Set<String> _categories;
-
-  EmptyPlayerItem({
-    Key key,
-    Set<RequiredItemCategory> categories,
-  })  : _categories = categories.map((e) => e.category.value).toSet(),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(A.EMPTY_IMAGE, width: 64, height: 64),
-              const SizedBox(height: 8.0),
-              Text(S.playerItemEmptyCategories(_categories)),
-              const SizedBox(height: 8.0),
-              RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                ),
-                child: Text(S.ok),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
         ),
       ),
     );

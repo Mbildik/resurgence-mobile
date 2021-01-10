@@ -179,10 +179,7 @@ class EmptyPlayerItem extends StatelessWidget {
               const SizedBox(height: 8.0),
               Text(S.playerItemEmptyCategories(_categories)),
               const SizedBox(height: 8.0),
-              RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                ),
+              OutlineButton(
                 child: Text(S.ok),
                 onPressed: () => Navigator.pop(context),
               ),
