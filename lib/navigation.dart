@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/item/npc_counter_ui.dart';
 import 'package:resurgence/player/profile.dart';
@@ -40,6 +42,13 @@ class _MainNavigationState extends State<MainNavigation> {
       Icon(Icons.home_outlined),
       GlobalKey<NavigatorState>(),
       PlayerProfile('eee'),
+    ),
+    NavigationItem(
+      S.chat,
+      _chatIcon(Icon(Icons.chat)),
+      _chatIcon(Icon(Icons.chat_outlined)),
+      GlobalKey<NavigatorState>(),
+      ChatPage(),
     ),
   ];
 
@@ -107,12 +116,43 @@ class _MainNavigationState extends State<MainNavigation> {
       child: TabNavigator(item),
     );
   }
+
+  static Widget _chatIcon(Icon icon) {
+    // todo chat kısmına bir bug var.
+    //  chat mesajları sadece geri tuşuna basınca okundu olarak
+    //  server'a gönderiliyor
+    return Selector<ChatState, int>(
+      selector: (_, s) => s.unreadMessageCount(),
+      shouldRebuild: (a, b) => a != b,
+      builder: (context, unread, child) {
+        if (unread <= 0) return child;
+
+        return Stack(
+          children: [
+            child,
+            Positioned(
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                width: 8.0,
+                height: 8.0,
+              ),
+            ),
+          ],
+        );
+      },
+      child: icon,
+    );
+  }
 }
 
 class NavigationItem {
   final String name;
-  final Icon selectedIcon;
-  final Icon unselectedIcon;
+  final Widget selectedIcon;
+  final Widget unselectedIcon;
   final GlobalKey<NavigatorState> key;
   final Widget screen;
 
