@@ -34,8 +34,6 @@ class TabNavigator extends StatelessWidget {
       key: tabItem.key,
       initialRoute: TabNavigatorRoutes.root,
       onGenerateRoute: (settings) {
-        log('Route generated $settings');
-
         if (settings.name == Routes.USER_PROFILE) {
           final PlayerProfileRouteArguments args = settings.arguments;
           return MaterialPageRoute(

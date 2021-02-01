@@ -133,14 +133,12 @@ class Client {
     var firstReceiveTime; // todo improve this ugly code
 
     subscriptions.forEach((sub) {
-      log('Subscribing topic ${sub.topic}.');
       callbacks[sub] = _client.subscribe(
         destination: '/user/$_playerName/${sub.topic}',
         callback: (frame) {
           if (firstReceiveTime == null) {
             firstReceiveTime = DateTime.now().millisecondsSinceEpoch;
           }
-          log('Message ${frame.body}');
           var message = Message.fromJson(jsonDecode(frame.body));
           _state.onMessage(
             sub,
