@@ -15,7 +15,7 @@ class S {
       case _Env.local:
         return 'http://192.168.1.101:8080/';
       case _Env.dev:
-        return 'https://hezaryar.com/';
+        return 'https://resurgence.ugalt.com/';
     }
   }();
 

@@ -48,8 +48,8 @@ class _NotificationHandlerState extends State<NotificationHandler> {
             margin: const EdgeInsets.symmetric(horizontal: 4),
             child: SafeArea(
               child: ListTile(
-                title: Text(event.data['notification']['title']),
-                subtitle: Text(event.data['notification']['body']),
+                title: Text(event.notification.title),
+                subtitle: Text(event.notification.body),
               ),
             ),
           ),
