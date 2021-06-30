@@ -40,6 +40,7 @@ class _NPCCounterState extends State<NPCCounter> {
     _playerService = context.read<PlayerService>();
     _playerState = context.read<PlayerState>();
     _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      // todo add is active tab is NPC Counter control
       setState(() {
         _disableLoading = true;
         _itemsFuture = _service.counter().then((items) {
@@ -76,7 +77,7 @@ class _NPCCounterState extends State<NPCCounter> {
           Tooltip(
             message: S.help,
             child: IconButton(
-              icon: Icon(Icons.help),
+              icon: Icon(Icons.info),
               onPressed: () {
                 showHelpDialog(
                   context: context,
@@ -104,6 +105,8 @@ class _NPCCounterState extends State<NPCCounter> {
                 ),
               ),
               Card(
+                margin: EdgeInsets.zero,
+                shape: Border(),
                 child: Container(
                   height: 50,
                   width: MediaQuery.of(context).size.width,
@@ -124,11 +127,14 @@ class _NPCCounterState extends State<NPCCounter> {
                               child: CircularProgressIndicator(),
                             )
                           : _buyCompleted
-                              ? Icon(Icons.done, color: Colors.green[700])
-                              : RaisedButton(
+                              ? Icon(Icons.done, size: 32)
+                              : OutlineButton(
                                   child: Text(
-                                      Money.format(_price()) + '\n' + S.buy),
-                                  color: Colors.green[700],
+                                    _basket.isNotEmpty
+                                        ? Money.format(_price())
+                                        : S.buy,
+                                  ),
+                                  padding: EdgeInsets.all(8.0),
                                   onPressed: _basket.isNotEmpty ? buy : null,
                                 ),
                       const SizedBox(width: 8.0),

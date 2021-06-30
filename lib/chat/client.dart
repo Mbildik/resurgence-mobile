@@ -77,7 +77,7 @@ class Client {
     var url = SockJsUtils()
         .generateTransportUrl('${S.baseUrl}ws')
         .replaceAll('#', ''); // todo refactor
-    return StompClient(
+    return this._client = StompClient(
       config: StompConfig(
         url: url,
         stompConnectHeaders: {
@@ -86,8 +86,7 @@ class Client {
         webSocketConnectHeaders: {
           HttpHeaders.authorizationHeader: 'Bearer $_token'
         },
-        onConnect: (client, frame) {
-          this._client = client;
+        onConnect: (frame) {
           log('on connect');
           _state.connectionState = ChatConnectionState.connected;
           _initSubscriptions();
@@ -133,14 +132,12 @@ class Client {
     var firstReceiveTime; // todo improve this ugly code
 
     subscriptions.forEach((sub) {
-      log('Subscribing topic ${sub.topic}.');
       callbacks[sub] = _client.subscribe(
         destination: '/user/$_playerName/${sub.topic}',
         callback: (frame) {
           if (firstReceiveTime == null) {
             firstReceiveTime = DateTime.now().millisecondsSinceEpoch;
           }
-          log('Message ${frame.body}');
           var message = Message.fromJson(jsonDecode(frame.body));
           _state.onMessage(
             sub,

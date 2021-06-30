@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/service.dart';
@@ -22,6 +25,28 @@ import 'application.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (Firebase.apps.isEmpty) {
+    try {
+      await Firebase.initializeApp(
+        name: 'Resurgence',
+        options: FirebaseOptions(
+          apiKey: 'AIzaSyAtKPl8C8ARr3rKviG6kdbKjp9EjLKal-g',
+          appId: '1:203290350160:android:bf3acbc376fb1de328f755',
+          projectId: 'rsrgnc',
+          messagingSenderId: '203290350160',
+        ),
+      );
+    } catch (err, stackTrace) {
+      var errMessage = 'Firebase application initialization error.';
+      log(errMessage, error: err, stackTrace: stackTrace);
+      Sentry.captureException(
+        err,
+        stackTrace: stackTrace,
+        hint: errMessage,
+      );
+    }
+  }
 
   // Monitoring
   final analytics = FirebaseAnalytics();

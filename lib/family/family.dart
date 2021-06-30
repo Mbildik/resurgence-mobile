@@ -50,7 +50,7 @@ class Family {
         : null;
     race = json['race'] != null ? AbstractEnum.fromJson(json['race']) : null;
     if (json['chiefs'] != null) {
-      chiefs = List<Chief>();
+      chiefs = <Chief>[];
       json['chiefs'].forEach((v) {
         chiefs.add(Chief.fromJson(v));
       });
@@ -881,7 +881,7 @@ class _ManagementWidget extends StatelessWidget {
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
         children: [
-          OutlineButton(
+          OutlinedButton(
             child: Text(
               S.humanResources,
               textAlign: TextAlign.center,
@@ -889,14 +889,14 @@ class _ManagementWidget extends StatelessWidget {
             onPressed: () =>
                 Navigator.push(context, HumanResourceRoute(family)),
           ),
-          OutlineButton(
+          OutlinedButton(
             child: Text(
               S.applicationsInvitations,
               textAlign: TextAlign.center,
             ),
             onPressed: () => Navigator.push(context, InvitationRoute(family)),
           ),
-          OutlineButton(
+          OutlinedButton(
             child: Text(
               S.regimeManagement,
               textAlign: TextAlign.center,
@@ -904,7 +904,7 @@ class _ManagementWidget extends StatelessWidget {
             onPressed: () =>
                 Navigator.push(context, ChiefManagementRoute(family)),
           ),
-          OutlineButton(
+          OutlinedButton(
             child: Text(
               S.announcement,
               textAlign: TextAlign.center,

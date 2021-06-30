@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/family/family.dart';
-import 'package:resurgence/menu_page.dart';
+import 'package:resurgence/navigation.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/player_creation_page.dart';
 import 'package:resurgence/player/service.dart';
@@ -38,7 +38,7 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
 
   void onPlayerInfoError(e) {
     if (e is DioError &&
-        e.type == DioErrorType.RESPONSE &&
+        e.type == DioErrorType.response &&
         e.response.statusCode == 404) {
       throw PlayerNotCreatedError();
     }
@@ -79,8 +79,7 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
             ),
           );
         }
-
-        return FamilyController(child: MenuPage());
+        return FamilyController(child: MainNavigation());
       },
     );
   }

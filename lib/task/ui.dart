@@ -50,7 +50,7 @@ class TaskListTile extends StatelessWidget {
                   padding: const EdgeInsets.only(left: expandedPaddingSize),
                   height: 48.0,
                   decoration: BoxDecoration(
-                    color: const Color(0xff292929),
+                    color: Theme.of(context).cardColor,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(8.0),
                       topRight: Radius.circular(8.0),
@@ -94,7 +94,7 @@ class TaskListTile extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.only(left: expandedPaddingSize),
                   decoration: BoxDecoration(
-                    color: const Color(0xff212121),
+                    color: Theme.of(context).cardColor,
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(8.0),
                       bottomRight: Radius.circular(8.0),
@@ -224,21 +224,18 @@ class _TaskPerformButtonState extends State<TaskPerformButton> {
               snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData) {
             var successRatio = snapshot.data;
-            return RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
+            return OutlineButton(
+              highlightColor: _buttonColor(successRatio.ratio),
+              splashColor: _buttonColor(successRatio.ratio),
+              child: Text(
+                '${S.perform} | %${successRatio.ratio}',
+                textAlign: TextAlign.right,
               ),
-              color: _buttonColor(successRatio.ratio),
-              child: Text('%${successRatio.ratio}', textAlign: TextAlign.right),
               onPressed: widget.onPressed,
             );
           }
 
-          return RaisedButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18.0),
-            ),
-            color: Colors.green[700],
+          return OutlineButton(
             child: Text(S.perform, textAlign: TextAlign.right),
             onPressed: widget.onPressed,
           );
@@ -355,10 +352,7 @@ class TaskDetail extends StatelessWidget {
                           color: Colors.blueGrey[700],
                         ),
                         SizedBox(height: 16.0),
-                        RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                          ),
+                        OutlineButton(
                           child: Text(S.ok),
                           onPressed: () => Navigator.pop(context),
                         ),
@@ -369,48 +363,6 @@ class TaskDetail extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class EmptyPlayerItem extends StatelessWidget {
-  final Set<String> _categories;
-
-  EmptyPlayerItem({
-    Key key,
-    Set<RequiredItemCategory> categories,
-  })  : _categories = categories.map((e) => e.category.value).toSet(),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(A.EMPTY_IMAGE, width: 64, height: 64),
-              const SizedBox(height: 8.0),
-              Text(S.playerItemEmptyCategories(_categories)),
-              const SizedBox(height: 8.0),
-              RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.0),
-                ),
-                child: Text(S.ok),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
         ),
       ),
     );

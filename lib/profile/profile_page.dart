@@ -1,14 +1,18 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:resurgence/chat/chat.dart';
+import 'package:resurgence/chat/client.dart';
 import 'package:resurgence/chat/model.dart';
 import 'package:resurgence/chat/state.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/money.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class ProfilePage extends StatelessWidget {
   final Player player;
@@ -21,11 +25,10 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 4.0),
       child: Column(
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // image
               ProfileImage(),
@@ -33,70 +36,42 @@ class ProfilePage extends StatelessWidget {
               // info
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      player.nickname,
-                      style: Theme.of(context).textTheme.headline6,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            player.balance != null
+                                ? InfoContentText(Money.format(player.balance))
+                                : InfoContentText(player.wealth.value),
+                            SizedBox(height: 2.0),
+                            InfoTitleText(S.money),
+                          ],
+                        ),
+                        Container(
+                          width: 1,
+                          height: 48,
+                          color: Colors.grey,
+                        ),
+                        Column(
+                          children: [
+                            InfoContentText(player.honor.toString()),
+                            SizedBox(height: 2.0),
+                            InfoTitleText(S.honor),
+                          ],
+                        ),
+                      ],
                     ),
-                    InfoTitleText(player.title.value),
-                    InfoTitleText(player.race.value),
-                    _PlayerOnlineInfo(player: player),
                   ],
                 ),
               ),
             ],
           ),
-          Card(
-            margin: EdgeInsets.only(top: 16.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  InfoRow(
-                    children: [
-                      InfoTitleText(S.money),
-                      player.balance != null
-                          ? InfoContentText(Money.format(player.balance))
-                          : InfoContentText(player.wealth.value),
-                    ],
-                  ),
-                  if (player.family != null) Divider(),
-                  if (player.family != null)
-                    InfoRow(
-                      children: [
-                        InfoTitleText(S.family),
-                        InfoContentText(player.family),
-                      ],
-                    ),
-                  if (player.health != null) Divider(),
-                  if (player.health != null)
-                    InfoRow(
-                      children: [
-                        InfoTitleText(S.health),
-                        InfoContentText(player.health.toString()),
-                      ],
-                    ),
-                  Divider(),
-                  InfoRow(
-                    children: [
-                      InfoTitleText(S.honor),
-                      InfoContentText(player.honor.toString()),
-                    ],
-                  ),
-                  if (player.usableHonor != null) Divider(),
-                  if (player.usableHonor != null)
-                    InfoRow(
-                      children: [
-                        InfoTitleText(S.usableHonor),
-                        InfoContentText(player.usableHonor.toString()),
-                      ],
-                    ),
-                ],
-              ),
-            ),
+          SizedBox(height: 16.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _PlayerOnlineInfo(player: player),
           ),
         ],
       ),
@@ -114,6 +89,8 @@ class _PlayerOnlineInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (player.nickname == PlayerState.playerName) return Container();
+
     return Selector<ChatState, List<Presence>>(
       selector: (_, state) => state.presences,
       builder: (_, presences, __) {
@@ -122,18 +99,43 @@ class _PlayerOnlineInfo extends StatelessWidget {
 
         if (presence == null) return Container();
 
-        return Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 16.0,
-              height: 16.0,
-              decoration: BoxDecoration(
-                color: presence.online ? Colors.green[700] : Colors.red[700],
-                borderRadius: BorderRadius.circular(8.0),
-              ),
+            Row(
+              children: [
+                Container(
+                  width: 16.0,
+                  height: 16.0,
+                  decoration: BoxDecoration(
+                    color:
+                        presence.online ? Colors.green[700] : Colors.red[700],
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                SizedBox(width: 4.0),
+                InfoTitleText(presence.online ? 'Çevrimiçi' : 'Çevrimdışı'),
+              ],
             ),
-            SizedBox(width: 4.0),
-            InfoTitleText(presence.online ? 'Çevrimiçi' : 'Çevrimdışı'),
+            OutlineButton.icon(
+              // padding: EdgeInsets.zero,
+              onPressed: () {
+                var chatClient = context.read<Client>();
+
+                chatClient.searchAndSubscribe(player.nickname).then((subs) {
+                  Navigator.push(context, MessageRoute(subs));
+                }).catchError((e) {
+                  Sentry.captureException(e,
+                      hint: 'An error occur while searc and subscribe a topic');
+                  log(
+                    'An error occur while searc and subscribe a topic',
+                    error: e,
+                  );
+                });
+              },
+              icon: Icon(Icons.messenger_outline),
+              label: Text(S.sendMessage),
+            )
           ],
         );
       },
@@ -216,17 +218,26 @@ class ProfileImage extends StatelessWidget {
             .editImage(file)
             .then(context.read<PlayerState>().updatePlayer);
       },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(18.0),
-        child: Consumer<PlayerState>(
-          builder: (context, state, child) {
-            return Image.network(
-              S.baseUrl + 'player/image/${state.player.nickname}',
-              height: 128,
-              width: 128,
-            );
-          },
-        ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(18.0),
+            child: Consumer<PlayerState>(
+              builder: (context, state, child) {
+                return Image.network(
+                  S.baseUrl + 'player/image/${state.player.nickname}',
+                  height: 128,
+                  width: 128,
+                );
+              },
+            ),
+          ),
+          Positioned(
+            bottom: 6.0,
+            right: 6.0,
+            child: Icon(Icons.add_circle),
+          ),
+        ],
       ),
     );
   }

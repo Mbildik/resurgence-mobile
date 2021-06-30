@@ -35,6 +35,23 @@ class Application extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+      buttonTheme: darkTheme.buttonTheme.copyWith(
+        colorScheme: darkTheme.buttonTheme.colorScheme.copyWith(
+          primary: Colors.white,
+        ),
+      ),
+      appBarTheme: darkTheme.appBarTheme.copyWith(
+        color: Colors.black,
+      ),
+      bottomNavigationBarTheme: darkTheme.bottomNavigationBarTheme.copyWith(
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey[700]),
+      dividerTheme: darkTheme.dividerTheme.copyWith(color: Colors.white),
+      canvasColor: Colors.grey[900],
+      scaffoldBackgroundColor: Colors.black,
+      cardColor: Colors.grey[900],
+      accentColor: Colors.white,
+      indicatorColor: Colors.white,
     );
 
     return OverlaySupport(

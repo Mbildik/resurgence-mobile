@@ -46,14 +46,11 @@ class _MultiplayerTaskPageState extends State<MultiplayerTaskPage> {
       future: _service.plan(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            appBar: W.defaultAppBar,
-            body: const LoadingWidget(),
-          );
+          return const LoadingWidget();
         } else if (!snapshot.hasError) {
           // player have a plan
           var plan = snapshot.data;
-          return _MPTaskPlanPage(
+          return MPTaskPlanPage(
             plan: plan,
             task: plan.task,
           );
@@ -62,50 +59,43 @@ class _MultiplayerTaskPageState extends State<MultiplayerTaskPage> {
         var error = snapshot.error;
         if (error is DioError && error?.response?.statusCode != 404) {
           log('plan future error', error: snapshot.error);
-          return Scaffold(
-            appBar: W.defaultAppBar,
-            body: RefreshOnErrorWidget(
-              onPressed: _reload,
-            ),
-          );
+          return RefreshOnErrorWidget(onPressed: _reload);
         }
 
-        return Scaffold(
-          appBar: W.defaultAppBar,
-          body: LoadingFutureBuilder<List<MultiplayerTask>>(
-            future: _allTasks,
-            onError: this._reload,
-            builder: (context, snapshot) {
-              var tasks = snapshot.data;
-              return ListView.builder(
-                itemCount: tasks.length,
-                itemBuilder: (context, index) {
-                  var task = tasks[index];
+        return LoadingFutureBuilder<List<MultiplayerTask>>(
+          future: _allTasks,
+          onError: this._reload,
+          builder: (context, snapshot) {
+            var tasks = snapshot.data;
+            return ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                var task = tasks[index];
 
-                  return TaskListTile(
-                    task.leaderTask,
-                    onPerform: (items) {
-                      Navigator.of(context).pushReplacement(
-                        _MPTaskPlanPageRoute(task, items),
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          ),
+                return TaskListTile(
+                  task.leaderTask,
+                  onPerform: (items) {
+                    // _MPTaskPlanPageRoute(task, items),
+                    Navigator.of(context).push(
+                      _MPTaskPlanPageRoute(task, items),
+                    );
+                  },
+                );
+              },
+            );
+          },
         );
       },
     );
   }
 }
 
-class _MPTaskPlanPage extends StatefulWidget {
+class MPTaskPlanPage extends StatefulWidget {
   final Plan plan;
   final MultiplayerTask task;
   final List<PlayerItem> selectedItems;
 
-  const _MPTaskPlanPage({
+  const MPTaskPlanPage({
     Key key,
     this.task,
     this.selectedItems,
@@ -113,11 +103,10 @@ class _MPTaskPlanPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  __MPTaskPlanPageState createState() => __MPTaskPlanPageState();
+  _MPTaskPlanPageState createState() => _MPTaskPlanPageState();
 }
 
-class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
-
+class _MPTaskPlanPageState extends State<MPTaskPlanPage> {
   TextEditingController _memberController;
   Future<Plan> _future;
   MultiplayerService _service;
@@ -173,7 +162,7 @@ class __MPTaskPlanPageState extends State<_MPTaskPlanPage> {
                     S.cancel,
                     () => _service
                         .leave()
-                        .then((_) => Navigator.pop(context))
+                        // .then((_) => Navigator.pop(context))
                         .catchError((e) => ErrorHandler.showError(context, e)));
               },
             ),
@@ -478,5 +467,5 @@ class _MPTaskPlanPageRoute<T> extends MaterialPageRoute<T> {
   _MPTaskPlanPageRoute(this.task, this.selectedItems)
       : super(
             builder: (BuildContext context) =>
-                _MPTaskPlanPage(task: task, selectedItems: selectedItems));
+                MPTaskPlanPage(task: task, selectedItems: selectedItems));
 }

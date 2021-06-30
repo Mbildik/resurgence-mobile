@@ -27,7 +27,7 @@ class S {
   // Misc
   static const applicationTitle = 'Resurgence';
   static const applicationDescription = 'Text-Tabanlı Mafya Oyunu';
-  static const version = '0.0.3+5'; // todo retrieve from pubspec.yaml
+  static const version = '0.0.6+9'; // todo retrieve from pubspec.yaml
   static const userAgent = 'ResurgenceMobile/$version';
   static const dateFormat = 'dd.MM.y HH:mm';
 
@@ -60,7 +60,7 @@ class S {
   static const race = 'race';
   static const balance = 'balance';
   static const health = 'Sağlık';
-  static const honor = 'Onur Puanı';
+  static const honor = 'Onur';
   static const usableHonor = 'Kullanılabilir Onur Puanı';
   static const experience = 'experience';
   static const reload = 'Yeniden yükle';
@@ -68,7 +68,7 @@ class S {
   static const profile = 'Profil';
   static const task = 'Task';
   static const tasks = 'Görevler';
-  static const soloTask = 'Solo Görevler';
+  static const soloTask = 'Solo';
   static const info = 'Information';
   static const perform = 'Yap';
   static const duration = 'duration';
@@ -256,14 +256,14 @@ class S {
     return '$quantity tane kaldı';
   }
 
-  static const npc = 'NPC';
+  static const npc = 'Market';
   static const npcHelp =
       '$helpBullet NPC\'den oyun içerisinde bulunan bazı item\'ları alabilirsin.'
       '$helpSeparator Almak istediğin item\'lara tıkla ve satın al.'
       '$helpSeparator Sepetten istemediğin item\'ları tıklayarak teker teker veya '
       'uzun basarak hepsini çıkabilirsin.';
 
-  static const multiplayerTasks = 'Organize görevler';
+  static const multiplayerTasks = 'Organize';
   static const multiplayerTaskGainMember = 'şunları kazandı.';
   static const multiplayerTaskGainSelf = 'Şunları kazandın.';
 
@@ -288,6 +288,9 @@ class S {
   }
 
   static playerImage(String player) => baseUrl + 'player/image/$player';
+
+  static const skills = 'Beceriler';
+  static const news = 'Gelişmeler';
 }
 
 class W {

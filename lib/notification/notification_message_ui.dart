@@ -26,70 +26,61 @@ class _NotificationMessagePageState extends State<NotificationMessagePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(S.messages),
-      ),
-      body: LoadingFutureBuilder<List<Message>>(
-        future: _messagesFuture,
-        onError: _onError,
-        builder: (context, snapshot) {
-          var messages = List.of(snapshot.data);
+    return LoadingFutureBuilder<List<Message>>(
+      future: _messagesFuture,
+      onError: _onError,
+      builder: (context, snapshot) {
+        var messages = List<Message>.of(snapshot.data);
 
-          return RefreshIndicator(
-            onRefresh: () {
-              var future = _service.messages();
-              setState(() {
-                _messagesFuture = future;
-              });
-              return future;
-            },
-            child: ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                var message = messages[index];
+        return RefreshIndicator(
+          onRefresh: () {
+            var future = _service.messages();
+            setState(() {
+              _messagesFuture = future;
+            });
+            return future;
+          },
+          child: ListView.separated(
+            itemCount: messages.length,
+            separatorBuilder: (_, __) => Divider(height: 1),
+            itemBuilder: (context, index) {
+              var message = messages[index];
 
-                return Dismissible(
-                  key: ValueKey(message.id),
-                  direction: DismissDirection.endToStart,
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: Text(S.delete),
-                    color: Colors.red,
-                  ),
-                  onDismissed: (direction) {
-                    _service
-                        .delete(message.id)
-                        .catchError((e) => ErrorHandler.showError(context, e));
-                  },
-                  child: Column(
+              return Dismissible(
+                key: ValueKey(message.id),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Text(S.delete),
+                  color: Colors.red[700],
+                ),
+                onDismissed: (direction) {
+                  _service
+                      .delete(message.id)
+                      .catchError((e) => ErrorHandler.showError(context, e));
+                },
+                child: ListTile(
+                  title: Text(message.title),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        title: Text(message.title),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(message.content),
-                            SizedBox(height: 16.0),
-                            Text(
-                              DateFormat(S.dateFormat).format(
-                                message.time.toLocal(),
-                              ),
-                            ),
-                          ],
+                      Text(message.content),
+                      SizedBox(height: 16.0),
+                      Text(
+                        DateFormat(S.dateFormat).format(
+                          message.time.toLocal(),
                         ),
-                        isThreeLine: true,
                       ),
-                      Divider(height: 0),
                     ],
                   ),
-                );
-              },
-            ),
-          );
-        },
-      ),
+                  isThreeLine: true,
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
