@@ -82,7 +82,7 @@ class AuthenticationPage extends StatelessWidget {
                 Container(margin: EdgeInsets.symmetric(vertical: 16.0)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: FlatButton(
+                  child: TextButton(
                     onPressed: () => Navigator.push(
                       context,
                       _LoginPageRoute(),
@@ -211,7 +211,7 @@ class __LoginPageState extends State<_LoginPage> {
                   alignment: Alignment.centerRight,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: FlatButton(
+                    child: TextButton(
                       onPressed: () {},
                       child: Text(S.passwordForgot),
                     ),
@@ -225,7 +225,7 @@ class __LoginPageState extends State<_LoginPage> {
               Container(margin: EdgeInsets.symmetric(vertical: 8.0)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: FlatButton(
+                child: TextButton(
                   onPressed: () => widget.onSecondAction(),
                   child: RichText(
                     text: TextSpan(

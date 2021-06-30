@@ -35,7 +35,7 @@ class AuthenticationState with ChangeNotifier {
       var jwt = _decodeToken(token.accessToken);
       var id = jwt['sub'];
       Sentry.configureScope((scope) {
-        scope.user = User(
+        scope.user = SentryUser(
           id: id,
           email: id,
           username: jwt['player'],

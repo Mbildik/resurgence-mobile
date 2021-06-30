@@ -16,7 +16,7 @@ class ChatState extends ChangeNotifier {
   Map<Subscription, SplayTreeSet<Message>> _subsMessages = HashMap();
   ChatConnectionState _connectionState = ChatConnectionState.disconnected;
   bool chatPageOpen = false;
-  List<Presence> _presences = List();
+  List<Presence> _presences = [];
 
   void subscribe(Set<Subscription> subscriptions) {
     var oldSubs = Set<Subscription>.from(_subscriptions);

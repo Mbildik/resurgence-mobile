@@ -54,8 +54,8 @@ class Client {
 
   Interceptor apiErrorInterceptor() {
     return InterceptorsWrapper(
-      onError: (e) {
-        if (e.type == DioErrorType.RESPONSE &&
+      onError: (e, handler) {
+        if (e.type == DioErrorType.response &&
             e.response?.data != null &&
             e.response?.data != '' &&
             e.response?.data is Map &&
@@ -70,30 +70,35 @@ class Client {
 
   Interceptor accessTokenFilter() {
     return InterceptorsWrapper(
-      onRequest: (RequestOptions options) {
+      onRequest: (options, handler) {
         if (_state.isLoggedIn && !securityPaths.contains(options.path)) {
           options.headers[HttpHeaders.authorizationHeader] =
               'Bearer ${_state.token.accessToken}';
         }
+        return handler.next(options);
       },
     );
   }
 
   Interceptor refreshTokenFilter() {
-    return InterceptorsWrapper(onError: (e) {
-      if (e.type == DioErrorType.RESPONSE &&
-          !securityPaths.contains(e.request.path) &&
-          e.response.statusCode == 401) {
-        var failedRequest = e.request;
-        return this.refreshToken().then(
-              (_) => _dio.request(
-                failedRequest.path,
-                options: failedRequest,
-              ),
-            );
+    return InterceptorsWrapper(onError: (err, handler) async {
+      if (err.type == DioErrorType.response &&
+          !securityPaths.contains(err.requestOptions.path) &&
+          err.response.statusCode == 401) {
+        var failedRequest = err.requestOptions;
+        await this.refreshToken();
+        var response = await _dio.request(
+          failedRequest.path,
+          data: failedRequest.data,
+          queryParameters: failedRequest.queryParameters,
+          cancelToken: failedRequest.cancelToken,
+          onSendProgress: failedRequest.onSendProgress,
+          onReceiveProgress: failedRequest.onReceiveProgress,
+        );
+        handler.resolve(response);
       }
 
-      return e;
+      return handler.next(err);
     });
   }
 
@@ -188,7 +193,7 @@ class Client {
 class RefreshTokenExpiredError extends DioError {
   RefreshTokenExpiredError(DioError e)
       : super(
-          request: e.request,
+          requestOptions: e.requestOptions,
           response: e.response,
           type: e.type,
           error: e.error,
@@ -210,21 +215,21 @@ class AcceptLanguageInterceptor extends Interceptor {
   AcceptLanguageInterceptor(this._locale);
 
   @override
-  Future onRequest(RequestOptions options) async {
+  void onRequest(options, handler) async {
     options.headers[HttpHeaders.acceptLanguageHeader] = _locale.toString();
-    return options;
+    return super.onRequest(options, handler);
   }
 }
 
 class SentryInterceptor extends Interceptor {
   @override
-  Future onError(DioError e) {
+  void onError(e, handler) {
     try {
       dynamic request;
-      if (e.request?.data is FormData) {
+      if (e.requestOptions?.data is FormData) {
         request = 'FormData';
       } else {
-        request = e.request.data;
+        request = e.requestOptions.data;
       }
       Sentry.captureEvent(
         SentryEvent(
@@ -237,8 +242,8 @@ class SentryInterceptor extends Interceptor {
             'response': e.response?.data,
           },
           tags: {
-            'path': e.request?.path,
-            'method': e.request?.method,
+            'path': e.requestOptions?.path,
+            'method': e.requestOptions?.method,
             'statusCode': '${e.response?.statusCode ?? 0}',
           },
         ),
@@ -249,7 +254,7 @@ class SentryInterceptor extends Interceptor {
       } catch (ignored) {}
     }
 
-    return super.onError(e);
+    return super.onError(e, handler);
   }
 }
 
@@ -275,7 +280,7 @@ class DioFirebasePerformanceInterceptor extends Interceptor {
   final ResponseContentLengthMethod responseContentLengthMethod;
 
   @override
-  Future onRequest(RequestOptions options) async {
+  void onRequest(options, handler) async {
     try {
       final metric = FirebasePerformance.instance.newHttpMetric(
           options.uri.normalized(), options.method.asHttpMethod());
@@ -290,13 +295,13 @@ class DioFirebasePerformanceInterceptor extends Interceptor {
     } catch (error) {
       log('Http onRequest metric error', error: error);
     }
-    return super.onRequest(options);
+    return super.onRequest(options, handler);
   }
 
   @override
-  Future onResponse(Response response) async {
+  void onResponse(response, handler) async {
     try {
-      final requestKey = response.request.extra.hashCode;
+      final requestKey = response.requestOptions.extra.hashCode;
       final metric = _map[requestKey];
       metric.setResponse(response, responseContentLengthMethod);
       await metric.stop();
@@ -304,13 +309,13 @@ class DioFirebasePerformanceInterceptor extends Interceptor {
     } catch (error) {
       log('Http onResponse metric error', error: error);
     }
-    return super.onResponse(response);
+    return super.onResponse(response, handler);
   }
 
   @override
-  Future onError(DioError err) async {
+  void onError(err, handler) async {
     try {
-      final requestKey = err.request.extra.hashCode;
+      final requestKey = err.requestOptions.extra.hashCode;
       final metric = _map[requestKey];
       metric.setResponse(err.response, responseContentLengthMethod);
       await metric.stop();
@@ -318,7 +323,7 @@ class DioFirebasePerformanceInterceptor extends Interceptor {
     } catch (error) {
       log('Http onError metric error', error: error);
     }
-    return super.onError(err);
+    return super.onError(err, handler);
   }
 }
 

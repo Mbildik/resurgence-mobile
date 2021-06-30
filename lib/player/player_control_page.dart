@@ -38,7 +38,7 @@ class _PlayerControlPageState extends State<PlayerControlPage> {
 
   void onPlayerInfoError(e) {
     if (e is DioError &&
-        e.type == DioErrorType.RESPONSE &&
+        e.type == DioErrorType.response &&
         e.response.statusCode == 404) {
       throw PlayerNotCreatedError();
     }

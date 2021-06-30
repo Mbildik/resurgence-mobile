@@ -6,9 +6,9 @@ class ApiError extends DioError {
 
   ApiError(DioError e)
       : message = e?.response?.data['message'],
-        url = e?.request?.path,
+        url = e?.requestOptions?.path,
         super(
-          request: e?.request,
+          requestOptions: e?.requestOptions,
           response: e?.response,
           type: e?.type,
           error: e?.error,
@@ -16,6 +16,7 @@ class ApiError extends DioError {
 
   @override
   String toString() {
+    // todo add DioError toString value.
     return 'ApiError{message: $message, url: $url, cause: ${super.toString()}}';
   }
 }
