@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/chat/chat.dart';
@@ -66,12 +68,6 @@ class _MainNavigationState extends State<MainNavigation> {
           label: item.name);
     }).toList(growable: false);
 
-    final screens = navigationItems.asMap().entries.map((e) {
-      var index = e.key;
-      var item = e.value;
-      return _buildOffstageNavigator(index, item);
-    }).toList(growable: false);
-
     return WillPopScope(
       onWillPop: () async {
         final isFirstRouteInCurrentTab =
@@ -88,7 +84,7 @@ class _MainNavigationState extends State<MainNavigation> {
         return isFirstRouteInCurrentTab;
       },
       child: Scaffold(
-        body: Stack(children: screens),
+        body: TabNavigator(navigationItems[this._bottomNavigationBarIndex]),
         bottomNavigationBar: BottomNavigationBar(
           items: items,
           currentIndex: _bottomNavigationBarIndex,
@@ -104,23 +100,13 @@ class _MainNavigationState extends State<MainNavigation> {
       navigationItems[index]
           .key
           .currentState
-          .popUntil((route) => route.isFirst);
+          .maybePop((route) => route.isFirst);
     } else {
       setState(() => this._bottomNavigationBarIndex = index);
     }
   }
 
-  Widget _buildOffstageNavigator(int index, NavigationItem item) {
-    return Offstage(
-      offstage: _bottomNavigationBarIndex != index,
-      child: TabNavigator(item),
-    );
-  }
-
   static Widget _chatIcon(Icon icon) {
-    // todo chat kısmına bir bug var.
-    //  chat mesajları sadece geri tuşuna basınca okundu olarak
-    //  server'a gönderiliyor
     return Selector<ChatState, int>(
       selector: (_, s) => s.unreadMessageCount(),
       shouldRebuild: (a, b) => a != b,

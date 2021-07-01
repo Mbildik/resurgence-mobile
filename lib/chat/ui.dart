@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
 import 'package:resurgence/player/player.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Image getImage(Subscription sub) {
   if (sub.isGroup()) {
@@ -216,7 +218,12 @@ class _ChatDetail extends StatelessWidget {
       onWillPop: () async {
         try {
           context.read<Client>().read(sub.topic);
-        } catch (e) {}
+        } catch (err, stackTrace) {
+          var errMessage = 'An error occurred while sending read request';
+          log(errMessage, error: err, stackTrace: stackTrace);
+          Sentry.captureException(err,
+              stackTrace: stackTrace, hint: errMessage);
+        }
         return true;
       },
     );
