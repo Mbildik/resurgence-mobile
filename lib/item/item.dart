@@ -8,6 +8,7 @@ class Item extends AbstractEnum {
   int price;
   String image;
   Quality quality;
+  bool usable;
 
   Item({
     String key,
@@ -16,6 +17,7 @@ class Item extends AbstractEnum {
     this.price,
     this.image,
     this.quality,
+    this.usable,
   }) : super(key: key, value: value);
 
   Item.fromJson(Map<String, dynamic> json) {
@@ -30,7 +32,11 @@ class Item extends AbstractEnum {
     price = json['price'];
     image = json['image'] == null ? null : S.baseUrl + json['image'];
     quality = json['quality'] == null ? null : Quality.fromJson(json['quality']);
+    usable = json['usable'] == null ? false : json['usable'];
   }
+
+  String categoryHumanReadable() =>
+      this.category?.map((c) => c.value)?.join(', ') ?? '';
 }
 
 class PlayerItem {
@@ -151,7 +157,6 @@ class SelectedPlayerItemState extends ChangeNotifier {
   }
 }
 
-
 class EmptyPlayerItem extends StatelessWidget {
   final Set<String> _categories;
 
@@ -189,4 +194,16 @@ class EmptyPlayerItem extends StatelessWidget {
       ),
     );
   }
+}
+
+class ItemUsageResponse {
+  ItemUsageResponse({
+    @required this.used,
+  });
+
+  final bool used;
+
+  factory ItemUsageResponse.fromJson(Map<String, dynamic> json) => ItemUsageResponse(
+    used: json["used"],
+  );
 }

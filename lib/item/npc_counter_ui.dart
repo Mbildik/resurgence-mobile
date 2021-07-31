@@ -233,9 +233,7 @@ class _ItemListView extends StatelessWidget {
                 .bodyText1
                 .copyWith(color: item.quality.color(), fontSize: 16.0),
           ),
-          subtitle: Text(
-            item.category.map((c) => c.value).join(', '),
-          ),
+          subtitle: Text(item.categoryHumanReadable()),
           trailing: Text(Money.format(item.price)),
           onTap: () => this.onTap(item),
         );

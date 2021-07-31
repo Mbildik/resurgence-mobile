@@ -14,6 +14,8 @@ class ItemService {
   Future<List<Item>> counter() => _client.counter();
 
   Future<void> buy(Map<Item, int> items) => _client.buy(items);
+
+  Future<ItemUsageResponse> use(Item item) => _client.use(item);
 }
 
 class _ItemClient {
@@ -46,4 +48,8 @@ class _ItemClient {
     );
     return _client.post('npc', data: data);
   }
+
+  Future<ItemUsageResponse> use(Item item) =>
+      _client.post('player-item/use', queryParameters: {'item': item.key}).then(
+          (response) => ItemUsageResponse.fromJson(response.data));
 }
