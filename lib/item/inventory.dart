@@ -46,23 +46,13 @@ class _InventoryState extends State<Inventory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Inventory'),
-      ),
       body: LoadingFutureBuilder<List<PlayerItem>>(
         future: this._items,
         onError: this._refresh,
         builder: (context, snapshot) {
           var items = snapshot.data;
 
-          return Column(
-            children: [
-              Row(
-                children: [],
-              ),
-              _InventoryListView(items: items, onRefresh: this._refresh),
-            ],
-          );
+          return _InventoryListView(items: items, onRefresh: this._refresh);
         },
       ),
     );

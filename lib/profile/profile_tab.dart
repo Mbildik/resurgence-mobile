@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/authentication/state.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/item/inventory.dart';
 import 'package:resurgence/notification/notification_message_ui.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/skills.dart';
@@ -50,7 +51,7 @@ class ProfileTab extends StatelessWidget {
           ],
         ),
         body: DefaultTabController(
-          length: 2,
+          length: 3,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -88,6 +89,10 @@ class ProfileTab extends StatelessWidget {
                     icon: Icon(Icons.new_releases_outlined),
                     text: Text(S.news),
                   ),
+                  _ProfileTabBar(
+                    icon: Icon(Icons.inventory),
+                    text: Text(S.inventory),
+                  ),
                 ],
               ),
               Expanded(
@@ -95,6 +100,7 @@ class ProfileTab extends StatelessWidget {
                   children: [
                     Skills(),
                     NotificationMessagePage(),
+                    Inventory(),
                   ],
                 ),
               ),
