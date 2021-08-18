@@ -27,7 +27,7 @@ class S {
   // Misc
   static const applicationTitle = 'Resurgence';
   static const applicationDescription = 'Text-Tabanlı Mafya Oyunu';
-  static const version = '0.0.6+9'; // todo retrieve from pubspec.yaml
+  static const version = '0.0.6+10'; // todo retrieve from pubspec.yaml
   static const userAgent = 'ResurgenceMobile/$version';
   static const dateFormat = 'dd.MM.y HH:mm';
 

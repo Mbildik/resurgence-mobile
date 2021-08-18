@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
+import 'package:resurgence/item/inventory.dart';
 import 'package:resurgence/item/npc_counter_ui.dart';
 import 'package:resurgence/player/profile.dart';
 import 'package:resurgence/profile/profile_tab.dart';
@@ -39,11 +40,11 @@ class _MainNavigationState extends State<MainNavigation> {
       NPCCounter(),
     ),
     NavigationItem(
-      'Haberler',
-      Icon(Icons.home),
-      Icon(Icons.home_outlined),
+      'Envanter',
+      Icon(Icons.inventory),
+      Icon(Icons.inventory_2_outlined),
       GlobalKey<NavigatorState>(),
-      PlayerProfile('eee'),
+      Inventory(),
     ),
     NavigationItem(
       S.chat,
