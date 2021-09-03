@@ -17,6 +17,7 @@ import 'package:resurgence/network/client.dart';
 import 'package:resurgence/notification/service.dart';
 import 'package:resurgence/player/player.dart';
 import 'package:resurgence/player/service.dart';
+import 'package:resurgence/quest/service.dart';
 import 'package:resurgence/real-estate/service.dart';
 import 'package:resurgence/task/service.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -117,6 +118,11 @@ void main() async {
     create: (_) => MessageService(client),
   );
 
+  // Quest
+  final questServiceProvider = Provider(
+    create: (_) => QuestService(client),
+  );
+
   var mainApp = MultiProvider(
     providers: [
       // Authentication
@@ -152,6 +158,9 @@ void main() async {
 
       // Notification Message
       messageServiceProvider,
+
+      // Quest
+      questServiceProvider,
     ],
     child: Application(analytics: analytics),
   );

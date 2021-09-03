@@ -1,13 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resurgence/chat/chat.dart';
 import 'package:resurgence/constants.dart';
-import 'package:resurgence/item/inventory.dart';
 import 'package:resurgence/item/npc_counter_ui.dart';
-import 'package:resurgence/player/profile.dart';
 import 'package:resurgence/profile/profile_tab.dart';
+import 'package:resurgence/quest/quest_page.dart';
 import 'package:resurgence/tab_navigator.dart';
 import 'package:resurgence/task/task_tab.dart';
 
@@ -40,11 +37,11 @@ class _MainNavigationState extends State<MainNavigation> {
       NPCCounter(),
     ),
     NavigationItem(
-      'Envanter',
-      Icon(Icons.inventory),
-      Icon(Icons.inventory_2_outlined),
+      S.quests,
+      Icon(Icons.assignment),
+      Icon(Icons.assignment_outlined),
       GlobalKey<NavigatorState>(),
-      Inventory(),
+      QuestPage(),
     ),
     NavigationItem(
       S.chat,
