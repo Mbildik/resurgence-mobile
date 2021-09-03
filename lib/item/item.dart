@@ -30,8 +30,11 @@ class Item extends AbstractEnum {
           .toSet();
     }
     price = json['price'];
-    image = json['image'] == null ? null : S.baseUrl + json['image'];
-    quality = json['quality'] == null ? null : Quality.fromJson(json['quality']);
+    image = json['image'] == null
+        ? S.baseUrl + "static/item/$key.png"
+        : S.baseUrl + json['image'];
+    quality =
+        json['quality'] == null ? null : Quality.fromJson(json['quality']);
     usable = json['usable'] == null ? false : json['usable'];
   }
 

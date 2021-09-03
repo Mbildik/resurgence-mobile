@@ -41,13 +41,13 @@ class Task extends AbstractEnum {
 
     difficulty = AbstractEnum.fromJson(json['difficulty']);
     if (json['auxiliary'] != null) {
-      auxiliary = List<AbstractEnum>();
+      auxiliary = [];
       json['auxiliary'].forEach((v) {
         auxiliary.add(AbstractEnum.fromJson(v));
       });
     }
     if (json['skill_gain'] != null) {
-      skillGain = List<AbstractEnum>();
+      skillGain = [];
       json['skill_gain'].forEach((v) {
         skillGain.add(AbstractEnum.fromJson(v));
       });
@@ -79,6 +79,8 @@ class Task extends AbstractEnum {
     }
     return Colors.red[700];
   }
+
+  static String imageOf(String key) => S.baseUrl + 'static/task/$key.png';
 }
 
 class Drop {

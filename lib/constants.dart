@@ -291,6 +291,9 @@ class S {
 
   static const skills = 'Beceriler';
   static const news = 'Gelişmeler';
+  static const inventory = 'Envanter';
+  static const quests = 'Görevler';
+
 }
 
 class W {
